@@ -18,6 +18,20 @@ class FrontendController extends Controller
     public function home(): View
     {
         $settings = SiteSetting::query()->first();
+        $portfolios = Portfolio::query()
+            ->where('is_active', true)
+            ->where('is_featured', true)
+            ->orderBy('sort_order')
+            ->take(3)
+            ->get();
+
+        if ($portfolios->isEmpty()) {
+            $portfolios = Portfolio::query()
+                ->where('is_active', true)
+                ->orderBy('sort_order')
+                ->take(3)
+                ->get();
+        }
 
         return view('frontend.home', [
             'settings' => $settings,
@@ -32,12 +46,7 @@ class FrontendController extends Controller
                 ->orderBy('sort_order')
                 ->take(4)
                 ->get(),
-            'portfolios' => Portfolio::query()
-                ->where('is_active', true)
-                ->where('is_featured', true)
-                ->orderBy('sort_order')
-                ->take(3)
-                ->get(),
+            'portfolios' => $portfolios,
             'blogPosts' => BlogPost::query()
                 ->with('category')
                 ->where('is_active', true)

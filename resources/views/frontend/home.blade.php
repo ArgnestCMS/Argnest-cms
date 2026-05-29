@@ -2,6 +2,18 @@
 
 @php
     $productStatusOptions = \App\Models\Product::statusOptions();
+    $whatsappNumber = preg_replace('/\D+/', '', $settings?->whatsapp ?: $settings?->phone ?: '');
+    $featuredProduct = $products->firstWhere('slug', 'argnest-cms') ?? $products->firstWhere('is_featured', true) ?? $products->first();
+    $secondaryProducts = $products->reject(fn ($product) => $featuredProduct && $product->id === $featuredProduct->id);
+    $trustBadges = ['Mobil Uyumlu', 'SEO Odaklı', 'Güvenli Altyapı', 'Teknik Destek'];
+    $serviceIconStyles = [
+        'from-blue-500 to-cyan-400',
+        'from-indigo-500 to-blue-500',
+        'from-sky-500 to-blue-700',
+        'from-slate-700 to-blue-600',
+        'from-blue-600 to-indigo-600',
+        'from-cyan-500 to-blue-600',
+    ];
     $comparisonRows = [
         ['label' => 'Özelleştirme', 'ready' => 'Tema sınırları içinde kalır', 'argnest' => 'Markaya özel arayüz ve akış tasarlanır'],
         ['label' => 'Yönetim Paneli', 'ready' => 'Kısıtlı ve standart panel', 'argnest' => 'İhtiyaca özel Filament panel'],
@@ -14,10 +26,10 @@
 
 @section('content')
     <section class="relative overflow-hidden border-b border-slate-200 bg-white">
-        <div class="absolute inset-x-0 top-0 h-40 bg-linear-to-b from-blue-50 to-white"></div>
+        <div class="absolute inset-x-0 top-0 h-52 bg-linear-to-b from-blue-50 via-slate-50 to-white"></div>
         <div class="relative mx-auto grid max-w-7xl items-center gap-12 px-4 py-20 sm:px-6 lg:grid-cols-[0.95fr_1.05fr] lg:px-8 lg:py-28">
             <div>
-                <p class="mb-6 inline-flex items-center gap-2 rounded-full border border-blue-100 bg-white px-4 py-2 text-sm font-bold text-blue-700 shadow-sm">
+                <p class="mb-6 inline-flex items-center gap-2 rounded-full border border-blue-100 bg-white px-4 py-2 text-sm font-black text-blue-700 shadow-sm">
                     <span class="h-2 w-2 rounded-full bg-blue-600"></span>
                     Premium SaaS altyapısı ve kurumsal yazılım
                 </p>
@@ -31,10 +43,20 @@
                     <a href="#teklif" class="rounded-xl bg-blue-600 px-6 py-3.5 text-center text-sm font-black text-white shadow-xl shadow-blue-600/20 transition hover:-translate-y-0.5 hover:bg-blue-700">Teklif Al</a>
                     <a href="#hizmetler" class="rounded-xl border border-slate-300 bg-white px-6 py-3.5 text-center text-sm font-black text-slate-900 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-300 hover:text-blue-700">Hizmetleri İncele</a>
                 </div>
+                <div class="mt-8 grid gap-3 sm:grid-cols-2">
+                    @foreach ($trustBadges as $badge)
+                        <div class="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
+                            <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-50">
+                                <span class="h-3 w-3 rounded-full bg-blue-600"></span>
+                            </span>
+                            <span class="text-sm font-black text-slate-700">{{ $badge }}</span>
+                        </div>
+                    @endforeach
+                </div>
             </div>
 
             <div class="relative">
-                <div class="absolute -inset-4 rounded-[2rem] bg-blue-100/60 blur-3xl"></div>
+                <div class="absolute -inset-5 rounded-[2rem] bg-blue-100/70 blur-3xl"></div>
                 <div class="relative overflow-hidden rounded-[1.75rem] border border-slate-200 bg-slate-950 p-3 shadow-2xl shadow-slate-300">
                     <div class="flex items-center gap-2 border-b border-white/10 px-4 py-3">
                         <span class="h-3 w-3 rounded-full bg-red-400"></span>
@@ -42,7 +64,7 @@
                         <span class="h-3 w-3 rounded-full bg-emerald-400"></span>
                         <span class="ml-3 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-slate-300">argnest.app/dashboard</span>
                     </div>
-                    <div class="grid gap-3 bg-slate-950 p-4 md:grid-cols-[0.75fr_1.25fr]">
+                    <div class="grid gap-3 bg-slate-950 p-4 md:grid-cols-[0.7fr_1.3fr]">
                         <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
                             <p class="text-xs font-bold uppercase tracking-widest text-blue-300">Panel</p>
                             <div class="mt-5 space-y-3">
@@ -76,6 +98,19 @@
                                     <div class="h-2 w-10/12 rounded-full bg-blue-600"></div>
                                 </div>
                             </div>
+                            <div class="mt-5 grid gap-3">
+                                @foreach ([78, 64, 91] as $width)
+                                    <div class="rounded-2xl border border-slate-100 bg-white p-3">
+                                        <div class="mb-2 flex items-center justify-between">
+                                            <span class="h-2 w-20 rounded-full bg-slate-200"></span>
+                                            <span class="h-2 w-10 rounded-full bg-blue-200"></span>
+                                        </div>
+                                        <div class="h-2 rounded-full bg-slate-100">
+                                            <div class="h-2 rounded-full bg-blue-600" style="width: {{ $width }}%"></div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -106,8 +141,13 @@
             <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
                 @forelse ($services as $service)
                     <article class="group rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:border-blue-200 hover:shadow-2xl hover:shadow-blue-100">
-                        <div class="mb-6 flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 text-lg font-black text-blue-700 ring-8 ring-blue-50/40">
-                            {{ mb_substr($service->title, 0, 1) }}
+                        <div class="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br {{ $serviceIconStyles[$loop->index % count($serviceIconStyles)] }} shadow-lg shadow-blue-200">
+                            <div class="grid h-7 w-7 grid-cols-2 gap-1">
+                                <span class="rounded-sm bg-white/95"></span>
+                                <span class="rounded-sm bg-white/70"></span>
+                                <span class="rounded-sm bg-white/70"></span>
+                                <span class="rounded-sm bg-white/95"></span>
+                            </div>
                         </div>
                         <h3 class="text-lg font-black text-slate-950">{{ $service->title }}</h3>
                         <p class="mt-3 text-sm leading-6 text-slate-600">{{ $service->short_description ?: 'İş hedeflerinize göre ölçeklenebilir, hızlı ve yönetilebilir çözüm.' }}</p>
@@ -128,25 +168,65 @@
                 <h2 class="mt-3 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">Argnest ürün ailesi</h2>
                 <p class="mt-4 text-base leading-7 text-slate-600">CMS, CRM ve sektörel yazılımlar; yönetilebilirlik, hız ve güvenlik odağıyla geliştirilir.</p>
             </div>
-            <div class="grid gap-5 lg:grid-cols-3">
-                @forelse ($products as $product)
-                    <article class="{{ $product->is_featured ? 'border-blue-200 bg-blue-50/70 lg:col-span-2' : 'border-slate-200 bg-white' }} rounded-3xl border p-7 shadow-sm">
-                        <div class="mb-7 flex flex-wrap items-center justify-between gap-3">
-                            <span class="rounded-full bg-white px-3 py-1.5 text-xs font-black text-blue-700 shadow-sm">{{ $productStatusOptions[$product->product_status] ?? 'Aktif' }}</span>
-                            @if ($product->product_status === \App\Models\Product::STATUS_COMING_SOON)
-                                <span class="rounded-full bg-amber-100 px-3 py-1.5 text-xs font-black text-amber-800">Coming Soon</span>
-                            @endif
-                            @if ($product->is_featured)
-                                <span class="rounded-full bg-blue-600 px-3 py-1.5 text-xs font-black text-white">Öne Çıkan</span>
-                            @endif
+            @if ($featuredProduct)
+                <div class="grid gap-5 lg:grid-cols-[1.45fr_0.85fr]">
+                    <article class="overflow-hidden rounded-3xl border border-blue-200 bg-blue-50/70 p-7 shadow-xl shadow-blue-100">
+                        <div class="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+                            <div>
+                                <div class="mb-7 flex flex-wrap items-center gap-3">
+                                    <span class="rounded-full bg-white px-3 py-1.5 text-xs font-black text-blue-700 shadow-sm">{{ $productStatusOptions[$featuredProduct->product_status] ?? 'Aktif' }}</span>
+                                    <span class="rounded-full bg-blue-600 px-3 py-1.5 text-xs font-black text-white">Öne Çıkan</span>
+                                </div>
+                                <h3 class="text-3xl font-black text-slate-950">{{ $featuredProduct->title }}</h3>
+                                <p class="mt-4 text-sm leading-6 text-slate-600">{{ $featuredProduct->short_description ?: 'Argnest CMS; içerik, sayfa, teklif, hizmet ve kurumsal site yönetimini tek panelde toplayan modern altyapıdır.' }}</p>
+                                <a href="#teklif" class="mt-7 inline-flex rounded-xl bg-blue-600 px-5 py-3 text-sm font-black text-white shadow-lg shadow-blue-600/20 hover:bg-blue-700">CMS için Görüşelim</a>
+                            </div>
+                            <div class="rounded-3xl border border-white/70 bg-white p-4 shadow-2xl shadow-blue-200">
+                                <div class="mb-4 flex items-center justify-between">
+                                    <div>
+                                        <p class="text-xs font-black uppercase tracking-widest text-blue-600">CMS Panel</p>
+                                        <p class="text-lg font-black text-slate-950">İçerik Merkezi</p>
+                                    </div>
+                                    <span class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-black text-emerald-700">Aktif</span>
+                                </div>
+                                <div class="grid gap-3">
+                                    @foreach ([['Sayfalar', 82], ['Hizmetler', 68], ['SEO Skoru', 94]] as [$label, $width])
+                                        <div class="rounded-2xl bg-slate-50 p-4">
+                                            <div class="mb-3 flex items-center justify-between text-xs font-black text-slate-600">
+                                                <span>{{ $label }}</span>
+                                                <span>{{ $width }}%</span>
+                                            </div>
+                                            <div class="h-2 rounded-full bg-white">
+                                                <div class="h-2 rounded-full bg-blue-600" style="width: {{ $width }}%"></div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
                         </div>
-                        <h3 class="text-2xl font-black text-slate-950">{{ $product->title }}</h3>
-                        <p class="mt-4 text-sm leading-6 text-slate-600">{{ $product->short_description ?: 'Argnest kalitesiyle geliştirilen modern, güvenli ve yönetilebilir ürün altyapısı.' }}</p>
                     </article>
-                @empty
+                    <div class="grid gap-5">
+                        @forelse ($secondaryProducts as $product)
+                            <article class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+                                <div class="mb-5 flex flex-wrap items-center gap-2">
+                                    <span class="rounded-full bg-slate-50 px-3 py-1.5 text-xs font-black text-blue-700">{{ $productStatusOptions[$product->product_status] ?? 'Aktif' }}</span>
+                                    @if ($product->product_status === \App\Models\Product::STATUS_COMING_SOON)
+                                        <span class="rounded-full bg-amber-100 px-3 py-1.5 text-xs font-black text-amber-800">Coming Soon</span>
+                                    @endif
+                                </div>
+                                <h3 class="text-xl font-black text-slate-950">{{ $product->title }}</h3>
+                                <p class="mt-3 text-sm leading-6 text-slate-600">{{ $product->short_description ?: 'Planlanan Argnest ürün yol haritasının parçası.' }}</p>
+                            </article>
+                        @empty
+                            <div class="rounded-3xl border border-slate-200 bg-white p-6 text-sm font-semibold text-slate-500">Yeni ürünler hazırlanıyor.</div>
+                        @endforelse
+                    </div>
+                </div>
+            @else
+                <div>
                     <p class="text-slate-600">Aktif ürün kaydı bulunamadı.</p>
-                @endforelse
-            </div>
+                </div>
+            @endif
         </div>
     </section>
 
@@ -206,28 +286,28 @@
         </div>
     </section>
 
-    <section id="referanslar" class="bg-white py-20">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div class="mb-12 flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
-                <div>
-                    <p class="text-sm font-black uppercase tracking-widest text-blue-600">Referanslar</p>
-                    <h2 class="mt-3 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">Öne çıkan projeler</h2>
+    @if ($portfolios->isNotEmpty())
+        <section id="referanslar" class="bg-white py-20">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="mb-12 flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
+                    <div>
+                        <p class="text-sm font-black uppercase tracking-widest text-blue-600">Referanslar</p>
+                        <h2 class="mt-3 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">Öne çıkan projeler</h2>
+                    </div>
+                    <p class="max-w-xl text-sm leading-6 text-slate-600">Tamamlanan projeler; ihtiyaç analizi, tasarım, yazılım ve yayın süreçleriyle uçtan uca yönetilir.</p>
                 </div>
-                <p class="max-w-xl text-sm leading-6 text-slate-600">Tamamlanan projeler; ihtiyaç analizi, tasarım, yazılım ve yayın süreçleriyle uçtan uca yönetilir.</p>
-            </div>
-            <div class="grid gap-5 md:grid-cols-3">
-                @forelse ($portfolios as $portfolio)
+                <div class="grid gap-5 md:grid-cols-3">
+                    @foreach ($portfolios as $portfolio)
                     <article class="rounded-3xl border border-slate-200 bg-slate-50 p-6 transition hover:-translate-y-1 hover:shadow-xl">
                         <p class="text-sm font-black text-blue-700">{{ $portfolio->client_name ?: 'Referans' }}</p>
                         <h3 class="mt-3 text-xl font-black text-slate-950">{{ $portfolio->title }}</h3>
                         <p class="mt-3 text-sm leading-6 text-slate-600">{{ $portfolio->short_description ?: 'Özel ihtiyaçlara göre planlanan ve yayına alınan dijital proje.' }}</p>
                     </article>
-                @empty
-                    <p class="text-slate-600">Öne çıkan referans kaydı bulunamadı.</p>
-                @endforelse
+                    @endforeach
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
+    @endif
 
     <section id="blog" class="bg-slate-50 py-20">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -237,17 +317,56 @@
             </div>
             <div class="grid gap-5 md:grid-cols-3">
                 @forelse ($blogPosts as $post)
-                    <article class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
-                        <p class="text-xs font-black uppercase tracking-widest text-blue-600">{{ $post->category?->name ?: 'Blog' }}</p>
-                        <h3 class="mt-3 text-lg font-black text-slate-950">{{ $post->title }}</h3>
-                        <p class="mt-3 text-sm leading-6 text-slate-600">{{ $post->excerpt ?: \Illuminate\Support\Str::limit(strip_tags($post->content), 120) }}</p>
-                        @if ($post->published_at)
-                            <p class="mt-5 text-xs font-bold text-slate-400">{{ $post->published_at->format('d.m.Y') }}</p>
+                    <article class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
+                        @if ($post->featured_image)
+                            <img src="{{ asset('storage/' . $post->featured_image) }}" alt="{{ $post->title }}" class="h-44 w-full object-cover">
+                        @else
+                            <div class="h-44 bg-linear-to-br from-blue-600 via-slate-900 to-cyan-400 p-5">
+                                <div class="h-full rounded-2xl border border-white/20 bg-white/10 p-4">
+                                    <div class="h-2 w-24 rounded-full bg-white/80"></div>
+                                    <div class="mt-4 h-2 w-32 rounded-full bg-white/50"></div>
+                                    <div class="mt-8 grid grid-cols-3 gap-2">
+                                        <span class="h-12 rounded-xl bg-white/20"></span>
+                                        <span class="h-12 rounded-xl bg-white/30"></span>
+                                        <span class="h-12 rounded-xl bg-white/20"></span>
+                                    </div>
+                                </div>
+                            </div>
                         @endif
+                        <div class="p-6">
+                            <div class="mb-4 flex flex-wrap items-center gap-2">
+                                <p class="rounded-full bg-blue-50 px-3 py-1 text-xs font-black uppercase tracking-widest text-blue-600">{{ $post->category?->name ?: 'Blog' }}</p>
+                                @if ($post->published_at)
+                                    <p class="text-xs font-bold text-slate-400">{{ $post->published_at->format('d.m.Y') }}</p>
+                                @endif
+                            </div>
+                            <h3 class="text-lg font-black text-slate-950">{{ $post->title }}</h3>
+                            <p class="mt-3 text-sm leading-6 text-slate-600">{{ $post->excerpt ?: \Illuminate\Support\Str::limit(strip_tags($post->content), 120) }}</p>
+                        </div>
                     </article>
                 @empty
                     <p class="text-slate-600">Aktif blog yazısı bulunamadı.</p>
                 @endforelse
+            </div>
+        </div>
+    </section>
+
+    <section class="bg-white py-16">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="overflow-hidden rounded-[2rem] bg-slate-950 p-8 text-white shadow-2xl shadow-slate-300 md:p-10">
+                <div class="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-center">
+                    <div>
+                        <p class="text-sm font-black uppercase tracking-widest text-blue-300">Bir sonraki adım</p>
+                        <h2 class="mt-3 max-w-3xl text-3xl font-black tracking-tight sm:text-4xl">Projeniz için doğru çözümü birlikte planlayalım</h2>
+                        <p class="mt-4 max-w-2xl text-sm leading-7 text-slate-300">İhtiyacınızı anlatın; web sitesi, CRM, panel, ürün veya SEO tarafında en doğru yol haritasını birlikte çıkaralım.</p>
+                    </div>
+                    <div class="flex flex-col gap-3 sm:flex-row lg:flex-col xl:flex-row">
+                        <a href="#teklif" class="rounded-xl bg-blue-600 px-6 py-3.5 text-center text-sm font-black text-white shadow-lg shadow-blue-600/20 hover:bg-blue-700">Teklif Al</a>
+                        @if ($whatsappNumber)
+                            <a href="https://wa.me/{{ $whatsappNumber }}" target="_blank" rel="noreferrer" class="rounded-xl border border-white/15 px-6 py-3.5 text-center text-sm font-black text-white hover:border-blue-300 hover:text-blue-200">WhatsApp ile Yaz</a>
+                        @endif
+                    </div>
+                </div>
             </div>
         </div>
     </section>
