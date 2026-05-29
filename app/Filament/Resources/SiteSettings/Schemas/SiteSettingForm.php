@@ -68,6 +68,18 @@ class SiteSettingForm
                             ->image()
                             ->imageEditor()
                             ->helperText('Logo dosyası public diskinde site klasörüne yüklenecek.'),
+                        FileUpload::make('hero_banner')
+                            ->label('Ana Sayfa Hero Banner')
+                            ->disk('public')
+                            ->directory('site/hero')
+                            ->image()
+                            ->helperText('Ana sayfada en üstte gösterilecek tek parça hero tanıtım görselidir. Görselin içinde başlık, logo, açıklama ve tanıtım öğeleri bulunabilir.'),
+                        FileUpload::make('hero_background')
+                            ->label('Hero Arka Plan Görseli')
+                            ->disk('public')
+                            ->directory('site/hero')
+                            ->image()
+                            ->helperText('Ana sayfa hero bölümünün arka planında kullanılacak koyu teknoloji temalı görseldir.'),
                         FileUpload::make('favicon')
                             ->label('Favicon')
                             ->disk('public')

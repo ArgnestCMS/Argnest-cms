@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
         $this->call(ProductSeeder::class);
         $this->call(PortfolioSeeder::class);
         $this->call(BlogSeeder::class);
+        $this->call(HeroButtonSeeder::class);
 
         User::query()->firstOrCreate(
             ['email' => 'test@example.com'],

@@ -6,13 +6,19 @@
     $featuredProduct = $products->firstWhere('slug', 'argnest-cms') ?? $products->firstWhere('is_featured', true) ?? $products->first();
     $secondaryProducts = $products->reject(fn ($product) => $featuredProduct && $product->id === $featuredProduct->id);
     $trustBadges = ['Mobil Uyumlu', 'SEO Odaklı', 'Güvenli Altyapı', 'Teknik Destek'];
-    $serviceIconStyles = [
-        'from-blue-500 to-cyan-400',
-        'from-indigo-500 to-blue-500',
-        'from-sky-500 to-blue-700',
-        'from-slate-700 to-blue-600',
-        'from-blue-600 to-indigo-600',
-        'from-cyan-500 to-blue-600',
+    $serviceIconMap = [
+        'Kurumsal Web Siteleri' => 'heroicon-o-globe-alt',
+        'Özel Yazılım Çözümleri' => 'heroicon-o-code-bracket-square',
+        'Müşteri Takip Sistemleri' => 'heroicon-o-users',
+        'Hosting ve Sunucu Hizmetleri' => 'heroicon-o-server-stack',
+        'SEO ve Google Çözümleri' => 'heroicon-o-chart-bar-square',
+        'Oto Galeri Yazılımları' => 'heroicon-o-truck',
+        'kurumsal-web-siteleri' => 'heroicon-o-globe-alt',
+        'ozel-yazilim-cozumleri' => 'heroicon-o-code-bracket-square',
+        'musteri-takip-sistemleri' => 'heroicon-o-users',
+        'hosting-ve-sunucu-hizmetleri' => 'heroicon-o-server-stack',
+        'seo-ve-google-cozumleri' => 'heroicon-o-chart-bar-square',
+        'oto-galeri-yazilimlari' => 'heroicon-o-truck',
     ];
     $comparisonRows = [
         ['label' => 'Özelleştirme', 'ready' => 'Tema sınırları içinde kalır', 'argnest' => 'Markaya özel arayüz ve akış tasarlanır'],
@@ -22,102 +28,63 @@
         ['label' => 'Destek', 'ready' => 'Genel destek süreçleri', 'argnest' => 'Projeye hakim teknik ekip'],
         ['label' => 'Ölçeklenebilirlik', 'ready' => 'Paket limitlerine bağlı büyüme', 'argnest' => 'İşletmeyle birlikte genişleyen mimari'],
     ];
+    $heroButtonClasses = [
+        'primary' => 'bg-linear-to-r from-violet-600 to-blue-600 text-white shadow-2xl shadow-blue-600/35 hover:shadow-violet-500/35',
+        'outline' => 'border border-violet-400/50 bg-slate-950/35 text-white shadow-lg shadow-slate-950/20 backdrop-blur hover:border-violet-300 hover:bg-white/10',
+        'secondary' => 'border border-blue-300/50 bg-slate-950/35 text-blue-200 shadow-lg shadow-slate-950/20 backdrop-blur hover:border-blue-200 hover:bg-blue-300/10',
+        'whatsapp' => 'border border-emerald-300/50 bg-slate-950/35 text-cyan-200 shadow-lg shadow-slate-950/20 backdrop-blur hover:border-cyan-200 hover:bg-emerald-300/10',
+    ];
 @endphp
 
 @section('content')
-    <section class="relative overflow-hidden border-b border-slate-200 bg-white">
-        <div class="absolute inset-x-0 top-0 h-52 bg-linear-to-b from-blue-50 via-slate-50 to-white"></div>
-        <div class="relative mx-auto grid max-w-7xl items-center gap-12 px-4 py-20 sm:px-6 lg:grid-cols-[0.95fr_1.05fr] lg:px-8 lg:py-28">
-            <div>
-                <p class="mb-6 inline-flex items-center gap-2 rounded-full border border-blue-100 bg-white px-4 py-2 text-sm font-black text-blue-700 shadow-sm">
-                    <span class="h-2 w-2 rounded-full bg-blue-600"></span>
-                    Premium SaaS altyapısı ve kurumsal yazılım
-                </p>
-                <h1 class="max-w-4xl text-4xl font-black tracking-tight text-slate-950 sm:text-5xl lg:text-7xl">
-                    İşletmeniz İçin Modern Dijital Çözümler
-                </h1>
-                <p class="mt-6 max-w-2xl text-lg leading-8 text-slate-600">
-                    Kurumsal web siteleri, özel yazılımlar, müşteri takip sistemleri, hosting ve dijital büyüme çözümleri geliştiriyoruz.
-                </p>
-                <div class="mt-9 flex flex-col gap-3 sm:flex-row">
-                    <a href="#teklif" class="rounded-xl bg-blue-600 px-6 py-3.5 text-center text-sm font-black text-white shadow-xl shadow-blue-600/20 transition hover:-translate-y-0.5 hover:bg-blue-700">Teklif Al</a>
-                    <a href="#hizmetler" class="rounded-xl border border-slate-300 bg-white px-6 py-3.5 text-center text-sm font-black text-slate-900 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-300 hover:text-blue-700">Hizmetleri İncele</a>
-                </div>
-                <div class="mt-8 grid gap-3 sm:grid-cols-2">
-                    @foreach ($trustBadges as $badge)
-                        <div class="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
-                            <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-50">
-                                <span class="h-3 w-3 rounded-full bg-blue-600"></span>
-                            </span>
-                            <span class="text-sm font-black text-slate-700">{{ $badge }}</span>
+    <section
+        class="relative overflow-hidden border-b border-slate-900/10 bg-slate-950 bg-cover bg-center"
+        @if ($settings?->hero_background) style="background-image: url('{{ asset('storage/' . $settings->hero_background) }}')" @endif
+    >
+        @if ($settings?->hero_background)
+            <div class="absolute inset-0 bg-slate-950/60"></div>
+        @else
+            <div class="absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(37,99,235,0.32),transparent_34%),radial-gradient(circle_at_82%_12%,rgba(124,58,237,0.24),transparent_32%),linear-gradient(135deg,#020617_0%,#0f172a_52%,#111827_100%)]"></div>
+        @endif
+        <div class="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-blue-200/70 to-transparent"></div>
+        <div class="relative mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
+            @if ($settings?->hero_banner)
+                <img
+                    src="{{ asset('storage/' . $settings->hero_banner) }}"
+                    alt="Argnest ana sayfa hero banner"
+                    class="w-full rounded-[2rem] object-cover shadow-2xl shadow-slate-950/40"
+                >
+            @else
+                <div class="overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.04] shadow-2xl shadow-slate-950/30 backdrop-blur">
+                    <div class="relative bg-slate-950 px-6 py-16 text-center sm:px-10 lg:px-16 lg:py-24">
+                        <div class="absolute inset-0 bg-[radial-gradient(circle_at_22%_20%,rgba(59,130,246,0.22),transparent_32%),radial-gradient(circle_at_78%_12%,rgba(99,102,241,0.18),transparent_34%),linear-gradient(135deg,#020617_0%,#0f172a_58%,#111827_100%)]"></div>
+                        <div class="relative mx-auto max-w-4xl">
+                            <h1 class="text-4xl font-black tracking-tight text-white sm:text-5xl lg:text-6xl">
+                                &#304;&#351;letmeniz &#304;&ccedil;in Modern Dijital &Ccedil;&ouml;z&uuml;mler
+                            </h1>
+                            <p class="mx-auto mt-6 max-w-2xl text-base leading-8 text-slate-300 sm:text-lg">
+                                Kurumsal web siteleri, &ouml;zel yaz&#305;l&#305;mlar, m&uuml;&#351;teri takip sistemleri, hosting ve dijital b&uuml;y&uuml;me &ccedil;&ouml;z&uuml;mleri geli&#351;tiriyoruz.
+                            </p>
                         </div>
+                    </div>
+                </div>
+            @endif
+
+            @if ($heroButtons->isNotEmpty())
+                <div class="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+                    @foreach ($heroButtons as $button)
+                        <a
+                            href="{{ $button->url }}"
+                            @if ($button->target === \App\Models\HeroButton::TARGET_BLANK) target="_blank" rel="noreferrer" @endif
+                            class="rounded-2xl px-6 py-3.5 text-center text-sm font-black transition duration-300 hover:scale-105 {{ $heroButtonClasses[$button->style] ?? $heroButtonClasses['primary'] }}"
+                        >
+                            {{ $button->title }}
+                        </a>
                     @endforeach
                 </div>
-            </div>
-
-            <div class="relative">
-                <div class="absolute -inset-5 rounded-[2rem] bg-blue-100/70 blur-3xl"></div>
-                <div class="relative overflow-hidden rounded-[1.75rem] border border-slate-200 bg-slate-950 p-3 shadow-2xl shadow-slate-300">
-                    <div class="flex items-center gap-2 border-b border-white/10 px-4 py-3">
-                        <span class="h-3 w-3 rounded-full bg-red-400"></span>
-                        <span class="h-3 w-3 rounded-full bg-amber-400"></span>
-                        <span class="h-3 w-3 rounded-full bg-emerald-400"></span>
-                        <span class="ml-3 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-slate-300">argnest.app/dashboard</span>
-                    </div>
-                    <div class="grid gap-3 bg-slate-950 p-4 md:grid-cols-[0.7fr_1.3fr]">
-                        <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
-                            <p class="text-xs font-bold uppercase tracking-widest text-blue-300">Panel</p>
-                            <div class="mt-5 space-y-3">
-                                @foreach (['Müşteri Talepleri', 'Hizmetler', 'Ürünler', 'Blog İçerikleri'] as $item)
-                                    <div class="rounded-xl bg-white/10 px-3 py-3 text-sm font-semibold text-white">{{ $item }}</div>
-                                @endforeach
-                            </div>
-                        </div>
-                        <div class="rounded-2xl bg-white p-5">
-                            <div class="mb-6 flex items-center justify-between">
-                                <div>
-                                    <p class="text-xs font-bold uppercase tracking-widest text-blue-600">Operasyon</p>
-                                    <h2 class="mt-1 text-xl font-black text-slate-950">Büyüme Özeti</h2>
-                                </div>
-                                <span class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-black text-emerald-700">Canlı</span>
-                            </div>
-                            <div class="grid gap-4 sm:grid-cols-2">
-                                @foreach ($stats as $stat)
-                                    <div class="rounded-2xl border border-slate-100 bg-slate-50 p-4">
-                                        <p class="text-2xl font-black text-slate-950">{{ $stat['value'] }}</p>
-                                        <p class="mt-1 text-xs font-bold text-slate-500">{{ $stat['label'] }}</p>
-                                    </div>
-                                @endforeach
-                            </div>
-                            <div class="mt-5 rounded-2xl border border-blue-100 bg-blue-50 p-4">
-                                <div class="mb-3 flex items-center justify-between text-xs font-bold text-blue-700">
-                                    <span>Proje Akışı</span>
-                                    <span>%86</span>
-                                </div>
-                                <div class="h-2 rounded-full bg-white">
-                                    <div class="h-2 w-10/12 rounded-full bg-blue-600"></div>
-                                </div>
-                            </div>
-                            <div class="mt-5 grid gap-3">
-                                @foreach ([78, 64, 91] as $width)
-                                    <div class="rounded-2xl border border-slate-100 bg-white p-3">
-                                        <div class="mb-2 flex items-center justify-between">
-                                            <span class="h-2 w-20 rounded-full bg-slate-200"></span>
-                                            <span class="h-2 w-10 rounded-full bg-blue-200"></span>
-                                        </div>
-                                        <div class="h-2 rounded-full bg-slate-100">
-                                            <div class="h-2 rounded-full bg-blue-600" style="width: {{ $width }}%"></div>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            @endif
         </div>
     </section>
-
     <section class="bg-white py-10">
         <div class="mx-auto grid max-w-7xl gap-4 px-4 sm:px-6 md:grid-cols-2 lg:grid-cols-4 lg:px-8">
             @foreach ($stats as $stat)
@@ -141,13 +108,15 @@
             <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
                 @forelse ($services as $service)
                     <article class="group rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:border-blue-200 hover:shadow-2xl hover:shadow-blue-100">
-                        <div class="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br {{ $serviceIconStyles[$loop->index % count($serviceIconStyles)] }} shadow-lg shadow-blue-200">
-                            <div class="grid h-7 w-7 grid-cols-2 gap-1">
-                                <span class="rounded-sm bg-white/95"></span>
-                                <span class="rounded-sm bg-white/70"></span>
-                                <span class="rounded-sm bg-white/70"></span>
-                                <span class="rounded-sm bg-white/95"></span>
-                            </div>
+                        <div class="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br from-slate-950 via-blue-800 to-blue-500 shadow-lg shadow-blue-200">
+                            @if ($service->icon)
+                                <img src="{{ asset('storage/' . $service->icon) }}" alt="{{ $service->title }}" class="h-8 w-8 object-contain">
+                            @else
+                                <x-dynamic-component
+                                    :component="$serviceIconMap[$service->title] ?? $serviceIconMap[$service->slug] ?? 'heroicon-o-sparkles'"
+                                    class="h-7 w-7 text-white"
+                                />
+                            @endif
                         </div>
                         <h3 class="text-lg font-black text-slate-950">{{ $service->title }}</h3>
                         <p class="mt-3 text-sm leading-6 text-slate-600">{{ $service->short_description ?: 'İş hedeflerinize göre ölçeklenebilir, hızlı ve yönetilebilir çözüm.' }}</p>

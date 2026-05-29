@@ -17,6 +17,8 @@ class SiteSetting extends Model
         'google_maps_url',
         'logo',
         'favicon',
+        'hero_banner',
+        'hero_background',
         'facebook_url',
         'instagram_url',
         'linkedin_url',

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Models\BlogPost;
+use App\Models\HeroButton;
 use App\Models\Lead;
 use App\Models\Portfolio;
 use App\Models\Product;
@@ -52,6 +53,10 @@ class FrontendController extends Controller
                 ->where('is_active', true)
                 ->orderByDesc('published_at')
                 ->take(3)
+                ->get(),
+            'heroButtons' => HeroButton::query()
+                ->where('is_active', true)
+                ->orderBy('sort_order')
                 ->get(),
             'stats' => [
                 [
