@@ -44,6 +44,24 @@ class FrontendController extends Controller
                 ->orderByDesc('published_at')
                 ->take(3)
                 ->get(),
+            'stats' => [
+                [
+                    'label' => 'Tamamlanan Proje',
+                    'value' => Portfolio::query()->where('is_active', true)->count(),
+                ],
+                [
+                    'label' => 'Aktif Hizmet',
+                    'value' => Service::query()->where('is_active', true)->count(),
+                ],
+                [
+                    'label' => 'Müşteri Talebi',
+                    'value' => Lead::query()->count(),
+                ],
+                [
+                    'label' => 'Blog İçeriği',
+                    'value' => BlogPost::query()->where('is_active', true)->count(),
+                ],
+            ],
         ]);
     }
 
