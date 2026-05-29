@@ -1,0 +1,94 @@
+<?php
+
+namespace App\Http\Controllers\Frontend;
+
+use App\Http\Controllers\Controller;
+use App\Models\BlogPost;
+use App\Models\Lead;
+use App\Models\Portfolio;
+use App\Models\Product;
+use App\Models\Service;
+use App\Models\SiteSetting;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
+
+class FrontendController extends Controller
+{
+    public function home(): View
+    {
+        $settings = SiteSetting::query()->first();
+
+        return view('frontend.home', [
+            'settings' => $settings,
+            'services' => Service::query()
+                ->where('is_active', true)
+                ->orderBy('sort_order')
+                ->take(6)
+                ->get(),
+            'products' => Product::query()
+                ->where('is_active', true)
+                ->orderByDesc('is_featured')
+                ->orderBy('sort_order')
+                ->take(4)
+                ->get(),
+            'portfolios' => Portfolio::query()
+                ->where('is_active', true)
+                ->where('is_featured', true)
+                ->orderBy('sort_order')
+                ->take(3)
+                ->get(),
+            'blogPosts' => BlogPost::query()
+                ->with('category')
+                ->where('is_active', true)
+                ->orderByDesc('published_at')
+                ->take(3)
+                ->get(),
+        ]);
+    }
+
+    public function storeLead(Request $request): RedirectResponse
+    {
+        $validated = $request->validate(
+            [
+                'name' => ['required', 'string', 'max:255'],
+                'phone' => ['nullable', 'string', 'max:255'],
+                'email' => ['nullable', 'email', 'max:255'],
+                'company' => ['nullable', 'string', 'max:255'],
+                'service_type' => ['nullable', 'string', 'max:255'],
+                'budget_range' => ['nullable', 'string', 'max:255'],
+                'message' => ['required', 'string'],
+            ],
+            [
+                'name.required' => 'Ad Soyad alanı zorunludur.',
+                'name.max' => 'Ad Soyad en fazla 255 karakter olabilir.',
+                'email.email' => 'Geçerli bir e-posta adresi giriniz.',
+                'email.max' => 'E-posta en fazla 255 karakter olabilir.',
+                'phone.max' => 'Telefon en fazla 255 karakter olabilir.',
+                'company.max' => 'Firma en fazla 255 karakter olabilir.',
+                'service_type.max' => 'Hizmet Türü en fazla 255 karakter olabilir.',
+                'budget_range.max' => 'Bütçe Aralığı en fazla 255 karakter olabilir.',
+                'message.required' => 'Mesaj alanı zorunludur.',
+            ],
+            [
+                'name' => 'Ad Soyad',
+                'phone' => 'Telefon',
+                'email' => 'E-posta',
+                'company' => 'Firma',
+                'service_type' => 'Hizmet Türü',
+                'budget_range' => 'Bütçe Aralığı',
+                'message' => 'Mesaj',
+            ],
+        );
+
+        Lead::query()->create([
+            ...$validated,
+            'status' => Lead::STATUS_NEW,
+            'source' => 'website',
+        ]);
+
+        return back()
+            ->withInput([])
+            ->with('success', 'Talebiniz başarıyla alındı. En kısa sürede sizinle iletişime geçeceğiz.');
+    }
+}
