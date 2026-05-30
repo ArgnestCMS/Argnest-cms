@@ -5,6 +5,16 @@
     $whatsappNumber = preg_replace('/\D+/', '', $settings?->whatsapp ?: $settings?->phone ?: '');
     $featuredProduct = $products->firstWhere('slug', 'argnest-cms') ?? $products->firstWhere('is_featured', true) ?? $products->first();
     $secondaryProducts = $products->reject(fn ($product) => $featuredProduct && $product->id === $featuredProduct->id);
+    $productFeatureMap = [
+        'argnest-cms' => ['Sayfa ve icerik yonetimi', 'SEO odakli yayin altyapisi', 'Teklif, hizmet ve blog modulleri', 'Rol bazli panel deneyimi'],
+        'argnest-crm' => ['Musteri kartlari', 'Talep ve teklif takibi', 'Satis sureci gorunurlugu'],
+        'argnest-fit' => ['Uye ve paket yonetimi', 'Randevu ve ders planlama', 'Salon operasyon paneli'],
+    ];
+    $productTechMap = [
+        'argnest-cms' => ['Laravel', 'Filament', 'Tailwind CSS', 'SEO Ready'],
+        'argnest-crm' => ['Laravel', 'Workflow', 'Reports'],
+        'argnest-fit' => ['Laravel', 'Booking', 'Membership'],
+    ];
     $trustBadges = ['Mobil Uyumlu', 'SEO Odaklı', 'Güvenli Altyapı', 'Teknik Destek'];
     $serviceIconMap = [
         'Kurumsal Web Siteleri' => 'heroicon-o-globe-alt',
@@ -130,8 +140,156 @@
         </div>
     </section>
 
-    <section id="urunler" class="bg-white py-20">
+    <section id="urunler" class="overflow-hidden bg-slate-950 py-20 text-white">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="mb-12 flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
+                <div class="max-w-3xl">
+                    <p class="text-sm font-black uppercase tracking-widest text-cyan-300">&Uuml;r&uuml;nler</p>
+                    <h2 class="mt-3 text-3xl font-black tracking-tight sm:text-4xl">Argnest SaaS &uuml;r&uuml;n vitrini</h2>
+                    <p class="mt-4 text-base leading-7 text-slate-300">Argnest CMS ana vitrin &uuml;r&uuml;n&uuml; olarak konumlan&#305;r; CRM ve Fit ayn&#305; ekosistemin operasyon odakl&#305; yan &uuml;r&uuml;nleri olarak b&uuml;y&uuml;r.</p>
+                </div>
+                <div class="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-black uppercase tracking-widest text-slate-300">CMS First Showcase</div>
+            </div>
+            @if ($featuredProduct)
+                @php
+                    $featuredImageUrl = $featuredProduct->cover_image ? \Illuminate\Support\Facades\Storage::url($featuredProduct->cover_image) : null;
+                    $featuredFeatures = $productFeatureMap[$featuredProduct->slug] ?? ['Moduler panel altyapisi', 'Guvenli icerik yonetimi', 'Olceklenebilir urun mimarisi'];
+                    $featuredTechs = $productTechMap[$featuredProduct->slug] ?? ['Laravel', 'Filament', 'Tailwind CSS'];
+                @endphp
+                <div class="grid gap-6 lg:grid-cols-[1.35fr_0.75fr]">
+                    <article class="relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.03] p-5 shadow-2xl shadow-cyan-950/40 sm:p-7">
+                        <div class="absolute inset-0 bg-[radial-gradient(circle_at_14%_12%,rgba(34,211,238,0.22),transparent_34%),radial-gradient(circle_at_86%_18%,rgba(59,130,246,0.20),transparent_32%),linear-gradient(135deg,rgba(15,23,42,0.20),rgba(2,6,23,0.96))]"></div>
+                        <div class="relative grid gap-8 xl:grid-cols-[0.92fr_1.08fr] xl:items-center">
+                            <div class="p-1">
+                                <div class="mb-7 flex flex-wrap items-center gap-3">
+                                    <span class="rounded-full bg-emerald-400/10 px-3 py-1.5 text-xs font-black text-emerald-200 ring-1 ring-emerald-300/25">{{ $productStatusOptions[$featuredProduct->product_status] ?? 'Aktif' }}</span>
+                                    <span class="rounded-full bg-cyan-300 px-3 py-1.5 text-xs font-black text-slate-950">Ana Vitrin &Uuml;r&uuml;n&uuml;</span>
+                                </div>
+                                <h3 class="text-3xl font-black tracking-tight sm:text-5xl">{{ $featuredProduct->title }}</h3>
+                                <p class="mt-5 max-w-xl text-sm leading-7 text-slate-300 sm:text-base">
+                                    {{ $featuredProduct->short_description ?: 'Argnest CMS; kurumsal web sitesi, hizmet, blog, teklif ve SEO yonetimini tek modern panelde birlestiren premium icerik yonetim altyapisidir.' }}
+                                </p>
+                                <div class="mt-7 grid gap-3 sm:grid-cols-2">
+                                    @foreach ($featuredFeatures as $feature)
+                                        <div class="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+                                            <span class="mt-1 h-2 w-2 rounded-full bg-cyan-300 shadow-lg shadow-cyan-300/40"></span>
+                                            <span class="text-sm font-bold leading-6 text-slate-100">{!! $feature !!}</span>
+                                        </div>
+                                    @endforeach
+                                </div>
+                                <div class="mt-7 flex flex-wrap gap-2">
+                                    @foreach ($featuredTechs as $tech)
+                                        <span class="rounded-full border border-white/10 bg-white/10 px-3 py-1.5 text-xs font-black text-cyan-100">{{ $tech }}</span>
+                                    @endforeach
+                                </div>
+                                <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+                                    <a href="#teklif" class="rounded-2xl bg-cyan-300 px-6 py-3.5 text-center text-sm font-black text-slate-950 shadow-xl shadow-cyan-500/20 transition hover:-translate-y-0.5 hover:bg-cyan-200">Demo &#304;ste</a>
+                                    <a href="#teklif" class="rounded-2xl border border-white/15 px-6 py-3.5 text-center text-sm font-black text-white transition hover:-translate-y-0.5 hover:border-cyan-200 hover:text-cyan-100">Detaylar&#305; G&ouml;r</a>
+                                </div>
+                            </div>
+                            <div class="relative">
+                                <div class="rounded-[1.75rem] border border-white/15 bg-slate-900/80 p-3 shadow-2xl shadow-slate-950/60 backdrop-blur">
+                                    <div class="flex items-center gap-2 rounded-t-[1.25rem] border border-white/10 border-b-0 bg-white/5 px-4 py-3">
+                                        <span class="h-2.5 w-2.5 rounded-full bg-red-400"></span>
+                                        <span class="h-2.5 w-2.5 rounded-full bg-amber-300"></span>
+                                        <span class="h-2.5 w-2.5 rounded-full bg-emerald-300"></span>
+                                        <span class="ml-auto text-xs font-black uppercase tracking-widest text-slate-400">Argnest CMS</span>
+                                    </div>
+                                    @if ($featuredImageUrl)
+                                        <img src="{{ $featuredImageUrl }}" alt="{{ $featuredProduct->title }}" class="aspect-[16/11] w-full rounded-b-[1.25rem] object-cover">
+                                    @else
+                                        <div class="aspect-[16/11] rounded-b-[1.25rem] bg-[linear-gradient(135deg,#0f172a_0%,#1d4ed8_48%,#22d3ee_100%)] p-5">
+                                            <div class="grid h-full grid-cols-[0.72fr_1fr] gap-4 rounded-2xl border border-white/15 bg-slate-950/35 p-4 backdrop-blur">
+                                                <div class="rounded-2xl bg-white/10 p-4">
+                                                    <div class="h-3 w-20 rounded-full bg-cyan-200"></div>
+                                                    <div class="mt-6 space-y-3">
+                                                        <span class="block h-10 rounded-xl bg-white/15"></span>
+                                                        <span class="block h-10 rounded-xl bg-white/10"></span>
+                                                        <span class="block h-10 rounded-xl bg-white/15"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="grid gap-4">
+                                                    <div class="rounded-2xl bg-white/90 p-4">
+                                                        <div class="h-3 w-28 rounded-full bg-slate-300"></div>
+                                                        <div class="mt-4 grid grid-cols-3 gap-3">
+                                                            <span class="h-16 rounded-xl bg-cyan-100"></span>
+                                                            <span class="h-16 rounded-xl bg-blue-100"></span>
+                                                            <span class="h-16 rounded-xl bg-slate-100"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="rounded-2xl bg-white/15 p-4">
+                                                        <div class="h-2 w-full rounded-full bg-white/25"></div>
+                                                        <div class="mt-3 h-2 w-4/5 rounded-full bg-cyan-200/80"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                    <div class="grid gap-5">
+                        @forelse ($secondaryProducts as $product)
+                            @php
+                                $productImageUrl = $product->cover_image ? \Illuminate\Support\Facades\Storage::url($product->cover_image) : null;
+                                $productFeatures = $productFeatureMap[$product->slug] ?? ['Operasyon paneli', 'Raporlama', 'Argnest ekosistemi'];
+                                $productTechs = $productTechMap[$product->slug] ?? ['Laravel', 'Panel', 'SaaS'];
+                            @endphp
+                            <article class="group overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/[0.04] p-5 shadow-xl shadow-slate-950/20 transition hover:-translate-y-1 hover:border-cyan-300/40">
+                                <div class="mb-5 overflow-hidden rounded-2xl border border-white/10 bg-slate-900">
+                                    @if ($productImageUrl)
+                                        <img src="{{ $productImageUrl }}" alt="{{ $product->title }}" class="h-36 w-full object-cover transition duration-500 group-hover:scale-105">
+                                    @else
+                                        <div class="h-36 bg-[linear-gradient(135deg,rgba(15,23,42,1),rgba(37,99,235,0.82),rgba(34,211,238,0.82))] p-4">
+                                            <div class="h-full rounded-2xl border border-white/15 bg-white/10 p-4">
+                                                <div class="h-2 w-20 rounded-full bg-white/80"></div>
+                                                <div class="mt-5 grid grid-cols-3 gap-2">
+                                                    <span class="h-12 rounded-xl bg-white/20"></span>
+                                                    <span class="h-12 rounded-xl bg-white/30"></span>
+                                                    <span class="h-12 rounded-xl bg-white/20"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
+                                </div>
+                                <div class="mb-4 flex flex-wrap items-center gap-2">
+                                    <span class="rounded-full bg-white/10 px-3 py-1.5 text-xs font-black text-cyan-100">{{ $productStatusOptions[$product->product_status] ?? 'Aktif' }}</span>
+                                    @if ($product->product_status === \App\Models\Product::STATUS_COMING_SOON)
+                                        <span class="rounded-full bg-amber-300/15 px-3 py-1.5 text-xs font-black text-amber-100">Coming Soon</span>
+                                    @endif
+                                </div>
+                                <h3 class="text-xl font-black">{{ $product->title }}</h3>
+                                <p class="mt-3 text-sm leading-6 text-slate-300">{{ $product->short_description ?: 'Argnest urun yol haritasinin premium ve operasyon odakli parcasidir.' }}</p>
+                                <div class="mt-5 space-y-2">
+                                    @foreach (array_slice($productFeatures, 0, 3) as $feature)
+                                        <p class="flex items-center gap-2 text-sm font-bold text-slate-200">
+                                            <span class="h-1.5 w-1.5 rounded-full bg-cyan-300"></span>
+                                            <span>{!! $feature !!}</span>
+                                        </p>
+                                    @endforeach
+                                </div>
+                                <div class="mt-5 flex flex-wrap gap-2">
+                                    @foreach ($productTechs as $tech)
+                                        <span class="rounded-full border border-white/10 px-2.5 py-1 text-[11px] font-black text-slate-300">{{ $tech }}</span>
+                                    @endforeach
+                                </div>
+                                <div class="mt-6 grid grid-cols-2 gap-3">
+                                    <a href="#teklif" class="rounded-xl bg-white px-4 py-3 text-center text-xs font-black text-slate-950 transition hover:bg-cyan-200">Demo</a>
+                                    <a href="#teklif" class="rounded-xl border border-white/15 px-4 py-3 text-center text-xs font-black text-white transition hover:border-cyan-200">Detay</a>
+                                </div>
+                            </article>
+                        @empty
+                            <div class="rounded-[1.75rem] border border-white/10 bg-white/[0.04] p-6 text-sm font-semibold text-slate-300">Yeni &uuml;r&uuml;nler haz&#305;rlan&#305;yor.</div>
+                        @endforelse
+                    </div>
+                </div>
+            @else
+                <div class="rounded-[1.75rem] border border-white/10 bg-white/[0.04] p-6">
+                    <p class="text-slate-300">Aktif &uuml;r&uuml;n kayd&#305; bulunamad&#305;.</p>
+                </div>
+            @endif
+            @if (false)
             <div class="mb-12 max-w-3xl">
                 <p class="text-sm font-black uppercase tracking-widest text-blue-600">Ürünler</p>
                 <h2 class="mt-3 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">Argnest ürün ailesi</h2>
@@ -196,6 +354,7 @@
                     <p class="text-slate-600">Aktif ürün kaydı bulunamadı.</p>
                 </div>
             @endif
+            @endif
         </div>
     </section>
 
@@ -246,7 +405,18 @@
                     ['title' => 'Yetkilendirme Sistemi', 'text' => 'Rol bazlı erişim ve kontrollü yönetim deneyimi.'],
                 ] as $item)
                     <article class="rounded-3xl border border-white/10 bg-white/5 p-6">
-                        <div class="mb-5 h-11 w-11 rounded-2xl bg-blue-500"></div>
+                        @php
+                            $securityIcon = match (true) {
+                                $item['title'] === 'KVKK Uyumlu' => 'heroicon-o-shield-check',
+                                \Illuminate\Support\Str::startsWith($item['title'], 'SSL') => 'heroicon-o-lock-closed',
+                                $item['title'] === 'Veri Yedekleme' => 'heroicon-o-circle-stack',
+                                $item['title'] === 'Yetkilendirme Sistemi' => 'heroicon-o-user-group',
+                                default => 'heroicon-o-shield-check',
+                            };
+                        @endphp
+                        <div class="mb-5 flex h-11 w-11 items-center justify-center rounded-2xl bg-linear-to-br from-blue-500 via-indigo-500 to-cyan-400 shadow-lg shadow-blue-950/30">
+                            <x-dynamic-component :component="$securityIcon" class="h-6 w-6 text-white" />
+                        </div>
                         <h3 class="font-black">{{ $item['title'] }}</h3>
                         <p class="mt-3 text-sm leading-6 text-slate-300">{{ $item['text'] }}</p>
                     </article>
@@ -256,8 +426,69 @@
     </section>
 
     @if ($portfolios->isNotEmpty())
-        <section id="referanslar" class="bg-white py-20">
+        <section id="referanslar" class="overflow-hidden bg-slate-950 py-20 text-white">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="mb-12 flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
+                    <div class="max-w-3xl">
+                        <p class="text-sm font-black uppercase tracking-widest text-blue-300">Referanslar</p>
+                        <h2 class="mt-3 text-3xl font-black tracking-tight sm:text-4xl">&Ouml;ne &ccedil;&#305;kan kurumsal proje vitrini</h2>
+                        <p class="mt-4 text-base leading-7 text-slate-300">Strateji, tasar&#305;m, yaz&#305;l&#305;m ve yay&#305;n s&uuml;reci tek elde y&ouml;netilen se&ccedil;ili Argnest projeleri.</p>
+                    </div>
+                    <div class="rounded-full border border-blue-300/20 bg-blue-400/10 px-4 py-2 text-xs font-black uppercase tracking-widest text-blue-100">Agency Portfolio</div>
+                </div>
+                <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    @foreach ($portfolios as $portfolio)
+                        @php
+                            $portfolioImageUrl = $portfolio->cover_image ? \Illuminate\Support\Facades\Storage::url($portfolio->cover_image) : null;
+                            $portfolioBadge = $portfolio->client_name ?: 'Kurumsal Proje';
+                        @endphp
+                        <article class="group overflow-hidden rounded-3xl border border-white/10 bg-[linear-gradient(145deg,rgba(15,23,42,0.96),rgba(30,41,59,0.82),rgba(29,78,216,0.18))] shadow-2xl shadow-slate-950/30 transition duration-300 hover:-translate-y-1 hover:border-blue-300/40 hover:shadow-blue-950/40">
+                            <div class="relative overflow-hidden">
+                                @if ($portfolioImageUrl)
+                                    <img src="{{ $portfolioImageUrl }}" alt="{{ $portfolio->title }}" class="h-56 w-full object-cover opacity-90 transition duration-500 group-hover:scale-105 group-hover:opacity-100">
+                                @else
+                                    <div class="h-56 bg-[radial-gradient(circle_at_18%_18%,rgba(59,130,246,0.58),transparent_32%),radial-gradient(circle_at_82%_20%,rgba(124,58,237,0.48),transparent_34%),linear-gradient(135deg,#020617_0%,#1e3a8a_52%,#312e81_100%)] p-5">
+                                        <div class="h-full rounded-3xl border border-white/15 bg-white/10 p-5 backdrop-blur">
+                                            <div class="flex items-center gap-2">
+                                                <span class="h-2.5 w-2.5 rounded-full bg-cyan-200"></span>
+                                                <span class="h-2.5 w-2.5 rounded-full bg-blue-200"></span>
+                                                <span class="h-2.5 w-2.5 rounded-full bg-violet-200"></span>
+                                            </div>
+                                            <div class="mt-8 grid grid-cols-[0.8fr_1fr] gap-4">
+                                                <span class="h-24 rounded-2xl bg-white/20"></span>
+                                                <span class="h-24 rounded-2xl bg-white/30"></span>
+                                            </div>
+                                            <div class="mt-5 h-3 w-36 rounded-full bg-white/70"></div>
+                                            <div class="mt-3 h-2 w-52 max-w-full rounded-full bg-white/35"></div>
+                                        </div>
+                                    </div>
+                                @endif
+                                <div class="absolute inset-0 bg-linear-to-t from-slate-950 via-slate-950/20 to-transparent"></div>
+                                <div class="absolute left-5 top-5 flex flex-wrap gap-2">
+                                    <span class="rounded-full bg-white/90 px-3 py-1.5 text-xs font-black text-slate-950 shadow-lg">{{ $portfolioBadge }}</span>
+                                    @if ($portfolio->is_featured)
+                                        <span class="rounded-full bg-blue-500 px-3 py-1.5 text-xs font-black text-white shadow-lg shadow-blue-950/30">&Ouml;ne &Ccedil;&#305;kan</span>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="p-6">
+                                <div class="mb-4 flex items-center justify-between gap-4">
+                                    <p class="text-xs font-black uppercase tracking-widest text-blue-200">Proje Vitrini</p>
+                                    @if ($portfolio->completion_date)
+                                        <p class="text-xs font-bold text-slate-400">{{ $portfolio->completion_date->format('Y') }}</p>
+                                    @endif
+                                </div>
+                                <h3 class="text-xl font-black tracking-tight text-white">{{ $portfolio->title }}</h3>
+                                <p class="mt-3 text-sm leading-6 text-slate-300">{{ $portfolio->short_description ?: 'Ozel ihtiyaclara gore planlanan, tasarlanan ve yayina alinan kurumsal dijital proje.' }}</p>
+                                <div class="mt-6 flex items-center justify-between border-t border-white/10 pt-5">
+                                    <span class="text-sm font-black text-blue-200">Detayli inceleme</span>
+                                    <span class="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-lg font-black text-white transition group-hover:bg-blue-500">-&gt;</span>
+                                </div>
+                            </div>
+                        </article>
+                    @endforeach
+                </div>
+                @if (false)
                 <div class="mb-12 flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
                     <div>
                         <p class="text-sm font-black uppercase tracking-widest text-blue-600">Referanslar</p>
@@ -274,6 +505,7 @@
                     </article>
                     @endforeach
                 </div>
+                @endif
             </div>
         </section>
     @endif
