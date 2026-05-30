@@ -185,7 +185,7 @@
                                 </div>
                                 <div class="mt-8 flex flex-col gap-3 sm:flex-row">
                                     <a href="#teklif" class="rounded-2xl bg-cyan-300 px-6 py-3.5 text-center text-sm font-black text-slate-950 shadow-xl shadow-cyan-500/20 transition hover:-translate-y-0.5 hover:bg-cyan-200">Demo &#304;ste</a>
-                                    <a href="#teklif" class="rounded-2xl border border-white/15 px-6 py-3.5 text-center text-sm font-black text-white transition hover:-translate-y-0.5 hover:border-cyan-200 hover:text-cyan-100">Detaylar&#305; G&ouml;r</a>
+                                    <a href="{{ route('frontend.products.show', $featuredProduct) }}" class="rounded-2xl border border-white/15 px-6 py-3.5 text-center text-sm font-black text-white transition hover:-translate-y-0.5 hover:border-cyan-200 hover:text-cyan-100">Detaylar&#305; G&ouml;r</a>
                                 </div>
                             </div>
                             <div class="relative">
@@ -277,7 +277,7 @@
                                 </div>
                                 <div class="mt-6 grid grid-cols-2 gap-3">
                                     <a href="#teklif" class="rounded-xl bg-white px-4 py-3 text-center text-xs font-black text-slate-950 transition hover:bg-cyan-200">Demo</a>
-                                    <a href="#teklif" class="rounded-xl border border-white/15 px-4 py-3 text-center text-xs font-black text-white transition hover:border-cyan-200">Detay</a>
+                                    <a href="{{ route('frontend.products.show', $product) }}" class="rounded-xl border border-white/15 px-4 py-3 text-center text-xs font-black text-white transition hover:border-cyan-200">Detay</a>
                                 </div>
                             </article>
                         @empty

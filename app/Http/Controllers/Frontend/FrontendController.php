@@ -95,6 +95,24 @@ class FrontendController extends Controller
         ]);
     }
 
+    public function productDetail(Product $product): View
+    {
+        abort_unless($product->is_active, 404);
+
+        return view('frontend.product-detail', [
+            'settings' => SiteSetting::query()->first(),
+            'product' => $product,
+            'relatedProducts' => Product::query()
+                ->where('is_active', true)
+                ->whereKeyNot($product->getKey())
+                ->orderByDesc('is_featured')
+                ->orderBy('sort_order')
+                ->take(3)
+                ->get(),
+            'productStatusOptions' => Product::statusOptions(),
+        ]);
+    }
+
     public function storeLead(Request $request): RedirectResponse
     {
         $validated = $request->validate(
