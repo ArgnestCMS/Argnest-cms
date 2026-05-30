@@ -32,23 +32,23 @@
             </a>
 
             <div class="hidden items-center gap-7 text-sm font-semibold text-slate-600 lg:flex">
-                <a href="#hizmetler" class="transition hover:text-blue-700">Hizmetler</a>
-                <a href="#urunler" class="transition hover:text-blue-700">Ürünler</a>
-                <a href="#referanslar" class="transition hover:text-blue-700">Referanslar</a>
-                <a href="#blog" class="transition hover:text-blue-700">Blog</a>
-                <a href="#teklif" class="transition hover:text-blue-700">İletişim</a>
-                <a href="#teklif" class="rounded-xl bg-blue-600 px-4 py-2.5 font-bold text-white shadow-lg shadow-blue-600/20 transition hover:-translate-y-0.5 hover:bg-blue-700">Teklif Al</a>
+                <a href="{{ route('home') }}#hizmetler" class="transition hover:text-blue-700">Hizmetler</a>
+                <a href="{{ route('home') }}#urunler" class="transition hover:text-blue-700">Ürünler</a>
+                <a href="{{ route('home') }}#referanslar" class="transition hover:text-blue-700">Referanslar</a>
+                <a href="{{ route('home') }}#blog" class="transition hover:text-blue-700">Blog</a>
+                <a href="{{ route('home') }}#teklif" class="transition hover:text-blue-700">İletişim</a>
+                <a href="{{ route('home') }}#teklif" class="rounded-xl bg-blue-600 px-4 py-2.5 font-bold text-white shadow-lg shadow-blue-600/20 transition hover:-translate-y-0.5 hover:bg-blue-700">Teklif Al</a>
             </div>
 
             <details class="relative lg:hidden">
                 <summary class="cursor-pointer list-none rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-800 shadow-sm">Menü</summary>
                 <div class="absolute right-0 mt-3 w-64 rounded-2xl border border-slate-200 bg-white p-3 shadow-2xl shadow-slate-200">
-                    <a href="#hizmetler" class="block rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">Hizmetler</a>
-                    <a href="#urunler" class="block rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">Ürünler</a>
-                    <a href="#referanslar" class="block rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">Referanslar</a>
-                    <a href="#blog" class="block rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">Blog</a>
-                    <a href="#teklif" class="block rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">İletişim</a>
-                    <a href="#teklif" class="mt-2 block rounded-xl bg-blue-600 px-3 py-2.5 text-center text-sm font-bold text-white">Teklif Al</a>
+                    <a href="{{ route('home') }}#hizmetler" class="block rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">Hizmetler</a>
+                    <a href="{{ route('home') }}#urunler" class="block rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">Ürünler</a>
+                    <a href="{{ route('home') }}#referanslar" class="block rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">Referanslar</a>
+                    <a href="{{ route('home') }}#blog" class="block rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">Blog</a>
+                    <a href="{{ route('home') }}#teklif" class="block rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">İletişim</a>
+                    <a href="{{ route('home') }}#teklif" class="mt-2 block rounded-xl bg-blue-600 px-3 py-2.5 text-center text-sm font-bold text-white">Teklif Al</a>
                 </div>
             </details>
         </nav>
@@ -86,30 +86,30 @@
             <div>
                 <h2 class="text-sm font-bold text-white">Kurumsal</h2>
                 <div class="mt-4 grid gap-3 text-sm text-slate-300">
-                    <a href="#neden" class="hover:text-blue-300">Neden Argnest</a>
-                    <a href="#guvenlik" class="hover:text-blue-300">Güvenlik ve KVKK</a>
-                    <a href="#referanslar" class="hover:text-blue-300">Referanslar</a>
-                    <a href="#blog" class="hover:text-blue-300">Blog</a>
+                    <a href="{{ route('home') }}#neden" class="hover:text-blue-300">Neden Argnest</a>
+                    <a href="{{ route('home') }}#guvenlik" class="hover:text-blue-300">Güvenlik ve KVKK</a>
+                    <a href="{{ route('home') }}#referanslar" class="hover:text-blue-300">Referanslar</a>
+                    <a href="{{ route('home') }}#blog" class="hover:text-blue-300">Blog</a>
                 </div>
             </div>
 
             <div>
                 <h2 class="text-sm font-bold text-white">Hizmetler</h2>
                 <div class="mt-4 grid gap-3 text-sm text-slate-300">
-                    <a href="#hizmetler" class="hover:text-blue-300">Kurumsal Web</a>
-                    <a href="#hizmetler" class="hover:text-blue-300">Özel Yazılım</a>
-                    <a href="#hizmetler" class="hover:text-blue-300">CRM Çözümleri</a>
-                    <a href="#hizmetler" class="hover:text-blue-300">SEO ve Hosting</a>
+                    <a href="{{ route('home') }}#hizmetler" class="hover:text-blue-300">Kurumsal Web</a>
+                    <a href="{{ route('home') }}#hizmetler" class="hover:text-blue-300">Özel Yazılım</a>
+                    <a href="{{ route('home') }}#hizmetler" class="hover:text-blue-300">CRM Çözümleri</a>
+                    <a href="{{ route('home') }}#hizmetler" class="hover:text-blue-300">SEO ve Hosting</a>
                 </div>
             </div>
 
             <div>
                 <h2 class="text-sm font-bold text-white">Ürünler</h2>
                 <div class="mt-4 grid gap-3 text-sm text-slate-300">
-                    <a href="#urunler" class="hover:text-blue-300">Argnest CMS</a>
-                    <a href="#urunler" class="hover:text-blue-300">Argnest CRM</a>
-                    <a href="#urunler" class="hover:text-blue-300">Argnest Fit</a>
-                    <a href="#urunler" class="hover:text-blue-300">Yakında</a>
+                    <a href="{{ route('home') }}#urunler" class="hover:text-blue-300">Argnest CMS</a>
+                    <a href="{{ route('home') }}#urunler" class="hover:text-blue-300">Argnest CRM</a>
+                    <a href="{{ route('home') }}#urunler" class="hover:text-blue-300">Argnest Fit</a>
+                    <a href="{{ route('home') }}#urunler" class="hover:text-blue-300">Yakında</a>
                 </div>
             </div>
 
@@ -120,7 +120,7 @@
                     @if ($settings?->email)<p>{{ $settings->email }}</p>@endif
                     @if ($settings?->address)<p>{{ $settings->address }}</p>@endif
                 </div>
-                <a href="#teklif" class="mt-6 inline-flex rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-blue-700">Teklif Al</a>
+                <a href="{{ route('home') }}#teklif" class="mt-6 inline-flex rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-blue-700">Teklif Al</a>
             </div>
         </div>
 

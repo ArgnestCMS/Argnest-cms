@@ -131,6 +131,7 @@
                         <h3 class="text-lg font-black text-slate-950">{{ $service->title }}</h3>
                         <p class="mt-3 text-sm leading-6 text-slate-600">{{ $service->short_description ?: 'İş hedeflerinize göre ölçeklenebilir, hızlı ve yönetilebilir çözüm.' }}</p>
                         <div class="mt-6 h-px bg-slate-100"></div>
+                        <a href="{{ route('frontend.services.show', $service) }}" class="mt-4 inline-flex text-sm font-black text-slate-950 transition hover:text-blue-700">Detay -&gt;</a>
                         <p class="mt-4 text-sm font-bold text-blue-700">Detaylı planlama ve sürdürülebilir geliştirme</p>
                     </article>
                 @empty

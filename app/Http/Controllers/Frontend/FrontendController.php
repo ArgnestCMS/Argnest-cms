@@ -79,6 +79,22 @@ class FrontendController extends Controller
         ]);
     }
 
+    public function serviceDetail(Service $service): View
+    {
+        abort_unless($service->is_active, 404);
+
+        return view('frontend.service-detail', [
+            'settings' => SiteSetting::query()->first(),
+            'service' => $service,
+            'relatedServices' => Service::query()
+                ->where('is_active', true)
+                ->whereKeyNot($service->getKey())
+                ->orderBy('sort_order')
+                ->take(3)
+                ->get(),
+        ]);
+    }
+
     public function storeLead(Request $request): RedirectResponse
     {
         $validated = $request->validate(
