@@ -20,6 +20,7 @@ Route::middleware('guest')->group(function (): void {
 });
 Route::middleware(['auth', 'customer'])->group(function (): void {
     Route::get('/musteri/panel', [FrontendController::class, 'customerDashboard'])->name('frontend.customer.dashboard');
+    Route::get('/musteri/hizmetlerim', [FrontendController::class, 'customerServices'])->name('frontend.customer.services');
     Route::post('/musteri/cikis', [FrontendController::class, 'customerLogout'])->name('frontend.customer.logout');
 });
 Route::get('/hizmet/{service:slug}', [FrontendController::class, 'serviceDetail'])->name('frontend.services.show');

@@ -342,9 +342,32 @@ class FrontendController extends Controller
 
     public function customerDashboard(Request $request): View
     {
+        $customer = $request->user()->load('customerServices');
+        $services = $customer->customerServices;
+
         return view('frontend.customer.dashboard', [
             'settings' => SiteSetting::query()->first(),
+            'customer' => $customer,
+            'services' => $services,
+            'totalServices' => $services->count(),
+            'activeServices' => $services->where('is_active', true)->count(),
+            'upcomingRenewals' => $services
+                ->filter(fn ($service): bool => $service->expiry_date && $service->expiry_date->isFuture() && $service->expiry_date->diffInDays(now()) <= 30)
+                ->count(),
+        ]);
+    }
+
+    public function customerServices(Request $request): View
+    {
+        return view('frontend.customer.services', [
+            'settings' => SiteSetting::query()->first(),
             'customer' => $request->user(),
+            'services' => $request->user()
+                ->customerServices()
+                ->orderByDesc('is_active')
+                ->orderByRaw('expiry_date is null')
+                ->orderBy('expiry_date')
+                ->get(),
         ]);
     }
 
