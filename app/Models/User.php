@@ -7,6 +7,7 @@ use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -66,5 +67,10 @@ class User extends Authenticatable implements FilamentUser
     public function isCustomer(): bool
     {
         return $this->is_active && $this->role === self::ROLE_CUSTOMER;
+    }
+
+    public function customerServices(): HasMany
+    {
+        return $this->hasMany(CustomerService::class);
     }
 }
