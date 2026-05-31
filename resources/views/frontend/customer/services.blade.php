@@ -9,7 +9,7 @@
         <div class="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-24">
             <p class="text-sm font-black uppercase tracking-widest text-blue-200">Musteri Paneli</p>
             <h1 class="mt-4 text-4xl font-black tracking-tight sm:text-5xl">Hizmetlerim</h1>
-            <p class="mt-5 max-w-2xl text-base leading-8 text-slate-300">Argnest tarafindan hesabınıza tanımlanan hizmet, domain, hosting ve yenileme bilgileri.</p>
+            <p class="mt-5 max-w-2xl text-base leading-8 text-slate-300">Argnest tarafindan hesabiniza tanimlanan hizmet, domain, hosting ve yenileme bilgileri.</p>
         </div>
     </section>
 
@@ -18,13 +18,14 @@
             <nav class="mb-8 flex flex-wrap gap-3 rounded-3xl border border-slate-200 bg-white p-3 shadow-sm">
                 <a href="{{ route('frontend.customer.dashboard') }}" class="rounded-2xl px-5 py-3 text-sm font-black text-slate-700 transition hover:bg-blue-50 hover:text-blue-700">Dashboard</a>
                 <a href="{{ route('frontend.customer.services') }}" class="rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white">Hizmetlerim</a>
+                <a href="{{ route('frontend.customer.support.index') }}" class="rounded-2xl px-5 py-3 text-sm font-black text-slate-700 transition hover:bg-blue-50 hover:text-blue-700">Destek</a>
                 <a href="{{ route('frontend.customer.dashboard') }}#profil" class="rounded-2xl px-5 py-3 text-sm font-black text-slate-700 transition hover:bg-blue-50 hover:text-blue-700">Profilim</a>
             </nav>
 
             <div class="grid gap-6 lg:grid-cols-2">
                 @forelse ($services as $service)
                     @php
-                        $remainingDays = $service->expiry_date ? now()->startOfDay()->diffInDays($service->expiry_date->startOfDay(), false) : null;
+                        $remainingDays = $service->expiry_date ? now()->startOfDay()->diffInDays($service->expiry_date->copy()->startOfDay(), false) : null;
                         $renewalClasses = match (true) {
                             $remainingDays === null => 'border-slate-200 bg-slate-50 text-slate-700',
                             $remainingDays >= 90 => 'border-emerald-200 bg-emerald-50 text-emerald-700',
@@ -32,10 +33,10 @@
                             default => 'border-red-200 bg-red-50 text-red-700',
                         };
                         $renewalText = match (true) {
-                            $remainingDays === null => 'Bitiş tarihi yok',
-                            $remainingDays < 0 => abs($remainingDays) . ' gün önce bitti',
-                            $remainingDays === 0 => 'Bugün bitiyor',
-                            default => $remainingDays . ' gün kaldı',
+                            $remainingDays === null => 'Bitis tarihi yok',
+                            $remainingDays < 0 => abs($remainingDays) . ' gun once bitti',
+                            $remainingDays === 0 => 'Bugun bitiyor',
+                            default => $remainingDays . ' gun kaldi',
                         };
                     @endphp
                     <article class="rounded-3xl border border-slate-200 bg-white p-6 shadow-xl shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-2xl">
@@ -54,12 +55,12 @@
 
                         <div class="mt-6 grid gap-4 sm:grid-cols-2">
                             @foreach ([
-                                'Domain adı' => $service->domain_name ?: 'Belirtilmedi',
+                                'Domain adi' => $service->domain_name ?: 'Belirtilmedi',
                                 'Hosting paketi' => $service->hosting_package ?: 'Belirtilmedi',
                                 'Sunucu IP' => $service->server_ip ?: 'Belirtilmedi',
                                 'Sunucu paneli' => $service->server_panel ?: 'Belirtilmedi',
-                                'Kullanıcı adı' => $service->username ?: 'Belirtilmedi',
-                                'Son kullanım tarihi' => $service->expiry_date?->format('d.m.Y') ?: 'Belirtilmedi',
+                                'Kullanici adi' => $service->username ?: 'Belirtilmedi',
+                                'Son kullanim tarihi' => $service->expiry_date?->format('d.m.Y') ?: 'Belirtilmedi',
                             ] as $label => $value)
                                 <div class="rounded-2xl border border-slate-100 bg-slate-50 p-4">
                                     <p class="text-xs font-black uppercase tracking-widest text-blue-600">{{ $label }}</p>
@@ -70,13 +71,13 @@
 
                         <div class="mt-5 rounded-2xl border border-slate-100 bg-slate-50 p-4">
                             <p class="text-xs font-black uppercase tracking-widest text-blue-600">Notlar</p>
-                            <p class="mt-2 whitespace-pre-line text-sm leading-6 text-slate-700">{{ $service->notes ?: 'Bu hizmet için henüz not eklenmedi.' }}</p>
+                            <p class="mt-2 whitespace-pre-line text-sm leading-6 text-slate-700">{{ $service->notes ?: 'Bu hizmet icin henuz not eklenmedi.' }}</p>
                         </div>
                     </article>
                 @empty
                     <div class="rounded-3xl border border-slate-200 bg-white p-8 shadow-xl shadow-slate-200/70 lg:col-span-2">
-                        <p class="text-xl font-black text-slate-950">Henüz hizmet kaydınız yok.</p>
-                        <p class="mt-3 text-sm leading-6 text-slate-600">Admin ekibi size hizmet tanımladığında domain, hosting ve yenileme bilgileri burada görünecek.</p>
+                        <p class="text-xl font-black text-slate-950">Henuz hizmet kaydiniz yok.</p>
+                        <p class="mt-3 text-sm leading-6 text-slate-600">Admin ekibi size hizmet tanimladiginda domain, hosting ve yenileme bilgileri burada gorunecek.</p>
                     </div>
                 @endforelse
             </div>

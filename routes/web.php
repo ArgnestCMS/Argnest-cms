@@ -21,6 +21,12 @@ Route::middleware('guest')->group(function (): void {
 Route::middleware(['auth', 'customer'])->group(function (): void {
     Route::get('/musteri/panel', [FrontendController::class, 'customerDashboard'])->name('frontend.customer.dashboard');
     Route::get('/musteri/hizmetlerim', [FrontendController::class, 'customerServices'])->name('frontend.customer.services');
+    Route::get('/musteri/destek', [FrontendController::class, 'customerSupportTickets'])->name('frontend.customer.support.index');
+    Route::get('/musteri/destek/yeni', [FrontendController::class, 'customerSupportCreate'])->name('frontend.customer.support.create');
+    Route::post('/musteri/destek/yeni', [FrontendController::class, 'storeCustomerSupportTicket'])->name('frontend.customer.support.store');
+    Route::get('/musteri/destek/dosya/{attachment}', [FrontendController::class, 'downloadSupportAttachment'])->name('frontend.customer.support.attachments.download');
+    Route::get('/musteri/destek/{ticket}', [FrontendController::class, 'showCustomerSupportTicket'])->name('frontend.customer.support.show');
+    Route::post('/musteri/destek/{ticket}/cevap', [FrontendController::class, 'replyCustomerSupportTicket'])->name('frontend.customer.support.reply');
     Route::post('/musteri/cikis', [FrontendController::class, 'customerLogout'])->name('frontend.customer.logout');
 });
 Route::get('/hizmet/{service:slug}', [FrontendController::class, 'serviceDetail'])->name('frontend.services.show');

@@ -10,10 +10,14 @@ use App\Models\Portfolio;
 use App\Models\Product;
 use App\Models\Service;
 use App\Models\SiteSetting;
+use App\Models\SupportAttachment;
+use App\Models\SupportMessage;
+use App\Models\SupportTicket;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
@@ -354,6 +358,9 @@ class FrontendController extends Controller
             'upcomingRenewals' => $services
                 ->filter(fn ($service): bool => $service->expiry_date && $service->expiry_date->isFuture() && $service->expiry_date->diffInDays(now()) <= 30)
                 ->count(),
+            'openSupportTickets' => $customer->supportTickets()
+                ->whereIn('status', [SupportTicket::STATUS_OPEN, SupportTicket::STATUS_ANSWERED, SupportTicket::STATUS_PENDING])
+                ->count(),
         ]);
     }
 
@@ -369,6 +376,131 @@ class FrontendController extends Controller
                 ->orderBy('expiry_date')
                 ->get(),
         ]);
+    }
+
+    public function customerSupportTickets(Request $request): View
+    {
+        return view('frontend.customer.support.index', [
+            'settings' => SiteSetting::query()->first(),
+            'customer' => $request->user(),
+            'tickets' => $request->user()
+                ->supportTickets()
+                ->withCount('messages')
+                ->latest()
+                ->paginate(10),
+            'statusOptions' => SupportTicket::statusOptions(),
+            'priorityOptions' => SupportTicket::priorityOptions(),
+        ]);
+    }
+
+    public function customerSupportCreate(Request $request): View
+    {
+        return view('frontend.customer.support.create', [
+            'settings' => SiteSetting::query()->first(),
+            'customer' => $request->user(),
+            'priorityOptions' => SupportTicket::priorityOptions(),
+        ]);
+    }
+
+    public function storeCustomerSupportTicket(Request $request): RedirectResponse
+    {
+        $validated = $request->validate($this->supportTicketValidationRules());
+
+        $ticket = $request->user()->supportTickets()->create([
+            'subject' => $validated['subject'],
+            'category' => $validated['category'] ?? null,
+            'status' => SupportTicket::STATUS_OPEN,
+            'priority' => $validated['priority'] ?? SupportTicket::PRIORITY_NORMAL,
+        ]);
+
+        $message = $ticket->messages()->create([
+            'user_id' => $request->user()->id,
+            'is_admin' => false,
+            'message' => $validated['message'],
+            'created_at' => now(),
+        ]);
+
+        $this->storeSupportAttachments($request, $message);
+
+        return redirect()
+            ->route('frontend.customer.support.show', $ticket)
+            ->with('success', 'Destek biletiniz olusturuldu. Ekibimiz en kisa surede yanitlayacak.');
+    }
+
+    public function showCustomerSupportTicket(Request $request, SupportTicket $ticket): View
+    {
+        abort_unless($ticket->user_id === $request->user()->id, 404);
+
+        return view('frontend.customer.support.show', [
+            'settings' => SiteSetting::query()->first(),
+            'customer' => $request->user(),
+            'ticket' => $ticket->load(['customer', 'messages.user', 'messages.attachments']),
+            'statusOptions' => SupportTicket::statusOptions(),
+            'priorityOptions' => SupportTicket::priorityOptions(),
+        ]);
+    }
+
+    public function replyCustomerSupportTicket(Request $request, SupportTicket $ticket): RedirectResponse
+    {
+        abort_unless($ticket->user_id === $request->user()->id, 404);
+
+        $validated = $request->validate([
+            'message' => ['required', 'string'],
+            'attachments' => ['nullable', 'array', 'max:5'],
+            'attachments.*' => ['file', 'mimes:pdf,doc,docx,xls,xlsx,txt,jpg,jpeg,png,webp,zip,rar', 'max:20480'],
+        ]);
+
+        $message = $ticket->messages()->create([
+            'user_id' => $request->user()->id,
+            'is_admin' => false,
+            'message' => $validated['message'],
+            'created_at' => now(),
+        ]);
+
+        $this->storeSupportAttachments($request, $message);
+
+        if ($ticket->status !== SupportTicket::STATUS_CLOSED) {
+            $ticket->forceFill(['status' => SupportTicket::STATUS_PENDING])->save();
+        }
+
+        return back()->with('success', 'Cevabiniz destek biletine eklendi.');
+    }
+
+    public function downloadSupportAttachment(Request $request, SupportAttachment $attachment)
+    {
+        $attachment->load('message.ticket');
+
+        abort_unless($attachment->message?->ticket?->user_id === $request->user()->id, 404);
+        abort_unless(Storage::disk('local')->exists($attachment->file_path), 404);
+
+        return Storage::disk('local')->download($attachment->file_path, $attachment->original_name);
+    }
+
+    private function supportTicketValidationRules(): array
+    {
+        return [
+            'subject' => ['required', 'string', 'max:255'],
+            'category' => ['nullable', 'string', 'max:255'],
+            'priority' => ['required', 'in:' . implode(',', array_keys(SupportTicket::priorityOptions()))],
+            'message' => ['required', 'string'],
+            'attachments' => ['nullable', 'array', 'max:5'],
+            'attachments.*' => ['file', 'mimes:pdf,doc,docx,xls,xlsx,txt,jpg,jpeg,png,webp,zip,rar', 'max:20480'],
+        ];
+    }
+
+    private function storeSupportAttachments(Request $request, SupportMessage $message): void
+    {
+        foreach ($request->file('attachments', []) as $file) {
+            $path = $file->store('support', 'local');
+
+            $message->attachments()->create([
+                'original_name' => $file->getClientOriginalName(),
+                'file_path' => $path,
+                'file_size' => $file->getSize() ?: 0,
+                'mime_type' => $file->getClientMimeType(),
+                'created_at' => now(),
+            ]);
+        }
     }
 
     public function storeLead(Request $request): RedirectResponse
