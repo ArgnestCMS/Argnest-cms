@@ -34,6 +34,9 @@
             'item' => url($path),
         ];
     }
+    $currentUser = auth()->user();
+    $isCustomerUser = $currentUser?->isCustomer() ?? false;
+    $isAdminUser = ($currentUser?->role ?? null) === \App\Models\User::ROLE_ADMIN;
 @endphp
 
 <!DOCTYPE html>
@@ -81,12 +84,33 @@
                 <span class="text-lg font-black tracking-tight">{{ $siteName }}</span>
             </a>
 
-            <div class="hidden items-center gap-7 text-sm font-semibold text-slate-600 lg:flex">
+            <div class="hidden items-center gap-5 text-sm font-semibold text-slate-600 lg:flex">
                 <a href="{{ route('home') }}#hizmetler" class="transition hover:text-blue-700">Hizmetler</a>
                 <a href="{{ route('home') }}#urunler" class="transition hover:text-blue-700">Ürünler</a>
                 <a href="{{ route('home') }}#referanslar" class="transition hover:text-blue-700">Referanslar</a>
                 <a href="{{ route('frontend.blog.index') }}" class="transition hover:text-blue-700">Blog</a>
                 <a href="{{ route('frontend.contact') }}" class="transition hover:text-blue-700">İletişim</a>
+                @guest
+                    <span class="h-5 w-px bg-slate-200"></span>
+                    <a href="{{ route('frontend.customer.register') }}" class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-800 shadow-sm transition hover:border-blue-300 hover:text-blue-700 hover:shadow-md">Uye Ol</a>
+                    <a href="{{ route('login') }}" class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-800 shadow-sm transition hover:border-blue-300 hover:text-blue-700 hover:shadow-md">Uye Girisi</a>
+                @else
+                    @if ($isCustomerUser)
+                        <span class="h-5 w-px bg-slate-200"></span>
+                        <a href="{{ route('frontend.customer.dashboard') }}" class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-800 shadow-sm transition hover:border-blue-300 hover:text-blue-700 hover:shadow-md">Musteri Paneli</a>
+                        <form action="{{ route('frontend.customer.logout') }}" method="POST" class="inline-flex">
+                            @csrf
+                            <button type="submit" class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-800 shadow-sm transition hover:border-blue-300 hover:text-blue-700 hover:shadow-md">Cikis Yap</button>
+                        </form>
+                    @elseif ($isAdminUser)
+                        <span class="h-5 w-px bg-slate-200"></span>
+                        <a href="{{ url('/admin') }}" class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-800 shadow-sm transition hover:border-blue-300 hover:text-blue-700 hover:shadow-md">Admin Paneli</a>
+                        <form action="{{ route('frontend.customer.logout') }}" method="POST" class="inline-flex">
+                            @csrf
+                            <button type="submit" class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-800 shadow-sm transition hover:border-blue-300 hover:text-blue-700 hover:shadow-md">Cikis Yap</button>
+                        </form>
+                    @endif
+                @endguest
                 <a href="{{ route('home') }}#teklif" class="rounded-xl bg-blue-600 px-4 py-2.5 font-bold text-white shadow-lg shadow-blue-600/20 transition hover:-translate-y-0.5 hover:bg-blue-700">Teklif Al</a>
             </div>
 
@@ -98,6 +122,25 @@
                     <a href="{{ route('home') }}#referanslar" class="block rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">Referanslar</a>
                     <a href="{{ route('frontend.blog.index') }}" class="block rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">Blog</a>
                     <a href="{{ route('frontend.contact') }}" class="block rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">İletişim</a>
+                    <div class="my-2 h-px bg-slate-100"></div>
+                    @guest
+                        <a href="{{ route('frontend.customer.register') }}" class="flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-800 shadow-sm transition hover:border-blue-300 hover:text-blue-700 hover:shadow-md">Uye Ol</a>
+                        <a href="{{ route('login') }}" class="mt-1 flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-800 shadow-sm transition hover:border-blue-300 hover:text-blue-700 hover:shadow-md">Uye Girisi</a>
+                    @else
+                        @if ($isCustomerUser)
+                            <a href="{{ route('frontend.customer.dashboard') }}" class="flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-800 shadow-sm transition hover:border-blue-300 hover:text-blue-700 hover:shadow-md">Musteri Paneli</a>
+                            <form action="{{ route('frontend.customer.logout') }}" method="POST" class="mt-1">
+                                @csrf
+                                <button type="submit" class="flex w-full items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-800 shadow-sm transition hover:border-blue-300 hover:text-blue-700 hover:shadow-md">Cikis Yap</button>
+                            </form>
+                        @elseif ($isAdminUser)
+                            <a href="{{ url('/admin') }}" class="flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-800 shadow-sm transition hover:border-blue-300 hover:text-blue-700 hover:shadow-md">Admin Paneli</a>
+                            <form action="{{ route('frontend.customer.logout') }}" method="POST" class="mt-1">
+                                @csrf
+                                <button type="submit" class="flex w-full items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-800 shadow-sm transition hover:border-blue-300 hover:text-blue-700 hover:shadow-md">Cikis Yap</button>
+                            </form>
+                        @endif
+                    @endguest
                     <a href="{{ route('home') }}#teklif" class="mt-2 block rounded-xl bg-blue-600 px-3 py-2.5 text-center text-sm font-bold text-white">Teklif Al</a>
                 </div>
             </details>
