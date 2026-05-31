@@ -5,6 +5,7 @@ namespace App\Filament\Resources\SupportTickets\Pages;
 use App\Filament\Resources\SupportTickets\SupportTicketResource;
 use App\Models\SupportMessage;
 use App\Models\SupportTicket;
+use App\Services\SupportTicketMailService;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Forms\Components\FileUpload;
@@ -49,6 +50,8 @@ class EditSupportTicket extends EditRecord
                     $this->attachFiles($message, $data['attachments'] ?? []);
 
                     $ticket->forceFill(['status' => SupportTicket::STATUS_ANSWERED])->save();
+
+                    app(SupportTicketMailService::class)->adminReplied($ticket, $message);
                 }),
             DeleteAction::make()
                 ->label('Sil'),

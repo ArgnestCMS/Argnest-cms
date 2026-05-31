@@ -14,6 +14,7 @@ use App\Models\SupportAttachment;
 use App\Models\SupportMessage;
 use App\Models\SupportTicket;
 use App\Models\User;
+use App\Services\SupportTicketMailService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -422,6 +423,8 @@ class FrontendController extends Controller
 
         $this->storeSupportAttachments($request, $message);
 
+        app(SupportTicketMailService::class)->ticketCreated($ticket, $message);
+
         return redirect()
             ->route('frontend.customer.support.show', $ticket)
             ->with('success', 'Destek biletiniz olusturuldu. Ekibimiz en kisa surede yanitlayacak.');
@@ -462,6 +465,8 @@ class FrontendController extends Controller
         if ($ticket->status !== SupportTicket::STATUS_CLOSED) {
             $ticket->forceFill(['status' => SupportTicket::STATUS_PENDING])->save();
         }
+
+        app(SupportTicketMailService::class)->customerReplied($ticket, $message);
 
         return back()->with('success', 'Cevabiniz destek biletine eklendi.');
     }
