@@ -522,7 +522,7 @@
             </div>
             <div class="grid gap-5 md:grid-cols-3">
                 @forelse ($blogPosts as $post)
-                    <article data-blog-slug="{{ $post->slug }}" class="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
+                    <a href="{{ route('frontend.blog.show', $post) }}" class="group block overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
                         @if ($post->featured_image)
                             <img src="{{ asset('storage/' . $post->featured_image) }}" alt="{{ $post->title }}" class="h-44 w-full object-cover">
                         @else
@@ -548,11 +548,11 @@
                             <h3 class="text-lg font-black text-slate-950">{{ $post->title }}</h3>
                             <p class="mt-3 text-sm leading-6 text-slate-600">{{ $post->excerpt ?: \Illuminate\Support\Str::limit(strip_tags($post->content), 120) }}</p>
                             <div class="mt-5 flex items-center justify-between border-t border-slate-100 pt-4">
-                                <span class="text-sm font-black text-blue-700">Detay sayfasi icin hazir</span>
+                                <span class="text-sm font-black text-blue-700">Yaziyi Oku</span>
                                 <span class="flex h-9 w-9 items-center justify-center rounded-full bg-blue-50 text-sm font-black text-blue-700 transition group-hover:bg-blue-600 group-hover:text-white">-&gt;</span>
                             </div>
                         </div>
-                    </article>
+                    </a>
                 @empty
                     <p class="text-slate-600">Aktif blog yazısı bulunamadı.</p>
                 @endforelse

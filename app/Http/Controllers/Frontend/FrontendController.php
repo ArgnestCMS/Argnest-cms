@@ -151,6 +151,32 @@ class FrontendController extends Controller
         ]);
     }
 
+    public function blogDetail(BlogPost $post): View
+    {
+        abort_unless($post->is_active, 404);
+
+        return view('frontend.blog-detail', [
+            'settings' => SiteSetting::query()->first(),
+            'post' => $post->load('category'),
+            'latestPosts' => BlogPost::query()
+                ->with('category')
+                ->where('is_active', true)
+                ->whereKeyNot($post->getKey())
+                ->orderByDesc('published_at')
+                ->take(4)
+                ->get(),
+            'relatedPosts' => BlogPost::query()
+                ->with('category')
+                ->where('is_active', true)
+                ->whereKeyNot($post->getKey())
+                ->when($post->blog_category_id, fn ($query) => $query->where('blog_category_id', $post->blog_category_id))
+                ->orderByDesc('is_featured')
+                ->orderByDesc('published_at')
+                ->take(4)
+                ->get(),
+        ]);
+    }
+
     public function storeLead(Request $request): RedirectResponse
     {
         $validated = $request->validate(

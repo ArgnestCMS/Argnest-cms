@@ -43,7 +43,7 @@
                     @php
                         $imageUrl = $post->featured_image ? \Illuminate\Support\Facades\Storage::url($post->featured_image) : null;
                     @endphp
-                    <article data-blog-slug="{{ $post->slug }}" class="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:border-blue-200 hover:shadow-2xl hover:shadow-blue-100">
+                    <a href="{{ route('frontend.blog.show', $post) }}" class="group block overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:border-blue-200 hover:shadow-2xl hover:shadow-blue-100">
                         <div class="relative overflow-hidden">
                             @if ($imageUrl)
                                 <img src="{{ $imageUrl }}" alt="{{ $post->title }}" class="h-56 w-full object-cover transition duration-500 group-hover:scale-105">
@@ -85,11 +85,11 @@
                             <h3 class="text-xl font-black tracking-tight text-slate-950">{{ $post->title }}</h3>
                             <p class="mt-3 text-sm leading-6 text-slate-600">{{ $post->excerpt ?: \Illuminate\Support\Str::limit(strip_tags($post->content), 130) }}</p>
                             <div class="mt-6 flex items-center justify-between border-t border-slate-100 pt-5">
-                                <span class="text-sm font-black text-blue-700">Detay sayfasi icin hazir</span>
+                                <span class="text-sm font-black text-blue-700">Yaziyi Oku</span>
                                 <span class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 text-lg font-black text-blue-700 transition group-hover:bg-blue-600 group-hover:text-white">-&gt;</span>
                             </div>
                         </div>
-                    </article>
+                    </a>
                 @empty
                     <div class="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm md:col-span-2 lg:col-span-3">
                         <p class="text-lg font-black text-slate-950">Aktif blog yazisi bulunamadi.</p>
