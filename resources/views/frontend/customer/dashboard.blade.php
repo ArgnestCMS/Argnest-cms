@@ -53,6 +53,15 @@
                 @endforeach
             </div>
 
+            @if ($expiredServicesCount > 0)
+                <div class="mb-6 rounded-3xl border border-red-200 bg-red-50 p-6 shadow-sm">
+                    <p class="text-sm font-black uppercase tracking-widest text-red-600">Yenileme Uyarisi</p>
+                    <h2 class="mt-2 text-2xl font-black text-red-900">{{ $expiredServicesCount }} hizmetinizin suresi gecmis.</h2>
+                    <p class="mt-3 text-sm leading-6 text-red-700">Kesinti yasanmamasi icin suresi gecen hizmetlerin yenileme durumunu kontrol edin.</p>
+                    <a href="{{ route('frontend.customer.services') }}" class="mt-5 inline-flex rounded-2xl bg-red-600 px-5 py-3 text-sm font-black text-white shadow-lg shadow-red-100 transition hover:-translate-y-0.5 hover:bg-red-700">Hizmetlerimi Incele</a>
+                </div>
+            @endif
+
             <div class="grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
                 <article class="rounded-3xl border border-slate-200 bg-white p-6 shadow-xl shadow-slate-200/70">
                     <div id="profil"></div>

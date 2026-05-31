@@ -27,21 +27,36 @@
             <div class="grid gap-6 lg:grid-cols-2">
                 @forelse ($services as $service)
                     @php
-                        $remainingDays = $service->expiry_date ? now()->startOfDay()->diffInDays($service->expiry_date->copy()->startOfDay(), false) : null;
-                        $renewalClasses = match (true) {
-                            $remainingDays === null => 'border-slate-200 bg-slate-50 text-slate-700',
-                            $remainingDays >= 90 => 'border-emerald-200 bg-emerald-50 text-emerald-700',
-                            $remainingDays >= 30 => 'border-amber-200 bg-amber-50 text-amber-700',
-                            default => 'border-red-200 bg-red-50 text-red-700',
+                        $remainingDays = $service->daysUntilExpiry();
+                        $renewalStatus = $service->renewalStatus();
+                        $renewalClasses = match ($renewalStatus) {
+                            'expired' => 'border-red-300 bg-red-100 text-red-800',
+                            'critical' => 'border-red-200 bg-red-50 text-red-700',
+                            'warning' => 'border-amber-200 bg-amber-50 text-amber-700',
+                            'safe' => 'border-emerald-200 bg-emerald-50 text-emerald-700',
+                            default => 'border-slate-200 bg-slate-50 text-slate-700',
+                        };
+                        $cardClasses = match ($renewalStatus) {
+                            'expired' => 'border-red-200 bg-red-50 shadow-red-100',
+                            'critical' => 'border-red-200 bg-white shadow-red-100',
+                            'warning' => 'border-amber-200 bg-white shadow-amber-100',
+                            default => 'border-slate-200 bg-white shadow-slate-200/70',
+                        };
+                        $renewalTitle = match ($renewalStatus) {
+                            'expired' => 'Suresi gecmis',
+                            'critical' => 'Kritik yenileme',
+                            'warning' => 'Yaklasan yenileme',
+                            'safe' => 'Guvenli',
+                            default => 'Tarih belirtilmedi',
                         };
                         $renewalText = match (true) {
-                            $remainingDays === null => 'Bitis tarihi yok',
+                            $remainingDays === null => 'Tarih belirtilmedi',
                             $remainingDays < 0 => abs($remainingDays) . ' gun once bitti',
                             $remainingDays === 0 => 'Bugun bitiyor',
                             default => $remainingDays . ' gun kaldi',
                         };
                     @endphp
-                    <article class="rounded-3xl border border-slate-200 bg-white p-6 shadow-xl shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-2xl">
+                    <article class="rounded-3xl border p-6 shadow-xl transition hover:-translate-y-1 hover:shadow-2xl {{ $cardClasses }}">
                         <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                             <div>
                                 <p class="text-sm font-black uppercase tracking-widest text-blue-600">Hizmet</p>
@@ -51,9 +66,21 @@
                                 <span class="rounded-full px-3 py-1.5 text-xs font-black {{ $service->is_active ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200' : 'bg-slate-100 text-slate-500 ring-1 ring-slate-200' }}">
                                     {{ $service->is_active ? 'Aktif' : 'Pasif' }}
                                 </span>
-                                <span class="rounded-full border px-3 py-1.5 text-xs font-black {{ $renewalClasses }}">{{ $renewalText }}</span>
+                                <span class="rounded-full border px-3 py-1.5 text-xs font-black {{ $renewalClasses }}">{{ $renewalTitle }} / {{ $renewalText }}</span>
                             </div>
                         </div>
+
+                        @if (in_array($renewalStatus, ['expired', 'critical', 'warning'], true))
+                            <div class="mt-5 rounded-2xl border p-4 text-sm font-bold leading-6 {{ $renewalClasses }}">
+                                @if ($renewalStatus === 'expired')
+                                    Bu hizmetin yenileme tarihi gecmis. Kesinti riskine karsi yenileme islemini kontrol edin.
+                                @elseif ($renewalStatus === 'critical')
+                                    Bu hizmet 30 gun icinde yenilenmeli. Planlama icin destek ekibiyle iletisime gecebilirsiniz.
+                                @else
+                                    Bu hizmet 90 gun icinde yenileme donemine girecek.
+                                @endif
+                            </div>
+                        @endif
 
                         <div class="mt-6 grid gap-4 sm:grid-cols-2">
                             @foreach ([
@@ -62,7 +89,7 @@
                                 'Sunucu IP' => $service->server_ip ?: 'Belirtilmedi',
                                 'Sunucu paneli' => $service->server_panel ?: 'Belirtilmedi',
                                 'Kullanici adi' => $service->username ?: 'Belirtilmedi',
-                                'Son kullanim tarihi' => $service->expiry_date?->format('d.m.Y') ?: 'Belirtilmedi',
+                                'Son kullanim tarihi' => $service->expiry_date?->format('d.m.Y') ?: 'Tarih belirtilmedi',
                             ] as $label => $value)
                                 <div class="rounded-2xl border border-slate-100 bg-slate-50 p-4">
                                     <p class="text-xs font-black uppercase tracking-widest text-blue-600">{{ $label }}</p>

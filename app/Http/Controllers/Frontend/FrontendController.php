@@ -384,6 +384,11 @@ class FrontendController extends Controller
     {
         $customer = $request->user()->load('customerServices');
         $services = $customer->customerServices;
+        $expiredServices = $services
+            ->filter(fn ($service): bool => $service->is_active && $service->isExpired());
+        $upcomingRenewals = $services
+            ->filter(fn ($service): bool => $service->is_active && $service->isExpiringSoon())
+            ->count();
 
         return view('frontend.customer.dashboard', [
             'settings' => SiteSetting::query()->first(),
@@ -391,9 +396,9 @@ class FrontendController extends Controller
             'services' => $services,
             'totalServices' => $services->count(),
             'activeServices' => $services->where('is_active', true)->count(),
-            'upcomingRenewals' => $services
-                ->filter(fn ($service): bool => $service->expiry_date && $service->expiry_date->isFuture() && $service->expiry_date->diffInDays(now()) <= 30)
-                ->count(),
+            'upcomingRenewals' => $upcomingRenewals,
+            'expiredServices' => $expiredServices,
+            'expiredServicesCount' => $expiredServices->count(),
             'openSupportTickets' => $customer->supportTickets()
                 ->whereIn('status', [SupportTicket::STATUS_OPEN, SupportTicket::STATUS_ANSWERED, SupportTicket::STATUS_PENDING])
                 ->count(),
