@@ -177,6 +177,13 @@ class FrontendController extends Controller
         ]);
     }
 
+    public function contact(): View
+    {
+        return view('frontend.contact', [
+            'settings' => SiteSetting::query()->first(),
+        ]);
+    }
+
     public function storeLead(Request $request): RedirectResponse
     {
         $validated = $request->validate(
