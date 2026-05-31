@@ -137,10 +137,36 @@ class CustomerForm
                                             ->map(fn ($service): string => e($service->service_name) . ' - ' . e($service->expiry_date?->format('d.m.Y') ?: 'Tarih yok'))
                                             ->implode('<br>'));
                                     }),
-                                Placeholder::make('future_activity_placeholder')
-                                    ->label('Teknik Destek / Yorumlar')
-                                    ->content('Teknik destek ve yorum sistemi eklendiğinde son işlemler burada listelenecek.'),
+                                Placeholder::make('activity_summary')
+                                    ->label('Aktivite Kayitlari')
+                                    ->content(fn (?User $record): string => (string) ($record?->customerActivityLogs()->count() ?? 0)),
                             ]),
+                    ])
+                    ->visible(fn (string $operation): bool => $operation === 'edit')
+                    ->columnSpanFull(),
+                Section::make('Musteri Aktivite Gecmisi')
+                    ->schema([
+                        Placeholder::make('latest_activity_logs')
+                            ->label('Son 20 Hareket')
+                            ->content(function (?User $record): HtmlString {
+                                $logs = $record?->customerActivityLogs()
+                                    ->latest('created_at')
+                                    ->take(20)
+                                    ->get() ?? collect();
+
+                                if ($logs->isEmpty()) {
+                                    return new HtmlString('Henuz aktivite kaydi yok.');
+                                }
+
+                                return new HtmlString($logs
+                                    ->map(function ($log): string {
+                                        $action = \App\Models\CustomerActivityLog::actionOptions()[$log->action] ?? $log->action;
+                                        $date = $log->created_at?->format('d.m.Y H:i') ?: 'Tarih yok';
+
+                                        return '<div style="margin-bottom:8px;"><strong>' . e($date) . ' - ' . e($action) . '</strong><br><span>' . e($log->description ?: '-') . '</span><br><small>IP: ' . e($log->ip_address ?: '-') . '</small></div>';
+                                    })
+                                    ->implode(''));
+                            }),
                     ])
                     ->visible(fn (string $operation): bool => $operation === 'edit')
                     ->columnSpanFull(),

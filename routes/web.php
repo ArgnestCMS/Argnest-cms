@@ -21,6 +21,7 @@ Route::middleware('guest')->group(function (): void {
 Route::middleware(['auth', 'customer'])->group(function (): void {
     Route::get('/musteri/panel', [FrontendController::class, 'customerDashboard'])->name('frontend.customer.dashboard');
     Route::get('/musteri/hizmetlerim', [FrontendController::class, 'customerServices'])->name('frontend.customer.services');
+    Route::get('/musteri/aktivitelerim', [FrontendController::class, 'customerActivities'])->name('frontend.customer.activities.index');
     Route::get('/musteri/yorumlarim', [FrontendController::class, 'customerReviews'])->name('frontend.customer.reviews.index');
     Route::get('/musteri/yorumlarim/yeni', [FrontendController::class, 'customerReviewCreate'])->name('frontend.customer.reviews.create');
     Route::post('/musteri/yorumlarim/yeni', [FrontendController::class, 'storeCustomerReview'])->name('frontend.customer.reviews.store');

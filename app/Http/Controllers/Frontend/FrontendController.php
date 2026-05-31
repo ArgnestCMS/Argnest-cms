@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Models\BlogPost;
+use App\Models\CustomerActivityLog;
 use App\Models\HeroButton;
 use App\Models\CustomerReview;
 use App\Models\Lead;
@@ -15,6 +16,7 @@ use App\Models\SupportAttachment;
 use App\Models\SupportMessage;
 use App\Models\SupportTicket;
 use App\Models\User;
+use App\Services\CustomerActivityLogger;
 use App\Services\SupportTicketMailService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -300,6 +302,13 @@ class FrontendController extends Controller
         Auth::login($user);
         $request->session()->regenerate();
 
+        app(CustomerActivityLogger::class)->log(
+            $user,
+            CustomerActivityLog::ACTION_REGISTERED,
+            'Musteri hesabi olusturuldu.',
+            $request,
+        );
+
         return redirect()->route('frontend.customer.dashboard');
     }
 
@@ -340,11 +349,29 @@ class FrontendController extends Controller
             'last_login_ip' => $request->ip(),
         ])->save();
 
+        app(CustomerActivityLogger::class)->log(
+            $request->user(),
+            CustomerActivityLog::ACTION_LOGIN,
+            'Musteri paneline giris yapti.',
+            $request,
+        );
+
         return redirect()->intended(route('frontend.customer.dashboard'));
     }
 
     public function customerLogout(Request $request): RedirectResponse
     {
+        $user = $request->user();
+
+        if ($user) {
+            app(CustomerActivityLogger::class)->log(
+                $user,
+                CustomerActivityLog::ACTION_LOGOUT,
+                'Musteri panelinden cikis yapti.',
+                $request,
+            );
+        }
+
         Auth::logout();
 
         $request->session()->invalidate();
@@ -375,6 +402,12 @@ class FrontendController extends Controller
 
     public function customerServices(Request $request): View
     {
+        app(CustomerActivityLogger::class)->logForRequest(
+            CustomerActivityLog::ACTION_SERVICES_VIEWED,
+            'Hizmetlerini goruntuledi.',
+            $request,
+        );
+
         return view('frontend.customer.services', [
             'settings' => SiteSetting::query()->first(),
             'customer' => $request->user(),
@@ -384,6 +417,19 @@ class FrontendController extends Controller
                 ->orderByRaw('expiry_date is null')
                 ->orderBy('expiry_date')
                 ->get(),
+        ]);
+    }
+
+    public function customerActivities(Request $request): View
+    {
+        return view('frontend.customer.activities.index', [
+            'settings' => SiteSetting::query()->first(),
+            'customer' => $request->user(),
+            'logs' => $request->user()
+                ->customerActivityLogs()
+                ->latest('created_at')
+                ->paginate(15),
+            'actionOptions' => CustomerActivityLog::actionOptions(),
         ]);
     }
 
@@ -418,7 +464,7 @@ class FrontendController extends Controller
             'hide_contact' => ['nullable', 'boolean'],
         ]);
 
-        $request->user()->customerReviews()->create([
+        $review = $request->user()->customerReviews()->create([
             'rating' => $validated['rating'] ?? null,
             'title' => $validated['title'] ?? null,
             'comment' => $validated['comment'],
@@ -426,6 +472,13 @@ class FrontendController extends Controller
             'hide_contact' => $request->boolean('hide_contact', true),
             'status' => CustomerReview::STATUS_PENDING,
         ]);
+
+        app(CustomerActivityLogger::class)->log(
+            $request->user(),
+            CustomerActivityLog::ACTION_REVIEW_SUBMITTED,
+            'Yorum gonderdi: ' . ($review->title ?: 'Basliksiz yorum'),
+            $request,
+        );
 
         return redirect()
             ->route('frontend.customer.reviews.index')
@@ -474,7 +527,23 @@ class FrontendController extends Controller
             'created_at' => now(),
         ]);
 
-        $this->storeSupportAttachments($request, $message);
+        $attachmentCount = $this->storeSupportAttachments($request, $message);
+
+        app(CustomerActivityLogger::class)->log(
+            $request->user(),
+            CustomerActivityLog::ACTION_SUPPORT_TICKET_CREATED,
+            'Destek talebi olusturdu: ' . $ticket->ticket_no,
+            $request,
+        );
+
+        if ($attachmentCount > 0) {
+            app(CustomerActivityLogger::class)->log(
+                $request->user(),
+                CustomerActivityLog::ACTION_FILE_UPLOADED,
+                $attachmentCount . ' dosya yukledi: ' . $ticket->ticket_no,
+                $request,
+            );
+        }
 
         app(SupportTicketMailService::class)->ticketCreated($ticket, $message);
 
@@ -513,10 +582,26 @@ class FrontendController extends Controller
             'created_at' => now(),
         ]);
 
-        $this->storeSupportAttachments($request, $message);
+        $attachmentCount = $this->storeSupportAttachments($request, $message);
 
         if ($ticket->status !== SupportTicket::STATUS_CLOSED) {
             $ticket->forceFill(['status' => SupportTicket::STATUS_PENDING])->save();
+        }
+
+        app(CustomerActivityLogger::class)->log(
+            $request->user(),
+            CustomerActivityLog::ACTION_SUPPORT_TICKET_REPLIED,
+            'Destek talebine cevap yazdi: ' . $ticket->ticket_no,
+            $request,
+        );
+
+        if ($attachmentCount > 0) {
+            app(CustomerActivityLogger::class)->log(
+                $request->user(),
+                CustomerActivityLog::ACTION_FILE_UPLOADED,
+                $attachmentCount . ' dosya yukledi: ' . $ticket->ticket_no,
+                $request,
+            );
         }
 
         app(SupportTicketMailService::class)->customerReplied($ticket, $message);
@@ -546,8 +631,10 @@ class FrontendController extends Controller
         ];
     }
 
-    private function storeSupportAttachments(Request $request, SupportMessage $message): void
+    private function storeSupportAttachments(Request $request, SupportMessage $message): int
     {
+        $storedCount = 0;
+
         foreach ($request->file('attachments', []) as $file) {
             $path = $file->store('support', 'local');
 
@@ -558,7 +645,11 @@ class FrontendController extends Controller
                 'mime_type' => $file->getClientMimeType(),
                 'created_at' => now(),
             ]);
+
+            $storedCount++;
         }
+
+        return $storedCount;
     }
 
     public function storeLead(Request $request): RedirectResponse
