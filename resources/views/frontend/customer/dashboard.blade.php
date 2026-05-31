@@ -11,6 +11,7 @@
         ['label' => 'Toplam Hizmet', 'value' => $totalServices],
         ['label' => 'Aktif Hizmet', 'value' => $activeServices],
         ['label' => 'Yaklasan Yenileme', 'value' => $upcomingRenewals],
+        ['label' => 'Dosyalarim', 'value' => $visibleFilesCount],
         ['label' => 'Acik Destek Talebi', 'value' => $openSupportTickets],
     ];
 @endphp
@@ -38,13 +39,14 @@
             <nav class="mb-8 flex flex-wrap gap-3 rounded-3xl border border-slate-200 bg-white p-3 shadow-sm">
                 <a href="{{ route('frontend.customer.dashboard') }}" class="rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white">Dashboard</a>
                 <a href="{{ route('frontend.customer.services') }}" class="rounded-2xl px-5 py-3 text-sm font-black text-slate-700 transition hover:bg-blue-50 hover:text-blue-700">Hizmetlerim</a>
+                <a href="{{ route('frontend.customer.files.index') }}" class="rounded-2xl px-5 py-3 text-sm font-black text-slate-700 transition hover:bg-blue-50 hover:text-blue-700">Dosyalarim</a>
                 <a href="{{ route('frontend.customer.reviews.index') }}" class="rounded-2xl px-5 py-3 text-sm font-black text-slate-700 transition hover:bg-blue-50 hover:text-blue-700">Yorumlarim</a>
                 <a href="{{ route('frontend.customer.activities.index') }}" class="rounded-2xl px-5 py-3 text-sm font-black text-slate-700 transition hover:bg-blue-50 hover:text-blue-700">Aktivitelerim</a>
                 <a href="{{ route('frontend.customer.support.index') }}" class="rounded-2xl px-5 py-3 text-sm font-black text-slate-700 transition hover:bg-blue-50 hover:text-blue-700">Destek</a>
                 <a href="#profil" class="rounded-2xl px-5 py-3 text-sm font-black text-slate-700 transition hover:bg-blue-50 hover:text-blue-700">Profilim</a>
             </nav>
 
-            <div class="mb-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div class="mb-6 grid gap-4 md:grid-cols-2 lg:grid-cols-5">
                 @foreach ($summaryCards as $card)
                     <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
                         <p class="text-3xl font-black text-slate-950">{{ $card['value'] }}</p>
@@ -98,6 +100,7 @@
                     </div>
                     <div class="mt-8 flex flex-wrap gap-3">
                         <a href="{{ route('frontend.customer.services') }}" class="inline-flex rounded-2xl bg-blue-600 px-6 py-3.5 text-sm font-black text-white shadow-lg shadow-blue-100 transition hover:-translate-y-0.5 hover:bg-blue-700">Hizmetlerimi Gor</a>
+                        <a href="{{ route('frontend.customer.files.index') }}" class="inline-flex rounded-2xl border border-slate-200 bg-white px-6 py-3.5 text-sm font-black text-slate-800 transition hover:-translate-y-0.5 hover:border-blue-200 hover:text-blue-700">Dosyalarim</a>
                         <a href="{{ route('frontend.customer.support.index') }}" class="inline-flex rounded-2xl border border-slate-200 bg-white px-6 py-3.5 text-sm font-black text-slate-800 transition hover:-translate-y-0.5 hover:border-blue-200 hover:text-blue-700">Destek Taleplerim</a>
                         <a href="{{ route('frontend.customer.reviews.index') }}" class="inline-flex rounded-2xl border border-slate-200 bg-white px-6 py-3.5 text-sm font-black text-slate-800 transition hover:-translate-y-0.5 hover:border-blue-200 hover:text-blue-700">Yorumlarim</a>
                         <a href="{{ route('frontend.customer.activities.index') }}" class="inline-flex rounded-2xl border border-slate-200 bg-white px-6 py-3.5 text-sm font-black text-slate-800 transition hover:-translate-y-0.5 hover:border-blue-200 hover:text-blue-700">Aktivite Gecmisim</a>

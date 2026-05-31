@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Frontend;
 use App\Http\Controllers\Controller;
 use App\Models\BlogPost;
 use App\Models\CustomerActivityLog;
+use App\Models\CustomerFile;
 use App\Models\HeroButton;
 use App\Models\CustomerReview;
 use App\Models\Lead;
@@ -399,6 +400,9 @@ class FrontendController extends Controller
             'upcomingRenewals' => $upcomingRenewals,
             'expiredServices' => $expiredServices,
             'expiredServicesCount' => $expiredServices->count(),
+            'visibleFilesCount' => $customer->customerFiles()
+                ->where('is_visible', true)
+                ->count(),
             'openSupportTickets' => $customer->supportTickets()
                 ->whereIn('status', [SupportTicket::STATUS_OPEN, SupportTicket::STATUS_ANSWERED, SupportTicket::STATUS_PENDING])
                 ->count(),
@@ -423,6 +427,42 @@ class FrontendController extends Controller
                 ->orderBy('expiry_date')
                 ->get(),
         ]);
+    }
+
+    public function customerFiles(Request $request): View
+    {
+        app(CustomerActivityLogger::class)->logForRequest(
+            CustomerActivityLog::ACTION_FILE_VIEWED,
+            'Dosya merkezi goruntulendi.',
+            $request,
+        );
+
+        return view('frontend.customer.files', [
+            'settings' => SiteSetting::query()->first(),
+            'customer' => $request->user(),
+            'files' => $request->user()
+                ->customerFiles()
+                ->where('is_visible', true)
+                ->latest()
+                ->paginate(12),
+            'categoryOptions' => CustomerFile::categoryOptions(),
+        ]);
+    }
+
+    public function downloadCustomerFile(Request $request, CustomerFile $file)
+    {
+        abort_unless($file->user_id === $request->user()->id, 404);
+        abort_unless($file->is_visible, 404);
+        abort_unless(Storage::disk('local')->exists($file->file_path), 404);
+
+        app(CustomerActivityLogger::class)->log(
+            $request->user(),
+            CustomerActivityLog::ACTION_FILE_DOWNLOADED,
+            'Dosya indirildi: ' . $file->title,
+            $request,
+        );
+
+        return Storage::disk('local')->download($file->file_path, $file->file_name);
     }
 
     public function customerActivities(Request $request): View
