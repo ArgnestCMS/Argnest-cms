@@ -4,6 +4,7 @@ use App\Http\Controllers\Frontend\FrontendController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [FrontendController::class, 'home'])->name('home');
+Route::get('/blog', [FrontendController::class, 'blogIndex'])->name('frontend.blog.index');
 Route::get('/hizmet/{service:slug}', [FrontendController::class, 'serviceDetail'])->name('frontend.services.show');
 Route::get('/urun/{product:slug}', [FrontendController::class, 'productDetail'])->name('frontend.products.show');
 Route::get('/referans/{portfolio:slug}', [FrontendController::class, 'portfolioDetail'])->name('frontend.references.show');

@@ -35,7 +35,7 @@
                 <a href="{{ route('home') }}#hizmetler" class="transition hover:text-blue-700">Hizmetler</a>
                 <a href="{{ route('home') }}#urunler" class="transition hover:text-blue-700">Ürünler</a>
                 <a href="{{ route('home') }}#referanslar" class="transition hover:text-blue-700">Referanslar</a>
-                <a href="{{ route('home') }}#blog" class="transition hover:text-blue-700">Blog</a>
+                <a href="{{ route('frontend.blog.index') }}" class="transition hover:text-blue-700">Blog</a>
                 <a href="{{ route('home') }}#teklif" class="transition hover:text-blue-700">İletişim</a>
                 <a href="{{ route('home') }}#teklif" class="rounded-xl bg-blue-600 px-4 py-2.5 font-bold text-white shadow-lg shadow-blue-600/20 transition hover:-translate-y-0.5 hover:bg-blue-700">Teklif Al</a>
             </div>
@@ -46,7 +46,7 @@
                     <a href="{{ route('home') }}#hizmetler" class="block rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">Hizmetler</a>
                     <a href="{{ route('home') }}#urunler" class="block rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">Ürünler</a>
                     <a href="{{ route('home') }}#referanslar" class="block rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">Referanslar</a>
-                    <a href="{{ route('home') }}#blog" class="block rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">Blog</a>
+                    <a href="{{ route('frontend.blog.index') }}" class="block rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">Blog</a>
                     <a href="{{ route('home') }}#teklif" class="block rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">İletişim</a>
                     <a href="{{ route('home') }}#teklif" class="mt-2 block rounded-xl bg-blue-600 px-3 py-2.5 text-center text-sm font-bold text-white">Teklif Al</a>
                 </div>
@@ -89,7 +89,7 @@
                     <a href="{{ route('home') }}#neden" class="hover:text-blue-300">Neden Argnest</a>
                     <a href="{{ route('home') }}#guvenlik" class="hover:text-blue-300">Güvenlik ve KVKK</a>
                     <a href="{{ route('home') }}#referanslar" class="hover:text-blue-300">Referanslar</a>
-                    <a href="{{ route('home') }}#blog" class="hover:text-blue-300">Blog</a>
+                    <a href="{{ route('frontend.blog.index') }}" class="hover:text-blue-300">Blog</a>
                 </div>
             </div>
 

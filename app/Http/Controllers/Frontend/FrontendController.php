@@ -130,6 +130,27 @@ class FrontendController extends Controller
         ]);
     }
 
+    public function blogIndex(): View
+    {
+        return view('frontend.blog', [
+            'settings' => SiteSetting::query()->first(),
+            'blogPosts' => BlogPost::query()
+                ->with('category')
+                ->where('is_active', true)
+                ->orderByDesc('is_featured')
+                ->orderByDesc('published_at')
+                ->orderBy('sort_order')
+                ->paginate(9),
+            'featuredPosts' => BlogPost::query()
+                ->with('category')
+                ->where('is_active', true)
+                ->where('is_featured', true)
+                ->orderByDesc('published_at')
+                ->take(3)
+                ->get(),
+        ]);
+    }
+
     public function storeLead(Request $request): RedirectResponse
     {
         $validated = $request->validate(

@@ -513,13 +513,16 @@
 
     <section id="blog" class="bg-slate-50 py-20">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div class="mb-12 max-w-3xl">
+            <div class="mb-12 flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
+                <div class="max-w-3xl">
                 <p class="text-sm font-black uppercase tracking-widest text-blue-600">Blog</p>
                 <h2 class="mt-3 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">Son içerikler ve dijital büyüme notları</h2>
+                </div>
+                <a href="{{ route('frontend.blog.index') }}" class="rounded-2xl bg-slate-950 px-5 py-3 text-center text-sm font-black text-white shadow-lg shadow-slate-200 transition hover:-translate-y-0.5 hover:bg-blue-700">Tum Yazilar</a>
             </div>
             <div class="grid gap-5 md:grid-cols-3">
                 @forelse ($blogPosts as $post)
-                    <article class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
+                    <article data-blog-slug="{{ $post->slug }}" class="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
                         @if ($post->featured_image)
                             <img src="{{ asset('storage/' . $post->featured_image) }}" alt="{{ $post->title }}" class="h-44 w-full object-cover">
                         @else
@@ -544,6 +547,10 @@
                             </div>
                             <h3 class="text-lg font-black text-slate-950">{{ $post->title }}</h3>
                             <p class="mt-3 text-sm leading-6 text-slate-600">{{ $post->excerpt ?: \Illuminate\Support\Str::limit(strip_tags($post->content), 120) }}</p>
+                            <div class="mt-5 flex items-center justify-between border-t border-slate-100 pt-4">
+                                <span class="text-sm font-black text-blue-700">Detay sayfasi icin hazir</span>
+                                <span class="flex h-9 w-9 items-center justify-center rounded-full bg-blue-50 text-sm font-black text-blue-700 transition group-hover:bg-blue-600 group-hover:text-white">-&gt;</span>
+                            </div>
                         </div>
                     </article>
                 @empty
