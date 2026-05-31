@@ -25,7 +25,12 @@ class DatabaseSeeder extends Seeder
 
         User::query()->firstOrCreate(
             ['email' => 'test@example.com'],
-            ['name' => 'Test User', 'password' => bcrypt('password')],
+            [
+                'name' => 'Test User',
+                'password' => bcrypt('password'),
+                'role' => User::ROLE_ADMIN,
+                'is_active' => true,
+            ],
         );
     }
 }

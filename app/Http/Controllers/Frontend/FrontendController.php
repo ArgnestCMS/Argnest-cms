@@ -10,8 +10,11 @@ use App\Models\Portfolio;
 use App\Models\Product;
 use App\Models\Service;
 use App\Models\SiteSetting;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class FrontendController extends Controller
@@ -234,6 +237,105 @@ class FrontendController extends Controller
             200,
             ['Content-Type' => 'text/plain'],
         );
+    }
+
+    public function customerRegister(): View
+    {
+        return view('frontend.customer.register', [
+            'settings' => SiteSetting::query()->first(),
+        ]);
+    }
+
+    public function storeCustomerRegister(Request $request): RedirectResponse
+    {
+        $validated = $request->validate(
+            [
+                'name' => ['required', 'string', 'max:255'],
+                'company_name' => ['nullable', 'string', 'max:255'],
+                'email' => ['required', 'email', 'max:255', 'unique:users,email'],
+                'phone' => ['nullable', 'string', 'max:255'],
+                'password' => ['required', 'string', 'min:8', 'confirmed'],
+                'kvkk_accepted' => ['accepted'],
+            ],
+            [
+                'name.required' => 'Ad soyad alanı zorunludur.',
+                'email.required' => 'E-posta alanı zorunludur.',
+                'email.email' => 'Geçerli bir e-posta adresi giriniz.',
+                'email.unique' => 'Bu e-posta adresi ile kayıtlı bir hesap var.',
+                'password.required' => 'Şifre alanı zorunludur.',
+                'password.min' => 'Şifre en az 8 karakter olmalıdır.',
+                'password.confirmed' => 'Şifre tekrarı eşleşmiyor.',
+                'kvkk_accepted.accepted' => 'Devam etmek için KVKK onayını kabul etmelisiniz.',
+            ],
+        );
+
+        $user = User::query()->create([
+            'name' => $validated['name'],
+            'company_name' => $validated['company_name'] ?? null,
+            'email' => $validated['email'],
+            'phone' => $validated['phone'] ?? null,
+            'password' => $validated['password'],
+            'role' => User::ROLE_CUSTOMER,
+            'is_active' => true,
+        ]);
+
+        Auth::login($user);
+        $request->session()->regenerate();
+
+        return redirect()->route('frontend.customer.dashboard');
+    }
+
+    public function customerLogin(): View
+    {
+        return view('frontend.customer.login', [
+            'settings' => SiteSetting::query()->first(),
+        ]);
+    }
+
+    public function storeCustomerLogin(Request $request): RedirectResponse
+    {
+        $credentials = $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required', 'string'],
+        ]);
+
+        if (! Auth::attempt($credentials, $request->boolean('remember'))) {
+            throw ValidationException::withMessages([
+                'email' => 'E-posta veya şifre hatalı.',
+            ]);
+        }
+
+        $request->session()->regenerate();
+
+        if (! $request->user()?->isCustomer()) {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            throw ValidationException::withMessages([
+                'email' => 'Bu giriş alanı yalnızca müşteri hesapları içindir.',
+            ]);
+        }
+
+        return redirect()->intended(route('frontend.customer.dashboard'));
+    }
+
+    public function customerLogout(Request $request): RedirectResponse
+    {
+        Auth::logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('login');
+    }
+
+    public function customerDashboard(Request $request): View
+    {
+        return view('frontend.customer.dashboard', [
+            'settings' => SiteSetting::query()->first(),
+            'customer' => $request->user(),
+        ]);
     }
 
     public function storeLead(Request $request): RedirectResponse
