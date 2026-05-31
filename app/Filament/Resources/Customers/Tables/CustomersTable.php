@@ -30,6 +30,23 @@ class CustomersTable
                     ->label('Mail')
                     ->searchable()
                     ->sortable(),
+                TextColumn::make('identity_number')
+                    ->label('TC Kimlik No')
+                    ->searchable()
+                    ->toggleable(),
+                TextColumn::make('registration_ip')
+                    ->label('Kayıt IP')
+                    ->searchable()
+                    ->toggleable(),
+                TextColumn::make('last_login_at')
+                    ->label('Son Giriş')
+                    ->dateTime('d.m.Y H:i')
+                    ->sortable()
+                    ->toggleable(),
+                TextColumn::make('last_login_ip')
+                    ->label('Son Giriş IP')
+                    ->searchable()
+                    ->toggleable(),
                 IconColumn::make('is_active')
                     ->label('Aktif/Pasif')
                     ->boolean()

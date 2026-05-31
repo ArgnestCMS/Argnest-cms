@@ -3,6 +3,12 @@
 @section('title', 'Musteri Paneli | Argnest')
 @section('description', 'Argnest musteri paneli.')
 
+@php
+    $maskedIdentityNumber = $customer->identity_number
+        ? str_repeat('*', max(strlen($customer->identity_number) - 4, 0)) . substr($customer->identity_number, -4)
+        : 'Belirtilmedi';
+@endphp
+
 @section('content')
     <section class="relative overflow-hidden bg-slate-950 text-white">
         <div class="absolute inset-0 bg-[radial-gradient(circle_at_16%_18%,rgba(37,99,235,0.36),transparent_34%),radial-gradient(circle_at_84%_8%,rgba(124,58,237,0.30),transparent_30%),linear-gradient(135deg,#020617_0%,#0f172a_55%,#111827_100%)]"></div>
@@ -31,6 +37,9 @@
                         'Firma' => $customer->company_name ?: 'Belirtilmedi',
                         'E-posta' => $customer->email,
                         'Telefon' => $customer->phone ?: 'Belirtilmedi',
+                        'TC Kimlik No' => $maskedIdentityNumber,
+                        'Son giriş tarihi' => $customer->last_login_at?->format('d.m.Y H:i') ?: 'Henuz yok',
+                        'Kayıt tarihi' => $customer->created_at?->format('d.m.Y H:i') ?: 'Belirtilmedi',
                     ] as $label => $value)
                         <div class="rounded-2xl border border-slate-100 bg-slate-50 p-4">
                             <p class="text-xs font-black uppercase tracking-widest text-blue-600">{{ $label }}</p>

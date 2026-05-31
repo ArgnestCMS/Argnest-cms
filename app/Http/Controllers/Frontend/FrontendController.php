@@ -252,6 +252,7 @@ class FrontendController extends Controller
             [
                 'name' => ['required', 'string', 'max:255'],
                 'company_name' => ['nullable', 'string', 'max:255'],
+                'identity_number' => ['required', 'digits:11'],
                 'email' => ['required', 'email', 'max:255', 'unique:users,email'],
                 'phone' => ['nullable', 'string', 'max:255'],
                 'password' => ['required', 'string', 'min:8', 'confirmed'],
@@ -272,9 +273,13 @@ class FrontendController extends Controller
         $user = User::query()->create([
             'name' => $validated['name'],
             'company_name' => $validated['company_name'] ?? null,
-            'email' => $validated['email'],
-            'phone' => $validated['phone'] ?? null,
-            'password' => $validated['password'],
+                'email' => $validated['email'],
+                'phone' => $validated['phone'] ?? null,
+                'identity_number' => $validated['identity_number'],
+                'registration_ip' => $request->ip(),
+                'last_login_at' => now(),
+                'last_login_ip' => $request->ip(),
+                'password' => $validated['password'],
             'role' => User::ROLE_CUSTOMER,
             'is_active' => true,
         ]);
@@ -316,6 +321,11 @@ class FrontendController extends Controller
                 'email' => 'Bu giriş alanı yalnızca müşteri hesapları içindir.',
             ]);
         }
+
+        $request->user()->forceFill([
+            'last_login_at' => now(),
+            'last_login_ip' => $request->ip(),
+        ])->save();
 
         return redirect()->intended(route('frontend.customer.dashboard'));
     }

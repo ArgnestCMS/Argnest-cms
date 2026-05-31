@@ -44,6 +44,11 @@
                         <input name="phone" value="{{ old('phone') }}" class="w-full rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-sm text-white outline-none ring-blue-300/20 transition focus:border-blue-200 focus:ring-4">
                         @error('phone')<span class="mt-2 block text-xs font-bold text-red-200">{{ $message }}</span>@enderror
                     </label>
+                    <label class="block md:col-span-2">
+                        <span class="mb-2 block text-sm font-bold text-slate-200">TC Kimlik No</span>
+                        <input name="identity_number" inputmode="numeric" maxlength="11" value="{{ old('identity_number') }}" class="w-full rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-sm text-white outline-none ring-blue-300/20 transition focus:border-blue-200 focus:ring-4">
+                        @error('identity_number')<span class="mt-2 block text-xs font-bold text-red-200">{{ $message }}</span>@enderror
+                    </label>
                     <label class="block">
                         <span class="mb-2 block text-sm font-bold text-slate-200">Sifre</span>
                         <input name="password" type="password" class="w-full rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-sm text-white outline-none ring-blue-300/20 transition focus:border-blue-200 focus:ring-4">
