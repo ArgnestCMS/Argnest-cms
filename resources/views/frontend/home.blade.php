@@ -458,6 +458,36 @@
         </div>
     </section>
 
+    @if ($customerReviews->isNotEmpty())
+        <section id="musteri-yorumlari" class="bg-white py-20">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="mb-12 flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
+                    <div class="max-w-3xl">
+                        <p class="text-sm font-black uppercase tracking-widest text-blue-600">Musteri Yorumlari</p>
+                        <h2 class="mt-3 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">Argnest deneyimini musterilerimiz anlatiyor</h2>
+                    </div>
+                    <p class="max-w-xl text-sm leading-6 text-slate-600">Onayli musteri yorumlari, gizlilik tercihleri korunarak yayinlanir.</p>
+                </div>
+                <div class="grid gap-5 md:grid-cols-3">
+                    @foreach ($customerReviews as $review)
+                        <article class="rounded-3xl border border-slate-200 bg-slate-50 p-6 shadow-sm">
+                            <div class="flex items-center justify-between gap-4">
+                                <p class="text-sm font-black text-slate-950">{{ $review->publicName() }}</p>
+                                @if ($review->rating)
+                                    <p class="text-sm font-black text-amber-500">{{ str_repeat('*', $review->rating) }}</p>
+                                @endif
+                            </div>
+                            @if ($review->title)
+                                <h3 class="mt-5 text-xl font-black tracking-tight text-slate-950">{{ $review->title }}</h3>
+                            @endif
+                            <p class="mt-4 text-sm leading-7 text-slate-600">{{ \Illuminate\Support\Str::limit($review->comment, 240) }}</p>
+                        </article>
+                    @endforeach
+                </div>
+            </div>
+        </section>
+    @endif
+
     @if ($portfolios->isNotEmpty())
         <section id="referanslar" class="overflow-hidden bg-slate-950 py-20 text-white">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

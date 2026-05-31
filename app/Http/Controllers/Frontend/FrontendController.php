@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Frontend;
 use App\Http\Controllers\Controller;
 use App\Models\BlogPost;
 use App\Models\HeroButton;
+use App\Models\CustomerReview;
 use App\Models\Lead;
 use App\Models\Portfolio;
 use App\Models\Product;
@@ -56,6 +57,13 @@ class FrontendController extends Controller
                 ->take(4)
                 ->get(),
             'portfolios' => $portfolios,
+            'customerReviews' => CustomerReview::query()
+                ->with('customer')
+                ->approved()
+                ->latest('approved_at')
+                ->latest()
+                ->take(3)
+                ->get(),
             'blogPosts' => BlogPost::query()
                 ->with('category')
                 ->where('is_active', true)
@@ -377,6 +385,51 @@ class FrontendController extends Controller
                 ->orderBy('expiry_date')
                 ->get(),
         ]);
+    }
+
+    public function customerReviews(Request $request): View
+    {
+        return view('frontend.customer.reviews.index', [
+            'settings' => SiteSetting::query()->first(),
+            'customer' => $request->user(),
+            'reviews' => $request->user()
+                ->customerReviews()
+                ->latest()
+                ->paginate(10),
+            'statusOptions' => CustomerReview::statusOptions(),
+        ]);
+    }
+
+    public function customerReviewCreate(Request $request): View
+    {
+        return view('frontend.customer.reviews.create', [
+            'settings' => SiteSetting::query()->first(),
+            'customer' => $request->user(),
+        ]);
+    }
+
+    public function storeCustomerReview(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'rating' => ['nullable', 'integer', 'min:1', 'max:5'],
+            'title' => ['nullable', 'string', 'max:255'],
+            'comment' => ['required', 'string', 'min:10'],
+            'hide_name' => ['nullable', 'boolean'],
+            'hide_contact' => ['nullable', 'boolean'],
+        ]);
+
+        $request->user()->customerReviews()->create([
+            'rating' => $validated['rating'] ?? null,
+            'title' => $validated['title'] ?? null,
+            'comment' => $validated['comment'],
+            'hide_name' => $request->boolean('hide_name'),
+            'hide_contact' => $request->boolean('hide_contact', true),
+            'status' => CustomerReview::STATUS_PENDING,
+        ]);
+
+        return redirect()
+            ->route('frontend.customer.reviews.index')
+            ->with('success', 'Yorumunuz alindi. Admin onayindan sonra sitede yayinlanabilir.');
     }
 
     public function customerSupportTickets(Request $request): View

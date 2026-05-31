@@ -21,6 +21,9 @@ Route::middleware('guest')->group(function (): void {
 Route::middleware(['auth', 'customer'])->group(function (): void {
     Route::get('/musteri/panel', [FrontendController::class, 'customerDashboard'])->name('frontend.customer.dashboard');
     Route::get('/musteri/hizmetlerim', [FrontendController::class, 'customerServices'])->name('frontend.customer.services');
+    Route::get('/musteri/yorumlarim', [FrontendController::class, 'customerReviews'])->name('frontend.customer.reviews.index');
+    Route::get('/musteri/yorumlarim/yeni', [FrontendController::class, 'customerReviewCreate'])->name('frontend.customer.reviews.create');
+    Route::post('/musteri/yorumlarim/yeni', [FrontendController::class, 'storeCustomerReview'])->name('frontend.customer.reviews.store');
     Route::get('/musteri/destek', [FrontendController::class, 'customerSupportTickets'])->name('frontend.customer.support.index');
     Route::get('/musteri/destek/yeni', [FrontendController::class, 'customerSupportCreate'])->name('frontend.customer.support.create');
     Route::post('/musteri/destek/yeni', [FrontendController::class, 'storeCustomerSupportTicket'])->name('frontend.customer.support.store');
