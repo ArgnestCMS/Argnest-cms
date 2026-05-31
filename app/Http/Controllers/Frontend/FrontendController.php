@@ -184,6 +184,27 @@ class FrontendController extends Controller
         ]);
     }
 
+    public function kvkk(): View
+    {
+        return view('frontend.kvkk', [
+            'settings' => SiteSetting::query()->first(),
+        ]);
+    }
+
+    public function privacyPolicy(): View
+    {
+        return view('frontend.privacy-policy', [
+            'settings' => SiteSetting::query()->first(),
+        ]);
+    }
+
+    public function cookiePolicy(): View
+    {
+        return view('frontend.cookie-policy', [
+            'settings' => SiteSetting::query()->first(),
+        ]);
+    }
+
     public function storeLead(Request $request): RedirectResponse
     {
         $validated = $request->validate(

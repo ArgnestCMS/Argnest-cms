@@ -87,9 +87,11 @@
                 <h2 class="text-sm font-bold text-white">Kurumsal</h2>
                 <div class="mt-4 grid gap-3 text-sm text-slate-300">
                     <a href="{{ route('home') }}#neden" class="hover:text-blue-300">Neden Argnest</a>
-                    <a href="{{ route('home') }}#guvenlik" class="hover:text-blue-300">Güvenlik ve KVKK</a>
+                    <a href="{{ route('frontend.legal.kvkk') }}" class="hover:text-blue-300">Guvenlik ve KVKK</a>
                     <a href="{{ route('home') }}#referanslar" class="hover:text-blue-300">Referanslar</a>
                     <a href="{{ route('frontend.blog.index') }}" class="hover:text-blue-300">Blog</a>
+                    <a href="{{ route('frontend.legal.privacy') }}" class="hover:text-blue-300">Gizlilik Politikasi</a>
+                    <a href="{{ route('frontend.legal.cookies') }}" class="hover:text-blue-300">Cerez Politikasi</a>
                 </div>
             </div>
 
