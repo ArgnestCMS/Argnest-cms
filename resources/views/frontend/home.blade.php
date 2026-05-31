@@ -46,6 +46,38 @@
     ];
 @endphp
 
+@push('head')
+    <script type="application/ld+json">
+        {!! json_encode([
+            ('@' . 'context') => 'https://schema.org',
+            ('@' . 'type') => 'Organization',
+            'name' => $settings?->site_name ?: 'Argnest',
+            'url' => route('home'),
+            'logo' => $settings?->logo ? asset('storage/' . $settings->logo) : asset('favicon.ico'),
+            'description' => $settings?->site_description ?: $settings?->seo_description ?: 'Argnest modern dijital cozumler gelistiren teknoloji sirketidir.',
+            'email' => $settings?->email,
+            'telephone' => $settings?->phone,
+            'address' => $settings?->address,
+            'sameAs' => array_values(array_filter([
+                $settings?->facebook_url,
+                $settings?->instagram_url,
+                $settings?->linkedin_url,
+                $settings?->youtube_url,
+                $settings?->x_url,
+            ])),
+        ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
+    </script>
+    <script type="application/ld+json">
+        {!! json_encode([
+            ('@' . 'context') => 'https://schema.org',
+            ('@' . 'type') => 'WebSite',
+            'name' => $settings?->site_name ?: 'Argnest',
+            'url' => route('home'),
+            'description' => $settings?->seo_description ?: 'Argnest kurumsal web sitesi, ozel yazilim, CRM, SEO ve hosting cozumleri sunar.',
+        ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
+    </script>
+@endpush
+
 @section('content')
     <section
         class="relative overflow-hidden border-b border-slate-900/10 bg-slate-950 bg-cover bg-center"

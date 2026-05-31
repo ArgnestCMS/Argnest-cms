@@ -2,7 +2,38 @@
     $siteName = $settings?->site_name ?? 'Argnest';
     $seoTitle = $settings?->seo_title ?: $siteName . ' | Modern Dijital Çözümler';
     $seoDescription = $settings?->seo_description ?: 'Argnest; kurumsal web siteleri, özel yazılım çözümleri, müşteri takip sistemleri, hosting ve dijital büyüme hizmetleri geliştirir.';
+    $seoKeywords = $settings?->seo_keywords ?: 'Argnest, kurumsal web sitesi, ozel yazilim, Laravel, Filament, CRM, SEO, hosting';
     $whatsappNumber = preg_replace('/\D+/', '', $settings?->whatsapp ?: $settings?->phone ?: '');
+    $metaTitle = trim($__env->yieldContent('title', $seoTitle));
+    $metaDescription = trim($__env->yieldContent('description', $seoDescription));
+    $metaKeywords = trim($__env->yieldContent('keywords', $seoKeywords));
+    $canonicalUrl = trim($__env->yieldContent('canonical', url()->current()));
+    $ogType = trim($__env->yieldContent('og_type', 'website'));
+    $fallbackImage = $settings?->logo
+        ? asset('storage/' . $settings->logo)
+        : ($settings?->favicon ? asset('storage/' . $settings->favicon) : asset('favicon.ico'));
+    $metaImage = trim($__env->yieldContent('image', $fallbackImage));
+    $faviconUrl = $settings?->favicon ? asset('storage/' . $settings->favicon) : asset('favicon.ico');
+    $segments = request()->segments();
+    $breadcrumbItems = [
+        [
+            ('@' . 'type') => 'ListItem',
+            'position' => 1,
+            'name' => 'Ana Sayfa',
+            'item' => route('home'),
+        ],
+    ];
+    $path = '';
+
+    foreach ($segments as $index => $segment) {
+        $path .= '/' . $segment;
+        $breadcrumbItems[] = [
+            ('@' . 'type') => 'ListItem',
+            'position' => $index + 2,
+            'name' => \Illuminate\Support\Str::headline(str_replace('-', ' ', $segment)),
+            'item' => url($path),
+        ];
+    }
 @endphp
 
 <!DOCTYPE html>
@@ -10,14 +41,33 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', $seoTitle)</title>
-    <meta name="description" content="@yield('description', $seoDescription)">
+    <title>{{ $metaTitle }}</title>
+    <meta name="description" content="{{ $metaDescription }}">
+    <meta name="keywords" content="{{ $metaKeywords }}">
+    <link rel="canonical" href="{{ $canonicalUrl }}">
+    <meta property="og:title" content="{{ $metaTitle }}">
+    <meta property="og:description" content="{{ $metaDescription }}">
+    <meta property="og:type" content="{{ $ogType }}">
+    <meta property="og:url" content="{{ $canonicalUrl }}">
+    <meta property="og:image" content="{{ $metaImage }}">
+    <meta property="og:site_name" content="{{ $siteName }}">
+    <meta property="og:locale" content="tr_TR">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ $metaTitle }}">
+    <meta name="twitter:description" content="{{ $metaDescription }}">
+    <meta name="twitter:image" content="{{ $metaImage }}">
 
-    @if ($settings?->favicon)
-        <link rel="icon" href="{{ asset('storage/' . $settings->favicon) }}">
-    @endif
+    <link rel="icon" href="{{ $faviconUrl }}">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <script type="application/ld+json">
+        {!! json_encode([
+            ('@' . 'context') => 'https://schema.org',
+            ('@' . 'type') => 'BreadcrumbList',
+            'itemListElement' => $breadcrumbItems,
+        ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
+    </script>
+    @stack('head')
 </head>
 <body class="bg-white text-slate-950 antialiased">
     <header class="sticky top-0 z-40 border-b border-slate-200/70 bg-white/85 backdrop-blur-xl">

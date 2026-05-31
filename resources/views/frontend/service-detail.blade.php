@@ -23,6 +23,7 @@
 
 @section('title', ($service->seo_title ?: $service->title) . ' | Argnest')
 @section('description', $service->seo_description ?: $service->short_description ?: 'Argnest hizmet detay sayfasi.')
+@section('image', $serviceImageUrl ?: ($settings?->logo ? asset('storage/' . $settings->logo) : asset('favicon.ico')))
 
 @section('content')
     <section class="relative overflow-hidden bg-slate-950 text-white">

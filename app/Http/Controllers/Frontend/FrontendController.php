@@ -205,6 +205,37 @@ class FrontendController extends Controller
         ]);
     }
 
+    public function sitemap()
+    {
+        return response()
+            ->view('frontend.sitemap', [
+                'staticUrls' => [
+                    ['url' => route('home'), 'priority' => '1.0', 'changefreq' => 'weekly'],
+                    ['url' => route('frontend.blog.index'), 'priority' => '0.8', 'changefreq' => 'weekly'],
+                    ['url' => route('frontend.contact'), 'priority' => '0.7', 'changefreq' => 'monthly'],
+                    ['url' => route('frontend.legal.kvkk'), 'priority' => '0.4', 'changefreq' => 'yearly'],
+                    ['url' => route('frontend.legal.privacy'), 'priority' => '0.4', 'changefreq' => 'yearly'],
+                    ['url' => route('frontend.legal.cookies'), 'priority' => '0.4', 'changefreq' => 'yearly'],
+                ],
+                'services' => Service::query()->where('is_active', true)->get(),
+                'products' => Product::query()->where('is_active', true)->get(),
+                'portfolios' => Portfolio::query()->where('is_active', true)->get(),
+                'blogPosts' => BlogPost::query()->where('is_active', true)->get(),
+            ])
+            ->header('Content-Type', 'application/xml');
+    }
+
+    public function robots()
+    {
+        return response(
+            "User-agent: *\n" .
+            "Disallow:\n" .
+            'Sitemap: ' . route('frontend.sitemap') . "\n",
+            200,
+            ['Content-Type' => 'text/plain'],
+        );
+    }
+
     public function storeLead(Request $request): RedirectResponse
     {
         $validated = $request->validate(

@@ -9,6 +9,38 @@
 
 @section('title', ($post->seo_title ?: $post->title) . ' | Argnest Blog')
 @section('description', $post->seo_description ?: $post->excerpt ?: \Illuminate\Support\Str::limit(strip_tags($post->content), 150))
+@section('og_type', 'article')
+@section('image', $imageUrl ?: ($settings?->logo ? asset('storage/' . $settings->logo) : asset('favicon.ico')))
+
+@push('head')
+    <script type="application/ld+json">
+        {!! json_encode([
+            ('@' . 'context') => 'https://schema.org',
+            ('@' . 'type') => 'Article',
+            'headline' => $post->title,
+            'description' => $post->seo_description ?: $post->excerpt ?: \Illuminate\Support\Str::limit(strip_tags($post->content), 150),
+            'image' => $imageUrl ?: ($settings?->logo ? asset('storage/' . $settings->logo) : asset('favicon.ico')),
+            'datePublished' => $post->published_at?->toAtomString(),
+            'dateModified' => $post->updated_at?->toAtomString(),
+            'author' => [
+                ('@' . 'type') => 'Person',
+                'name' => $post->author ?: ($settings?->site_name ?: 'Argnest'),
+            ],
+            'publisher' => [
+                ('@' . 'type') => 'Organization',
+                'name' => $settings?->site_name ?: 'Argnest',
+                'logo' => [
+                    ('@' . 'type') => 'ImageObject',
+                    'url' => $settings?->logo ? asset('storage/' . $settings->logo) : asset('favicon.ico'),
+                ],
+            ],
+            'mainEntityOfPage' => [
+                ('@' . 'type') => 'WebPage',
+                ('@' . 'id') => route('frontend.blog.show', $post),
+            ],
+        ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
+    </script>
+@endpush
 
 @section('content')
     <section class="relative overflow-hidden bg-slate-950 text-white">

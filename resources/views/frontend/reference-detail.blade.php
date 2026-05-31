@@ -23,6 +23,7 @@
 
 @section('title', ($portfolio->seo_title ?: $portfolio->title) . ' | Argnest')
 @section('description', $portfolio->seo_description ?: $portfolio->short_description ?: 'Argnest referans detay sayfasi.')
+@section('image', $coverImageUrl ?: ($settings?->logo ? asset('storage/' . $settings->logo) : asset('favicon.ico')))
 
 @section('content')
     <section class="relative overflow-hidden bg-slate-950 text-white">

@@ -10,6 +10,8 @@ Route::get('/iletisim', [FrontendController::class, 'contact'])->name('frontend.
 Route::get('/kvkk', [FrontendController::class, 'kvkk'])->name('frontend.legal.kvkk');
 Route::get('/gizlilik-politikasi', [FrontendController::class, 'privacyPolicy'])->name('frontend.legal.privacy');
 Route::get('/cerez-politikasi', [FrontendController::class, 'cookiePolicy'])->name('frontend.legal.cookies');
+Route::get('/sitemap.xml', [FrontendController::class, 'sitemap'])->name('frontend.sitemap');
+Route::get('/robots.txt', [FrontendController::class, 'robots'])->name('frontend.robots');
 Route::get('/hizmet/{service:slug}', [FrontendController::class, 'serviceDetail'])->name('frontend.services.show');
 Route::get('/urun/{product:slug}', [FrontendController::class, 'productDetail'])->name('frontend.products.show');
 Route::get('/referans/{portfolio:slug}', [FrontendController::class, 'portfolioDetail'])->name('frontend.references.show');

@@ -40,6 +40,35 @@
 
 @section('title', ($product->seo_title ?: $product->title) . ' | Argnest')
 @section('description', $product->seo_description ?: $product->short_description ?: 'Argnest urun detay sayfasi.')
+@section('og_type', 'product')
+@section('image', $productImageUrl ?: ($settings?->logo ? asset('storage/' . $settings->logo) : asset('favicon.ico')))
+
+@push('head')
+    <script type="application/ld+json">
+        {!! json_encode([
+            ('@' . 'context') => 'https://schema.org',
+            ('@' . 'type') => 'SoftwareApplication',
+            'name' => $product->title,
+            'description' => $product->seo_description ?: $product->short_description ?: 'Argnest urun detay sayfasi.',
+            'image' => $productImageUrl ?: ($settings?->logo ? asset('storage/' . $settings->logo) : asset('favicon.ico')),
+            'url' => route('frontend.products.show', $product),
+            'applicationCategory' => 'BusinessApplication',
+            'operatingSystem' => 'Web',
+            'publisher' => [
+                ('@' . 'type') => 'Organization',
+                'name' => $settings?->site_name ?: 'Argnest',
+                'url' => route('home'),
+            ],
+            'offers' => [
+                ('@' . 'type') => 'Offer',
+                'availability' => 'https://schema.org/InStock',
+                'price' => '0',
+                'priceCurrency' => 'TRY',
+                'url' => route('frontend.contact'),
+            ],
+        ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
+    </script>
+@endpush
 
 @section('content')
     <section class="relative overflow-hidden bg-slate-950 text-white">
