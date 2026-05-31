@@ -443,7 +443,7 @@
                             $portfolioImageUrl = $portfolio->cover_image ? \Illuminate\Support\Facades\Storage::url($portfolio->cover_image) : null;
                             $portfolioBadge = $portfolio->client_name ?: 'Kurumsal Proje';
                         @endphp
-                        <article class="group overflow-hidden rounded-3xl border border-white/10 bg-[linear-gradient(145deg,rgba(15,23,42,0.96),rgba(30,41,59,0.82),rgba(29,78,216,0.18))] shadow-2xl shadow-slate-950/30 transition duration-300 hover:-translate-y-1 hover:border-blue-300/40 hover:shadow-blue-950/40">
+                        <a href="{{ route('frontend.references.show', $portfolio) }}" class="group block overflow-hidden rounded-3xl border border-white/10 bg-[linear-gradient(145deg,rgba(15,23,42,0.96),rgba(30,41,59,0.82),rgba(29,78,216,0.18))] shadow-2xl shadow-slate-950/30 transition duration-300 hover:-translate-y-1 hover:border-blue-300/40 hover:shadow-blue-950/40">
                             <div class="relative overflow-hidden">
                                 @if ($portfolioImageUrl)
                                     <img src="{{ $portfolioImageUrl }}" alt="{{ $portfolio->title }}" class="h-56 w-full object-cover opacity-90 transition duration-500 group-hover:scale-105 group-hover:opacity-100">
@@ -486,7 +486,7 @@
                                     <span class="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-lg font-black text-white transition group-hover:bg-blue-500">-&gt;</span>
                                 </div>
                             </div>
-                        </article>
+                        </a>
                     @endforeach
                 </div>
                 @if (false)

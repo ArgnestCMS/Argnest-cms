@@ -113,6 +113,23 @@ class FrontendController extends Controller
         ]);
     }
 
+    public function portfolioDetail(Portfolio $portfolio): View
+    {
+        abort_unless($portfolio->is_active, 404);
+
+        return view('frontend.reference-detail', [
+            'settings' => SiteSetting::query()->first(),
+            'portfolio' => $portfolio,
+            'relatedPortfolios' => Portfolio::query()
+                ->where('is_active', true)
+                ->whereKeyNot($portfolio->getKey())
+                ->orderByDesc('is_featured')
+                ->orderBy('sort_order')
+                ->take(3)
+                ->get(),
+        ]);
+    }
+
     public function storeLead(Request $request): RedirectResponse
     {
         $validated = $request->validate(
