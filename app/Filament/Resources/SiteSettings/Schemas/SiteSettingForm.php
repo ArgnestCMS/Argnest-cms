@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\SiteSettings\Schemas;
 
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
@@ -128,6 +129,57 @@ class SiteSettingForm
                             ->helperText('Anahtar kelimeleri virgülle ayırabilirsiniz.'),
                     ])
                     ->columns(2)
+                    ->columnSpanFull(),
+                Section::make('Mail Ayarları')
+                    ->schema([
+                        Grid::make(2)
+                            ->schema([
+                                TextInput::make('smtp_host')
+                                    ->label('SMTP Host')
+                                    ->maxLength(255),
+                                TextInput::make('smtp_port')
+                                    ->label('SMTP Port')
+                                    ->numeric()
+                                    ->minValue(1)
+                                    ->maxValue(65535),
+                                TextInput::make('smtp_username')
+                                    ->label('SMTP Kullanici Adi')
+                                    ->maxLength(255),
+                                TextInput::make('smtp_password')
+                                    ->label('SMTP Sifresi')
+                                    ->password()
+                                    ->revealable()
+                                    ->afterStateHydrated(fn ($component) => $component->state(null))
+                                    ->dehydrated(fn (?string $state): bool => filled($state))
+                                    ->helperText('Bos birakilirsa mevcut sifre korunur.'),
+                                Select::make('smtp_encryption')
+                                    ->label('SMTP Sifreleme')
+                                    ->options([
+                                        'tls' => 'TLS',
+                                        'ssl' => 'SSL',
+                                        'none' => 'Yok',
+                                    ])
+                                    ->native(false),
+                                TextInput::make('mail_from_address')
+                                    ->label('Gonderen E-posta')
+                                    ->email()
+                                    ->maxLength(255),
+                                TextInput::make('mail_from_name')
+                                    ->label('Gonderen Adi')
+                                    ->maxLength(255),
+                                TextInput::make('admin_notification_email')
+                                    ->label('Admin Bildirim E-postasi')
+                                    ->helperText('Birden fazla alici icin virgul veya noktalı virgul kullanabilirsiniz.')
+                                    ->maxLength(255),
+                                TextInput::make('support_notification_email')
+                                    ->label('Destek Bildirim E-postasi')
+                                    ->helperText('Destek bildirimlerinde ilk oncelikli alici.')
+                                    ->maxLength(255),
+                                TextInput::make('sales_notification_email')
+                                    ->label('Satis Bildirim E-postasi')
+                                    ->maxLength(255),
+                            ]),
+                    ])
                     ->columnSpanFull(),
                 Section::make('Yasal Metinler')
                     ->schema([

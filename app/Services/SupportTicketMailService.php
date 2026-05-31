@@ -105,6 +105,8 @@ class SupportTicketMailService
     private function send(string $recipient, Mailable $mail, string $event, ?SupportTicket $ticket = null): void
     {
         try {
+            app(MailConfigurationService::class)->apply();
+
             Mail::to($recipient)->send($mail);
         } catch (Throwable $exception) {
             Log::error('Support ticket mail could not be sent.', [
@@ -120,11 +122,26 @@ class SupportTicketMailService
     private function adminRecipients(): array
     {
         $settings = SiteSetting::query()->first();
-        $email = $settings?->admin_email
-            ?: $settings?->contact_email
-            ?: $settings?->email
-            ?: config('mail.from.address');
 
+        foreach ([
+            $settings?->support_notification_email,
+            $settings?->admin_notification_email,
+            $settings?->contact_email,
+            $settings?->email,
+            config('mail.from.address'),
+        ] as $email) {
+            $recipients = $this->parseRecipients($email);
+
+            if ($recipients !== []) {
+                return $recipients;
+            }
+        }
+
+        return [];
+    }
+
+    private function parseRecipients(?string $email): array
+    {
         return collect(preg_split('/[,;]/', (string) $email))
             ->map(fn (string $recipient): string => trim($recipient))
             ->filter(fn (string $recipient): bool => filter_var($recipient, FILTER_VALIDATE_EMAIL) !== false)

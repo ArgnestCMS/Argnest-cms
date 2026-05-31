@@ -33,5 +33,23 @@ class SiteSetting extends Model
         'information_security_policy',
         'footer_text',
         'copyright_text',
+        'smtp_host',
+        'smtp_port',
+        'smtp_username',
+        'smtp_password',
+        'smtp_encryption',
+        'mail_from_address',
+        'mail_from_name',
+        'admin_notification_email',
+        'support_notification_email',
+        'sales_notification_email',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'smtp_port' => 'integer',
+            'smtp_password' => 'encrypted',
+        ];
+    }
 }
