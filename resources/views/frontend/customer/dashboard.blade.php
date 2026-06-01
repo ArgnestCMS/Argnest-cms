@@ -56,6 +56,26 @@
                 <a href="{{ route('frontend.customer.security') }}" class="rounded-2xl px-5 py-3 text-sm font-black text-slate-700 transition hover:bg-blue-50 hover:text-blue-700">Güvenlik Merkezi</a>
             </nav>
 
+            @if (session('success'))
+                <div class="mb-6 rounded-3xl border border-emerald-200 bg-emerald-50 p-5 text-sm font-bold text-emerald-700">{{ session('success') }}</div>
+            @endif
+
+            @if (session('warning'))
+                <div class="mb-6 rounded-3xl border border-amber-200 bg-amber-50 p-5 text-sm font-bold text-amber-800">{{ session('warning') }}</div>
+            @endif
+
+            @if (($settings?->customer_email_verification_enabled ?? false) && $customer->email_verified_at === null)
+                <div class="mb-6 rounded-3xl border border-amber-200 bg-amber-50 p-6 shadow-sm">
+                    <p class="text-sm font-black uppercase tracking-widest text-amber-600">E-posta Dogrulama</p>
+                    <h2 class="mt-2 text-2xl font-black text-amber-950">E-posta adresiniz henuz dogrulanmadi.</h2>
+                    <p class="mt-3 text-sm leading-6 text-amber-800">Hesap guvenliginiz icin gelen kutunuzdaki dogrulama baglantisini kullanin.</p>
+                    <form action="{{ route('frontend.customer.email.resend') }}" method="POST" class="mt-5">
+                        @csrf
+                        <button class="rounded-2xl bg-amber-600 px-5 py-3 text-sm font-black text-white shadow-lg shadow-amber-100 transition hover:-translate-y-0.5 hover:bg-amber-700">Dogrulama maili tekrar gonder</button>
+                    </form>
+                </div>
+            @endif
+
             <div class="mb-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
                 @foreach ($summaryCards as $card)
                     <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">

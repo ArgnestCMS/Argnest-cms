@@ -2,9 +2,13 @@
 
 namespace App\Filament\Resources\Customers\Tables;
 
+use App\Models\User;
+use App\Services\CustomerEmailVerificationService;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Notifications\Notification;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -30,6 +34,12 @@ class CustomersTable
                     ->label('Mail')
                     ->searchable()
                     ->sortable(),
+                TextColumn::make('email_verified_at')
+                    ->label('E-posta Dogrulama')
+                    ->dateTime('d.m.Y H:i')
+                    ->placeholder('Dogrulanmadi')
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('identity_number')
                     ->label('TC Kimlik No')
                     ->searchable()
@@ -62,6 +72,32 @@ class CustomersTable
             ])
             ->defaultSort('created_at', 'desc')
             ->recordActions([
+                Action::make('mark_email_verified')
+                    ->label('E-postayi dogrulandi isaretle')
+                    ->color('success')
+                    ->requiresConfirmation()
+                    ->visible(fn (User $record): bool => $record->email_verified_at === null)
+                    ->action(function (User $record): void {
+                        app(CustomerEmailVerificationService::class)->markVerified($record);
+
+                        Notification::make()
+                            ->title('E-posta dogrulandi olarak isaretlendi.')
+                            ->success()
+                            ->send();
+                    }),
+                Action::make('resend_email_verification')
+                    ->label('Dogrulama mailini tekrar gonder')
+                    ->color('warning')
+                    ->requiresConfirmation()
+                    ->visible(fn (User $record): bool => $record->email_verified_at === null)
+                    ->action(function (User $record): void {
+                        $sent = app(CustomerEmailVerificationService::class)->send($record);
+                        $notification = Notification::make()
+                            ->title($sent ? 'Dogrulama maili gonderildi.' : 'Dogrulama maili gonderilemedi, log kaydi olusturuldu.');
+
+                        $sent ? $notification->success() : $notification->warning();
+                        $notification->send();
+                    }),
                 EditAction::make()
                     ->label('Düzenle'),
             ])

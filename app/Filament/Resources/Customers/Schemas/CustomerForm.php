@@ -75,6 +75,11 @@ class CustomerForm
                                     ->formatStateUsing(fn (?User $record): string => $record?->last_login_at?->format('d.m.Y H:i') ?: 'Henüz yok')
                                     ->disabled()
                                     ->dehydrated(false),
+                                TextInput::make('email_verified_at')
+                                    ->label('E-posta Dogrulama Tarihi')
+                                    ->formatStateUsing(fn (?User $record): string => $record?->email_verified_at?->format('d.m.Y H:i') ?: 'Dogrulanmadi')
+                                    ->disabled()
+                                    ->dehydrated(false),
                                 TextInput::make('last_login_ip')
                                     ->label('Son Giriş IP')
                                     ->disabled()

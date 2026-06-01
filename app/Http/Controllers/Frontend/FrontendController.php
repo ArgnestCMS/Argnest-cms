@@ -21,6 +21,7 @@ use App\Models\SupportMessage;
 use App\Models\SupportTicket;
 use App\Models\User;
 use App\Services\CustomerActivityLogger;
+use App\Services\CustomerEmailVerificationService;
 use App\Services\SupportTicketMailService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -312,16 +313,20 @@ class FrontendController extends Controller
             ],
         );
 
+        $settings = SiteSetting::query()->first();
+        $emailVerificationEnabled = (bool) $settings?->customer_email_verification_enabled;
+
         $user = User::query()->create([
             'name' => $validated['name'],
             'company_name' => $validated['company_name'] ?? null,
-                'email' => $validated['email'],
-                'phone' => $validated['phone'] ?? null,
-                'identity_number' => $validated['identity_number'],
-                'registration_ip' => $request->ip(),
-                'last_login_at' => now(),
-                'last_login_ip' => $request->ip(),
-                'password' => $validated['password'],
+            'email' => $validated['email'],
+            'phone' => $validated['phone'] ?? null,
+            'identity_number' => $validated['identity_number'],
+            'registration_ip' => $request->ip(),
+            'email_verified_at' => $emailVerificationEnabled ? null : now(),
+            'last_login_at' => now(),
+            'last_login_ip' => $request->ip(),
+            'password' => $validated['password'],
             'role' => User::ROLE_CUSTOMER,
             'is_active' => true,
         ]);
@@ -335,6 +340,14 @@ class FrontendController extends Controller
             'Musteri hesabi olusturuldu.',
             $request,
         );
+
+        if ($emailVerificationEnabled) {
+            app(CustomerEmailVerificationService::class)->send($user, $request);
+
+            return redirect()
+                ->route('frontend.customer.dashboard')
+                ->with('warning', 'E-posta adresinizi dogrulayin. Dogrulama baglantisini gelen kutunuza gonderdik.');
+        }
 
         return redirect()->route('frontend.customer.dashboard');
     }
@@ -448,6 +461,39 @@ class FrontendController extends Controller
         ]);
     }
 
+    public function verifyCustomerEmail(Request $request, int $id, string $hash): RedirectResponse
+    {
+        $customer = User::query()
+            ->where('role', User::ROLE_CUSTOMER)
+            ->findOrFail($id);
+
+        abort_unless(hash_equals(sha1($customer->email), $hash), 403);
+
+        app(CustomerEmailVerificationService::class)->markVerified($customer, $request);
+
+        if (! $request->user()?->is($customer)) {
+            Auth::login($customer);
+            $request->session()->regenerate();
+        }
+
+        return redirect()
+            ->route('frontend.customer.dashboard')
+            ->with('success', 'E-posta adresiniz dogrulandi.');
+    }
+
+    public function resendCustomerEmailVerification(Request $request): RedirectResponse
+    {
+        $customer = $request->user();
+
+        if ($customer->email_verified_at !== null) {
+            return back()->with('success', 'E-posta adresiniz zaten dogrulanmis.');
+        }
+
+        app(CustomerEmailVerificationService::class)->send($customer, $request);
+
+        return back()->with('success', 'Dogrulama maili tekrar gonderildi.');
+    }
+
     public function customerProfile(Request $request): View
     {
         return view('frontend.customer.profile', [
@@ -471,6 +517,13 @@ class FrontendController extends Controller
             ],
         ]);
 
+        $emailChanged = $customer->email !== $validated['email'];
+        $emailVerificationEnabled = (bool) SiteSetting::query()->value('customer_email_verification_enabled');
+
+        if ($emailChanged && $emailVerificationEnabled) {
+            $validated['email_verified_at'] = null;
+        }
+
         $customer->forceFill($validated)->save();
 
         app(CustomerActivityLogger::class)->log(
@@ -488,6 +541,12 @@ class FrontendController extends Controller
                 'type' => 'profile',
                 'link' => route('frontend.customer.profile'),
             ]);
+        }
+
+        if ($emailChanged && $emailVerificationEnabled) {
+            app(CustomerEmailVerificationService::class)->send($customer, $request);
+
+            return back()->with('warning', 'Profil bilgileriniz guncellendi. Yeni e-posta adresinizi dogrulayin.');
         }
 
         return back()->with('success', 'Profil bilgileriniz guncellendi.');

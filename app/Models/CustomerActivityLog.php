@@ -41,6 +41,10 @@ class CustomerActivityLog extends Model
 
     public const ACTION_FILE_DOWNLOADED = 'file_downloaded';
 
+    public const ACTION_EMAIL_VERIFICATION_SENT = 'email_verification_sent';
+
+    public const ACTION_EMAIL_VERIFIED = 'email_verified';
+
     protected $fillable = [
         'user_id',
         'action',
@@ -76,6 +80,8 @@ class CustomerActivityLog extends Model
             self::ACTION_ADDRESS_UPDATED => 'Adres guncelledi',
             self::ACTION_FILE_VIEWED => 'Dosya goruntulendi',
             self::ACTION_FILE_DOWNLOADED => 'Dosya indirildi',
+            self::ACTION_EMAIL_VERIFICATION_SENT => 'E-posta dogrulama maili gonderildi',
+            self::ACTION_EMAIL_VERIFIED => 'E-posta adresi dogrulandi',
         ];
     }
 

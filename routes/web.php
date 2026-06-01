@@ -13,6 +13,9 @@ Route::get('/gizlilik-politikasi', [FrontendController::class, 'privacyPolicy'])
 Route::get('/cerez-politikasi', [FrontendController::class, 'cookiePolicy'])->name('frontend.legal.cookies');
 Route::get('/sitemap.xml', [FrontendController::class, 'sitemap'])->name('frontend.sitemap');
 Route::get('/robots.txt', [FrontendController::class, 'robots'])->name('frontend.robots');
+Route::get('/musteri/email-dogrula/{id}/{hash}', [FrontendController::class, 'verifyCustomerEmail'])
+    ->middleware('signed')
+    ->name('frontend.customer.email.verify');
 Route::middleware('guest')->group(function (): void {
     Route::get('/musteri/kayit', [FrontendController::class, 'customerRegister'])->name('frontend.customer.register');
     Route::post('/musteri/kayit', [FrontendController::class, 'storeCustomerRegister'])->name('frontend.customer.register.store');
@@ -21,6 +24,7 @@ Route::middleware('guest')->group(function (): void {
 });
 Route::middleware(['auth', 'customer'])->group(function (): void {
     Route::get('/musteri/panel', [FrontendController::class, 'customerDashboard'])->name('frontend.customer.dashboard');
+    Route::post('/musteri/email-dogrulama-tekrar-gonder', [FrontendController::class, 'resendCustomerEmailVerification'])->name('frontend.customer.email.resend');
     Route::get('/musteri/profil', [FrontendController::class, 'customerProfile'])->name('frontend.customer.profile');
     Route::post('/musteri/profil', [FrontendController::class, 'customerProfileUpdate'])->name('frontend.customer.profile.update');
     Route::get('/musteri/sifre-degistir', [FrontendController::class, 'customerPassword'])->name('frontend.customer.password');

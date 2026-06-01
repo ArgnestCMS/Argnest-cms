@@ -6,6 +6,7 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -179,6 +180,14 @@ class SiteSettingForm
                                     ->label('Satis Bildirim E-postasi')
                                     ->maxLength(255),
                             ]),
+                    ])
+                    ->columnSpanFull(),
+                Section::make('Musteri Ayarlari')
+                    ->schema([
+                        Toggle::make('customer_email_verification_enabled')
+                            ->label('Musteri E-posta Dogrulama Aktif')
+                            ->default(false)
+                            ->inline(false),
                     ])
                     ->columnSpanFull(),
                 Section::make('Yasal Metinler')

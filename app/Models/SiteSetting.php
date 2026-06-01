@@ -43,6 +43,7 @@ class SiteSetting extends Model
         'admin_notification_email',
         'support_notification_email',
         'sales_notification_email',
+        'customer_email_verification_enabled',
     ];
 
     protected function casts(): array
@@ -50,6 +51,7 @@ class SiteSetting extends Model
         return [
             'smtp_port' => 'integer',
             'smtp_password' => 'encrypted',
+            'customer_email_verification_enabled' => 'boolean',
         ];
     }
 }
