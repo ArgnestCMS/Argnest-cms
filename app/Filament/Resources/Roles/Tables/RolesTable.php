@@ -36,7 +36,7 @@ class RolesTable
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->label('Olusturulma Tarihi')
-                    ->dateTime('d.m.Y H:i')
+                    ->dateTime('d.m.Y H:i', timezone: 'Europe/Istanbul')
                     ->sortable(),
             ])
             ->defaultSort('created_at', 'desc')

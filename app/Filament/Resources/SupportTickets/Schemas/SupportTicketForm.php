@@ -78,7 +78,7 @@ class SupportTicketForm
                                 return new HtmlString($messages
                                     ->map(function ($message): string {
                                         $sender = $message->is_admin ? 'Admin' : e($message->user?->name ?: 'Musteri');
-                                        $date = e($message->created_at?->format('d.m.Y H:i') ?: '');
+                                        $date = e($message->created_at?->timezone('Europe/Istanbul')->format('d.m.Y H:i') ?: '');
                                         $body = nl2br(e($message->message));
                                         $attachments = $message->attachments->isEmpty()
                                             ? ''

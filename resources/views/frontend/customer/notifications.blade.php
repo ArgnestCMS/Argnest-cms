@@ -48,9 +48,9 @@
                             </div>
                             <p class="mt-3 text-sm leading-7 text-slate-600">{{ $notification->message }}</p>
                             <p class="mt-3 text-xs font-bold text-slate-400">
-                                {{ $notification->created_at?->format('d.m.Y H:i') }}
+                                {{ $notification->created_at?->timezone('Europe/Istanbul')->format('d.m.Y H:i') }}
                                 @if ($notification->read_at)
-                                    / Okunma: {{ $notification->read_at->format('d.m.Y H:i') }}
+                                    / Okunma: {{ $notification->read_at->timezone('Europe/Istanbul')->format('d.m.Y H:i') }}
                                 @endif
                             </p>
                         </div>

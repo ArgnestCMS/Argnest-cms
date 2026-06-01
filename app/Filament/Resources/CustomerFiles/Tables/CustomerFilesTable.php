@@ -47,7 +47,7 @@ class CustomerFilesTable
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->label('Yuklenme Tarihi')
-                    ->dateTime('d.m.Y H:i')
+                    ->dateTime('d.m.Y H:i', timezone: 'Europe/Istanbul')
                     ->sortable(),
             ])
             ->filters([

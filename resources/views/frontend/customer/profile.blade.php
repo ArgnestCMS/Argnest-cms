@@ -98,8 +98,8 @@
                     <div class="mt-6 grid gap-4">
                         @foreach ([
                             'TC Kimlik No' => $maskedIdentityNumber,
-                            'Kayit tarihi' => $customer->created_at?->format('d.m.Y H:i') ?: 'Belirtilmedi',
-                            'Son giris tarihi' => $customer->last_login_at?->format('d.m.Y H:i') ?: 'Henuz yok',
+                            'Kayit tarihi' => $customer->created_at?->timezone('Europe/Istanbul')->format('d.m.Y H:i') ?: 'Belirtilmedi',
+                            'Son giris tarihi' => $customer->last_login_at?->timezone('Europe/Istanbul')->format('d.m.Y H:i') ?: 'Henuz yok',
                             'Son giris IP' => $customer->last_login_ip ?: 'Belirtilmedi',
                             'Kayit IP' => $customer->registration_ip ?: 'Belirtilmedi',
                         ] as $label => $value)

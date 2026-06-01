@@ -38,7 +38,7 @@
                                 <p class="mt-3 text-sm font-bold text-slate-500">IP: {{ $log->ip_address ?: 'Kayit yok' }}</p>
                             </div>
                             <div class="rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3 text-sm font-bold text-slate-600">
-                                {{ $log->created_at?->format('d.m.Y H:i') ?: 'Tarih yok' }}
+                                {{ $log->created_at?->timezone('Europe/Istanbul')->format('d.m.Y H:i') ?: 'Tarih yok' }}
                             </div>
                         </div>
                         @if ($log->user_agent)

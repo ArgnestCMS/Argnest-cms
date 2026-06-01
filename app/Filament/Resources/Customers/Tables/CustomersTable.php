@@ -36,7 +36,7 @@ class CustomersTable
                     ->sortable(),
                 TextColumn::make('email_verified_at')
                     ->label('E-posta Dogrulama')
-                    ->dateTime('d.m.Y H:i')
+                    ->dateTime('d.m.Y H:i', timezone: 'Europe/Istanbul')
                     ->placeholder('Dogrulanmadi')
                     ->sortable()
                     ->toggleable(),
@@ -50,7 +50,7 @@ class CustomersTable
                     ->toggleable(),
                 TextColumn::make('last_login_at')
                     ->label('Son Giriş')
-                    ->dateTime('d.m.Y H:i')
+                    ->dateTime('d.m.Y H:i', timezone: 'Europe/Istanbul')
                     ->sortable()
                     ->toggleable(),
                 TextColumn::make('last_login_ip')
@@ -67,7 +67,7 @@ class CustomersTable
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->label('Kayıt Tarihi')
-                    ->dateTime('d.m.Y H:i')
+                    ->dateTime('d.m.Y H:i', timezone: 'Europe/Istanbul')
                     ->sortable(),
             ])
             ->defaultSort('created_at', 'desc')

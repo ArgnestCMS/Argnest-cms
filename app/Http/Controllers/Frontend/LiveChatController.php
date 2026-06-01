@@ -158,7 +158,7 @@ class LiveChatController extends Controller
                     default => $session->visitor_name ?: 'Ziyaretci',
                 },
                 'message' => $message->message,
-                'created_at' => $message->created_at?->format('d.m.Y H:i'),
+                'created_at' => $message->created_at?->timezone('Europe/Istanbul')->format('d.m.Y H:i'),
             ])
             ->all();
     }

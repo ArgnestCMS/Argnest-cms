@@ -72,12 +72,12 @@ class CustomerForm
                                     ->dehydrated(false),
                                 TextInput::make('last_login_at')
                                     ->label('Son Giriş Tarihi')
-                                    ->formatStateUsing(fn (?User $record): string => $record?->last_login_at?->format('d.m.Y H:i') ?: 'Henüz yok')
+                                    ->formatStateUsing(fn (?User $record): string => $record?->last_login_at?->timezone('Europe/Istanbul')->format('d.m.Y H:i') ?: 'Henüz yok')
                                     ->disabled()
                                     ->dehydrated(false),
                                 TextInput::make('email_verified_at')
                                     ->label('E-posta Dogrulama Tarihi')
-                                    ->formatStateUsing(fn (?User $record): string => $record?->email_verified_at?->format('d.m.Y H:i') ?: 'Dogrulanmadi')
+                                    ->formatStateUsing(fn (?User $record): string => $record?->email_verified_at?->timezone('Europe/Istanbul')->format('d.m.Y H:i') ?: 'Dogrulanmadi')
                                     ->disabled()
                                     ->dehydrated(false),
                                 TextInput::make('last_login_ip')
@@ -86,7 +86,7 @@ class CustomerForm
                                     ->dehydrated(false),
                                 TextInput::make('created_at')
                                     ->label('Kayıt Tarihi')
-                                    ->formatStateUsing(fn (?User $record): string => $record?->created_at?->format('d.m.Y H:i') ?: 'Henüz yok')
+                                    ->formatStateUsing(fn (?User $record): string => $record?->created_at?->timezone('Europe/Istanbul')->format('d.m.Y H:i') ?: 'Henüz yok')
                                     ->disabled()
                                     ->dehydrated(false),
                             ]),
@@ -103,7 +103,7 @@ class CustomerForm
                                 Placeholder::make('last_login_summary')
                                     ->label('Son Giriş Bilgisi')
                                     ->content(fn (?User $record): string => $record?->last_login_at
-                                        ? $record->last_login_at->format('d.m.Y H:i') . ' / ' . ($record->last_login_ip ?: 'IP yok')
+                                        ? $record->last_login_at->timezone('Europe/Istanbul')->format('d.m.Y H:i') . ' / ' . ($record->last_login_ip ?: 'IP yok')
                                         : 'Henüz giriş kaydı yok.'),
                                 Placeholder::make('registration_ip_summary')
                                     ->label('Kayıt IP Bilgisi')
@@ -166,7 +166,7 @@ class CustomerForm
                                 return new HtmlString($logs
                                     ->map(function ($log): string {
                                         $action = \App\Models\CustomerActivityLog::actionOptions()[$log->action] ?? $log->action;
-                                        $date = $log->created_at?->format('d.m.Y H:i') ?: 'Tarih yok';
+                                        $date = $log->created_at?->timezone('Europe/Istanbul')->format('d.m.Y H:i') ?: 'Tarih yok';
 
                                         return '<div style="margin-bottom:8px;"><strong>' . e($date) . ' - ' . e($action) . '</strong><br><span>' . e($log->description ?: '-') . '</span><br><small>IP: ' . e($log->ip_address ?: '-') . '</small></div>';
                                     })

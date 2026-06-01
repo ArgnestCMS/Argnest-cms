@@ -460,7 +460,7 @@ class FrontendController extends Controller
             'closedSupportTickets' => (clone $supportTicketsQuery)
                 ->where('status', SupportTicket::STATUS_CLOSED)
                 ->count(),
-            'lastSupportTicketDate' => $lastSupportTicket?->created_at?->format('d.m.Y H:i') ?: 'Henuz yok',
+            'lastSupportTicketDate' => $lastSupportTicket?->created_at?->timezone('Europe/Istanbul')->format('d.m.Y H:i') ?: 'Henuz yok',
         ]);
     }
 

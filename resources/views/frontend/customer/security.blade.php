@@ -30,9 +30,9 @@
 
             <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
                 @foreach ([
-                    'Son giriş tarihi' => $customer->last_login_at?->format('d.m.Y H:i') ?: 'Henuz yok',
+                    'Son giriş tarihi' => $customer->last_login_at?->timezone('Europe/Istanbul')->format('d.m.Y H:i') ?: 'Henuz yok',
                     'Son giriş IP' => $customer->last_login_ip ?: 'Belirtilmedi',
-                    'Kayıt tarihi' => $customer->created_at?->format('d.m.Y H:i') ?: 'Belirtilmedi',
+                    'Kayıt tarihi' => $customer->created_at?->timezone('Europe/Istanbul')->format('d.m.Y H:i') ?: 'Belirtilmedi',
                     'Kayıt IP' => $customer->registration_ip ?: 'Belirtilmedi',
                 ] as $label => $value)
                     <article class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -59,7 +59,7 @@
                                     <p class="mt-1 text-sm leading-6 text-slate-600">{{ $log->description ?: 'Aciklama yok.' }}</p>
                                 </div>
                                 <div class="text-left sm:text-right">
-                                    <p class="text-xs font-bold text-slate-500">{{ $log->created_at?->format('d.m.Y H:i') }}</p>
+                                    <p class="text-xs font-bold text-slate-500">{{ $log->created_at?->timezone('Europe/Istanbul')->format('d.m.Y H:i') }}</p>
                                     <p class="mt-1 text-xs font-bold text-slate-400">IP: {{ $log->ip_address ?: 'Belirtilmedi' }}</p>
                                 </div>
                             </div>

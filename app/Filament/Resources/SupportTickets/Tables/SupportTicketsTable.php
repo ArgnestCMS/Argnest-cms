@@ -43,7 +43,7 @@ class SupportTicketsTable
                 TextColumn::make('latest_message_at')
                     ->label('Son mesaj tarihi')
                     ->getStateUsing(fn (SupportTicket $record) => $record->messages()->latest('created_at')->value('created_at') ?: $record->updated_at)
-                    ->dateTime('d.m.Y H:i')
+                    ->dateTime('d.m.Y H:i', timezone: 'Europe/Istanbul')
                     ->sortable(query: fn ($query, string $direction) => $query->orderBy('updated_at', $direction)),
             ])
             ->filters([

@@ -45,11 +45,11 @@ class LiveChatSessionsTable
                     ->sortable(),
                 TextColumn::make('updated_at')
                     ->label('Son Hareket')
-                    ->dateTime('d.m.Y H:i')
+                    ->dateTime('d.m.Y H:i', timezone: 'Europe/Istanbul')
                     ->sortable(),
                 TextColumn::make('closed_at')
                     ->label('Kapanis')
-                    ->dateTime('d.m.Y H:i')
+                    ->dateTime('d.m.Y H:i', timezone: 'Europe/Istanbul')
                     ->sortable()
                     ->toggleable(),
             ])

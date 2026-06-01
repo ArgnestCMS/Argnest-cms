@@ -84,7 +84,7 @@ class LiveChatSessionForm
                                             LiveChatMessage::SENDER_SYSTEM => 'Sistem',
                                             default => 'Ziyaretci: ' . e($record?->visitor_name ?: 'Isimsiz'),
                                         };
-                                        $date = e($message->created_at?->format('d.m.Y H:i') ?: '');
+                                        $date = e($message->created_at?->timezone('Europe/Istanbul')->format('d.m.Y H:i') ?: '');
                                         $body = nl2br(e($message->message));
                                         $isSystem = $message->sender_type === LiveChatMessage::SENDER_SYSTEM;
                                         $cardStyle = $isSystem

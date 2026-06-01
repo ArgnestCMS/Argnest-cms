@@ -45,7 +45,7 @@
                         @endif
 
                         <div class="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-5">
-                            <p class="text-xs font-bold text-slate-500">Yuklenme: {{ $file->created_at?->format('d.m.Y H:i') ?: 'Tarih yok' }}</p>
+                            <p class="text-xs font-bold text-slate-500">Yuklenme: {{ $file->created_at?->timezone('Europe/Istanbul')->format('d.m.Y H:i') ?: 'Tarih yok' }}</p>
                             <a href="{{ route('frontend.customer.files.download', $file) }}" class="inline-flex rounded-2xl bg-blue-600 px-5 py-3 text-sm font-black text-white shadow-lg shadow-blue-100 transition hover:-translate-y-0.5 hover:bg-blue-700">Indir</a>
                         </div>
                     </article>

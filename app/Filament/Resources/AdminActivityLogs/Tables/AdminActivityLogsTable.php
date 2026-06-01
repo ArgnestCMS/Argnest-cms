@@ -40,7 +40,7 @@ class AdminActivityLogsTable
                     ->toggleable(),
                 TextColumn::make('created_at')
                     ->label('Tarih')
-                    ->dateTime('d.m.Y H:i')
+                    ->dateTime('d.m.Y H:i', timezone: 'Europe/Istanbul')
                     ->sortable(),
             ])
             ->filters([

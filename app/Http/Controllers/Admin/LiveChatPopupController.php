@@ -140,9 +140,9 @@ class LiveChatPopupController extends Controller
             'messages_count' => $session->messages_count ?? $session->messages()->count(),
             'last_message' => $lastMessage?->message,
             'last_sender_type' => $lastMessage?->sender_type,
-            'last_message_at' => $lastMessage?->created_at?->format('d.m.Y H:i'),
+            'last_message_at' => $lastMessage?->created_at?->timezone('Europe/Istanbul')->format('d.m.Y H:i'),
             'needs_attention' => $lastMessage?->sender_type === LiveChatMessage::SENDER_VISITOR && $session->status !== LiveChatSession::STATUS_CLOSED,
-            'updated_at' => $session->updated_at?->format('d.m.Y H:i'),
+            'updated_at' => $session->updated_at?->timezone('Europe/Istanbul')->format('d.m.Y H:i'),
         ];
     }
 
@@ -161,7 +161,7 @@ class LiveChatPopupController extends Controller
                     default => $session->visitor_name ?: 'Ziyaretci',
                 },
                 'message' => $message->message,
-                'created_at' => $message->created_at?->format('d.m.Y H:i'),
+                'created_at' => $message->created_at?->timezone('Europe/Istanbul')->format('d.m.Y H:i'),
             ])
             ->all();
     }

@@ -71,7 +71,7 @@
                             <div>
                                 <p class="text-xs font-black uppercase tracking-widest text-blue-600">{{ $ticket->ticket_no }}</p>
                                 <h2 class="mt-2 text-2xl font-black tracking-tight text-slate-950">{{ $ticket->subject }}</h2>
-                                <p class="mt-3 text-sm font-bold text-slate-500">{{ $ticket->category ?: 'Genel Destek' }} / Son guncelleme: {{ $ticket->updated_at?->format('d.m.Y H:i') }}</p>
+                                <p class="mt-3 text-sm font-bold text-slate-500">{{ $ticket->category ?: 'Genel Destek' }} / Son guncelleme: {{ $ticket->updated_at?->timezone('Europe/Istanbul')->format('d.m.Y H:i') }}</p>
                             </div>
                             <div class="flex flex-wrap gap-2">
                                 <span class="rounded-full px-3 py-1.5 text-xs font-black ring-1 {{ $statusClass }}">{{ $statusOptions[$ticket->status] ?? $ticket->status }}</span>

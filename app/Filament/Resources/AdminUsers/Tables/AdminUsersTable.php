@@ -42,11 +42,11 @@ class AdminUsersTable
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->label('Oluşturulma Tarihi')
-                    ->dateTime('d.m.Y H:i')
+                    ->dateTime('d.m.Y H:i', timezone: 'Europe/Istanbul')
                     ->sortable(),
                 TextColumn::make('updated_at')
                     ->label('Güncellenme Tarihi')
-                    ->dateTime('d.m.Y H:i')
+                    ->dateTime('d.m.Y H:i', timezone: 'Europe/Istanbul')
                     ->sortable()
                     ->toggleable(),
             ])

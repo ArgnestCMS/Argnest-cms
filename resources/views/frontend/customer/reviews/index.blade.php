@@ -59,7 +59,7 @@
                                 <p class="mt-3 whitespace-pre-line text-sm leading-7 text-slate-600">{{ $review->comment }}</p>
                             </div>
                             <div class="shrink-0 rounded-2xl border border-slate-100 bg-slate-50 p-4 text-sm font-bold text-slate-600">
-                                <p>Gonderim: {{ $review->created_at?->format('d.m.Y H:i') }}</p>
+                                <p>Gonderim: {{ $review->created_at?->timezone('Europe/Istanbul')->format('d.m.Y H:i') }}</p>
                                 <p class="mt-2">Isim: {{ $review->hide_name ? 'Gizli' : 'Gorunebilir' }}</p>
                                 <p class="mt-2">Iletisim: {{ $review->hide_contact ? 'Gizli' : 'Gorunebilir' }}</p>
                             </div>

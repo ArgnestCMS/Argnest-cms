@@ -9,7 +9,7 @@
         <div class="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-24">
             <p class="text-sm font-black uppercase tracking-widest text-blue-200">{{ $ticket->ticket_no }}</p>
             <h1 class="mt-4 text-4xl font-black tracking-tight sm:text-5xl">{{ $ticket->subject }}</h1>
-            <p class="mt-5 max-w-2xl text-base leading-8 text-slate-300">{{ $ticket->category ?: 'Genel Destek' }} / {{ $ticket->created_at?->format('d.m.Y H:i') }}</p>
+            <p class="mt-5 max-w-2xl text-base leading-8 text-slate-300">{{ $ticket->category ?: 'Genel Destek' }} / {{ $ticket->created_at?->timezone('Europe/Istanbul')->format('d.m.Y H:i') }}</p>
         </div>
     </section>
 
@@ -26,7 +26,7 @@
                             <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                                 <div>
                                     <p class="text-sm font-black text-slate-950">{{ $supportMessage->is_admin ? 'Argnest Destek Ekibi' : ($supportMessage->user?->name ?: 'Musteri') }}</p>
-                                    <p class="mt-1 text-xs font-bold text-slate-500">{{ $supportMessage->created_at?->format('d.m.Y H:i') }}</p>
+                                    <p class="mt-1 text-xs font-bold text-slate-500">{{ $supportMessage->created_at?->timezone('Europe/Istanbul')->format('d.m.Y H:i') }}</p>
                                 </div>
                                 <span class="w-fit rounded-full px-3 py-1.5 text-xs font-black {{ $supportMessage->is_admin ? 'bg-blue-600 text-white' : 'bg-slate-950 text-white' }}">{{ $supportMessage->is_admin ? 'Admin Cevabi' : 'Musteri Mesaji' }}</span>
                             </div>
@@ -74,7 +74,7 @@
                     </div>
                     <div class="rounded-2xl bg-slate-50 p-4">
                         <p class="text-xs font-black uppercase tracking-widest text-blue-600">Son Guncelleme</p>
-                        <p class="mt-2 text-sm font-bold text-slate-800">{{ $ticket->updated_at?->format('d.m.Y H:i') }}</p>
+                        <p class="mt-2 text-sm font-bold text-slate-800">{{ $ticket->updated_at?->timezone('Europe/Istanbul')->format('d.m.Y H:i') }}</p>
                     </div>
                 </div>
                 <a href="{{ route('frontend.customer.support.index') }}" class="mt-6 inline-flex rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-black text-slate-800 transition hover:-translate-y-0.5 hover:border-blue-200 hover:text-blue-700">Tum Biletlere Don</a>

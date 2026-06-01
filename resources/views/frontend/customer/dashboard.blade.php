@@ -105,8 +105,8 @@
                             'E-posta' => $customer->email,
                             'Telefon' => $customer->phone ?: 'Belirtilmedi',
                             'TC Kimlik No' => $maskedIdentityNumber,
-                            'Son giris tarihi' => $customer->last_login_at?->format('d.m.Y H:i') ?: 'Henuz yok',
-                            'Kayit tarihi' => $customer->created_at?->format('d.m.Y H:i') ?: 'Belirtilmedi',
+                            'Son giris tarihi' => $customer->last_login_at?->timezone('Europe/Istanbul')->format('d.m.Y H:i') ?: 'Henuz yok',
+                            'Kayit tarihi' => $customer->created_at?->timezone('Europe/Istanbul')->format('d.m.Y H:i') ?: 'Belirtilmedi',
                         ] as $label => $value)
                             <div class="rounded-2xl border border-slate-100 bg-slate-50 p-4">
                                 <p class="text-xs font-black uppercase tracking-widest text-blue-600">{{ $label }}</p>

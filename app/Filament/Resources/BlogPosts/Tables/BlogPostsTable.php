@@ -41,7 +41,7 @@ class BlogPostsTable
                     ->sortable(),
                 TextColumn::make('published_at')
                     ->label('Yayın Tarihi')
-                    ->dateTime('d.m.Y H:i')
+                    ->dateTime('d.m.Y H:i', timezone: 'Europe/Istanbul')
                     ->sortable(),
             ])
             ->filters([

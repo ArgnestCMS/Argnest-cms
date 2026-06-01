@@ -43,7 +43,7 @@ class ProductsTable
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->label('Oluşturulma Tarihi')
-                    ->dateTime('d.m.Y H:i')
+                    ->dateTime('d.m.Y H:i', timezone: 'Europe/Istanbul')
                     ->sortable(),
             ])
             ->filters([

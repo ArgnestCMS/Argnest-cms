@@ -75,7 +75,7 @@
                                             <p class="mt-1 text-xs font-bold text-slate-500">{{ $service->hosting_package ?: 'Paket belirtilmedi' }}</p>
                                         </td>
                                         <td class="px-6 py-5 font-bold text-slate-700">{{ $service->domain_name ?: 'Belirtilmedi' }}</td>
-                                        <td class="px-6 py-5 font-bold text-slate-700">{{ $service->created_at?->format('d.m.Y H:i') ?: 'Belirtilmedi' }}</td>
+                                        <td class="px-6 py-5 font-bold text-slate-700">{{ $service->created_at?->timezone('Europe/Istanbul')->format('d.m.Y H:i') ?: 'Belirtilmedi' }}</td>
                                         <td class="px-6 py-5 font-bold text-slate-700">{{ $service->expiry_date?->format('d.m.Y') ?: 'Tarih belirtilmedi' }}</td>
                                         <td class="px-6 py-5">
                                             <span class="inline-flex rounded-full px-3 py-1.5 text-xs font-black ring-1 {{ $statusClass }}">
