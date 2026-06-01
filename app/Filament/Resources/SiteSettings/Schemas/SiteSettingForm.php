@@ -33,6 +33,7 @@ class SiteSettingForm
                             ->columnSpanFull(),
                     ])
                     ->columns(2)
+                    ->disabled(fn (): bool => ! self::canManageSiteSettings())
                     ->columnSpanFull(),
                 Section::make('İletişim Bilgileri')
                     ->schema([
@@ -60,6 +61,7 @@ class SiteSettingForm
                                     ->columnSpanFull(),
                             ]),
                     ])
+                    ->disabled(fn (): bool => ! self::canManageSiteSettings())
                     ->columnSpanFull(),
                 Section::make('Görsel Ayarlar')
                     ->schema([
@@ -90,6 +92,7 @@ class SiteSettingForm
                             ->helperText('Favicon dosyası public diskinde site klasörüne yüklenecek.'),
                     ])
                     ->columns(2)
+                    ->disabled(fn (): bool => ! self::canManageSiteSettings())
                     ->columnSpanFull(),
                 Section::make('Sosyal Medya')
                     ->schema([
@@ -115,6 +118,7 @@ class SiteSettingForm
                             ->maxLength(255),
                     ])
                     ->columns(2)
+                    ->disabled(fn (): bool => ! self::canManageSiteSettings())
                     ->columnSpanFull(),
                 Section::make('SEO Ayarları')
                     ->schema([
@@ -130,6 +134,7 @@ class SiteSettingForm
                             ->helperText('Anahtar kelimeleri virgülle ayırabilirsiniz.'),
                     ])
                     ->columns(2)
+                    ->disabled(fn (): bool => ! self::canManageSiteSettings())
                     ->columnSpanFull(),
                 Section::make('Mail Ayarları')
                     ->schema([
@@ -181,17 +186,19 @@ class SiteSettingForm
                                     ->maxLength(255),
                             ]),
                     ])
+                    ->disabled(fn (): bool => ! self::canManageMailSettings())
                     ->columnSpanFull(),
                 Section::make('Musteri Ayarlari')
                     ->schema([
                         Toggle::make('customer_email_verification_enabled')
                             ->label('Musteri E-posta Dogrulama Aktif')
                             ->default(false)
+                            ->disabled(fn (): bool => ! self::canManageSiteSettings())
                             ->inline(false),
                         Toggle::make('live_chat_enabled')
                             ->label('Canlı Destek Aktif')
                             ->default(false)
-                            ->disabled(fn (): bool => ! (auth()->user()?->hasPermission('live_chat_manage') ?? false))
+                            ->disabled(fn (): bool => ! self::canManageLiveChatSettings())
                             ->inline(false),
                     ])
                     ->columnSpanFull(),
@@ -211,6 +218,7 @@ class SiteSettingForm
                             ->rows(6),
                     ])
                     ->columns(2)
+                    ->disabled(fn (): bool => ! self::canManageSiteSettings())
                     ->columnSpanFull(),
                 Section::make('Footer')
                     ->schema([
@@ -222,7 +230,23 @@ class SiteSettingForm
                             ->maxLength(255),
                     ])
                     ->columns(2)
+                    ->disabled(fn (): bool => ! self::canManageSiteSettings())
                     ->columnSpanFull(),
             ]);
+    }
+
+    private static function canManageSiteSettings(): bool
+    {
+        return auth()->user()?->hasPermission('site_settings_manage') ?? false;
+    }
+
+    private static function canManageMailSettings(): bool
+    {
+        return auth()->user()?->hasPermission('mail_settings_manage') ?? false;
+    }
+
+    private static function canManageLiveChatSettings(): bool
+    {
+        return auth()->user()?->hasPermission('live_chat_manage') ?? false;
     }
 }

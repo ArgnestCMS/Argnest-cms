@@ -23,6 +23,7 @@ class EditSupportTicket extends EditRecord
         return [
             Action::make('reply')
                 ->label('Admin Cevabi Yaz')
+                ->visible(fn (): bool => auth()->user()?->hasPermission('support_reply') ?? false)
                 ->schema([
                     Textarea::make('message')
                         ->label('Mesaj')

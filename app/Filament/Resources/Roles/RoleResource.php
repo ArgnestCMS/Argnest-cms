@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Roles;
 
+use App\Filament\Resources\Concerns\ChecksResourcePermissions;
 use App\Filament\Resources\Roles\Pages\CreateRole;
 use App\Filament\Resources\Roles\Pages\EditRole;
 use App\Filament\Resources\Roles\Pages\ListRoles;
@@ -17,7 +18,13 @@ use UnitEnum;
 
 class RoleResource extends Resource
 {
+    use ChecksResourcePermissions;
+
     protected static ?string $model = Role::class;
+
+    protected static ?string $viewPermission = 'role_manage';
+
+    protected static ?string $editPermission = 'role_manage';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedShieldCheck;
 

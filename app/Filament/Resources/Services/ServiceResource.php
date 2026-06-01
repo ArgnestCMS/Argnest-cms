@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Services;
 
+use App\Filament\Resources\Concerns\ChecksResourcePermissions;
 use App\Filament\Resources\Services\Pages\CreateService;
 use App\Filament\Resources\Services\Pages\EditService;
 use App\Filament\Resources\Services\Pages\ListServices;
@@ -17,7 +18,13 @@ use UnitEnum;
 
 class ServiceResource extends Resource
 {
+    use ChecksResourcePermissions;
+
     protected static ?string $model = Service::class;
+
+    protected static ?string $viewPermission = 'service_view';
+
+    protected static ?string $editPermission = 'service_edit';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBriefcase;
 

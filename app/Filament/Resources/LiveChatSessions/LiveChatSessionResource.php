@@ -2,12 +2,12 @@
 
 namespace App\Filament\Resources\LiveChatSessions;
 
+use App\Filament\Resources\Concerns\ChecksResourcePermissions;
 use App\Filament\Resources\LiveChatSessions\Pages\EditLiveChatSession;
 use App\Filament\Resources\LiveChatSessions\Pages\ListLiveChatSessions;
 use App\Filament\Resources\LiveChatSessions\Schemas\LiveChatSessionForm;
 use App\Filament\Resources\LiveChatSessions\Tables\LiveChatSessionsTable;
 use App\Models\LiveChatSession;
-use App\Models\User;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -17,7 +17,15 @@ use UnitEnum;
 
 class LiveChatSessionResource extends Resource
 {
+    use ChecksResourcePermissions;
+
     protected static ?string $model = LiveChatSession::class;
+
+    protected static ?string $viewPermission = 'live_chat_view';
+
+    protected static ?string $editPermission = 'live_chat_view';
+
+    protected static ?string $deletePermission = 'live_chat_close';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedChatBubbleLeftRight;
 
@@ -28,23 +36,6 @@ class LiveChatSessionResource extends Resource
     protected static ?string $modelLabel = 'Canli Destek Sohbeti';
 
     protected static ?string $pluralModelLabel = 'Canli Destek Sohbetleri';
-
-    public static function canViewAny(): bool
-    {
-        $user = auth()->user();
-
-        return $user instanceof User && $user->hasPermission('live_chat_view');
-    }
-
-    public static function canView($record): bool
-    {
-        return static::canViewAny();
-    }
-
-    public static function canEdit($record): bool
-    {
-        return static::canViewAny();
-    }
 
     public static function form(Schema $schema): Schema
     {

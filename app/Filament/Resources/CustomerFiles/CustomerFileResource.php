@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\CustomerFiles;
 
+use App\Filament\Resources\Concerns\ChecksResourcePermissions;
 use App\Filament\Resources\CustomerFiles\Pages\CreateCustomerFile;
 use App\Filament\Resources\CustomerFiles\Pages\EditCustomerFile;
 use App\Filament\Resources\CustomerFiles\Pages\ListCustomerFiles;
@@ -17,7 +18,13 @@ use UnitEnum;
 
 class CustomerFileResource extends Resource
 {
+    use ChecksResourcePermissions;
+
     protected static ?string $model = CustomerFile::class;
+
+    protected static ?string $viewPermission = 'file_view';
+
+    protected static ?string $editPermission = 'file_upload';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocument;
 

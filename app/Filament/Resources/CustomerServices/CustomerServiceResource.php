@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\CustomerServices;
 
+use App\Filament\Resources\Concerns\ChecksResourcePermissions;
 use App\Filament\Resources\CustomerServices\Pages\CreateCustomerService;
 use App\Filament\Resources\CustomerServices\Pages\EditCustomerService;
 use App\Filament\Resources\CustomerServices\Pages\ListCustomerServices;
@@ -17,7 +18,13 @@ use UnitEnum;
 
 class CustomerServiceResource extends Resource
 {
+    use ChecksResourcePermissions;
+
     protected static ?string $model = CustomerService::class;
+
+    protected static ?string $viewPermission = 'service_view';
+
+    protected static ?string $editPermission = 'service_edit';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedServerStack;
 

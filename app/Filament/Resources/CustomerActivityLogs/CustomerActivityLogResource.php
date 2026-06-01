@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\CustomerActivityLogs;
 
+use App\Filament\Resources\Concerns\ChecksResourcePermissions;
 use App\Filament\Resources\CustomerActivityLogs\Pages\ListCustomerActivityLogs;
 use App\Filament\Resources\CustomerActivityLogs\Tables\CustomerActivityLogsTable;
 use App\Models\CustomerActivityLog;
@@ -13,7 +14,13 @@ use UnitEnum;
 
 class CustomerActivityLogResource extends Resource
 {
+    use ChecksResourcePermissions;
+
     protected static ?string $model = CustomerActivityLog::class;
+
+    protected static ?string $viewPermission = 'customer_view';
+
+    protected static ?string $editPermission = 'customer_edit';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedClock;
 

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\CustomerNotifications;
 
+use App\Filament\Resources\Concerns\ChecksResourcePermissions;
 use App\Filament\Resources\CustomerNotifications\Pages\CreateCustomerNotification;
 use App\Filament\Resources\CustomerNotifications\Pages\EditCustomerNotification;
 use App\Filament\Resources\CustomerNotifications\Pages\ListCustomerNotifications;
@@ -17,7 +18,13 @@ use UnitEnum;
 
 class CustomerNotificationResource extends Resource
 {
+    use ChecksResourcePermissions;
+
     protected static ?string $model = CustomerNotification::class;
+
+    protected static ?string $viewPermission = 'notification_manage';
+
+    protected static ?string $editPermission = 'notification_manage';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBell;
 

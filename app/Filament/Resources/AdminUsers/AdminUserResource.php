@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\AdminUsers;
 
+use App\Filament\Resources\Concerns\ChecksResourcePermissions;
 use App\Filament\Resources\AdminUsers\Pages\CreateAdminUser;
 use App\Filament\Resources\AdminUsers\Pages\EditAdminUser;
 use App\Filament\Resources\AdminUsers\Pages\ListAdminUsers;
@@ -18,7 +19,13 @@ use UnitEnum;
 
 class AdminUserResource extends Resource
 {
+    use ChecksResourcePermissions;
+
     protected static ?string $model = User::class;
+
+    protected static ?string $viewPermission = 'admin_manage';
+
+    protected static ?string $editPermission = 'admin_manage';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedShieldCheck;
 

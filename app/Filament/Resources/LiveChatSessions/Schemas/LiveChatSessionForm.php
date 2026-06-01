@@ -25,17 +25,24 @@ class LiveChatSessionForm
                             ->schema([
                                 TextInput::make('visitor_name')
                                     ->label('Ad Soyad')
+                                    ->disabled()
+                                    ->dehydrated(false)
                                     ->maxLength(255),
                                 TextInput::make('visitor_email')
                                     ->label('E-posta')
                                     ->email()
+                                    ->disabled()
+                                    ->dehydrated(false)
                                     ->maxLength(255),
                                 TextInput::make('visitor_phone')
                                     ->label('Telefon')
+                                    ->disabled()
+                                    ->dehydrated(false)
                                     ->maxLength(255),
                                 Select::make('status')
                                     ->label('Durum')
                                     ->options(LiveChatSession::statusOptions())
+                                    ->disabled(fn (): bool => ! (auth()->user()?->hasPermission('live_chat_close') ?? false))
                                     ->required(),
                                 Select::make('assigned_user_id')
                                     ->label('Atanan Admin')
@@ -47,6 +54,7 @@ class LiveChatSessionForm
                                             ->orderBy('name'),
                                     )
                                     ->searchable()
+                                    ->disabled(fn (): bool => ! (auth()->user()?->hasPermission('live_chat_reply') ?? false))
                                     ->preload(),
                                 TextInput::make('ip_address')
                                     ->label('IP Adresi')

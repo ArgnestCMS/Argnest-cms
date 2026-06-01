@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\CustomerAddresses;
 
+use App\Filament\Resources\Concerns\ChecksResourcePermissions;
 use App\Filament\Resources\CustomerAddresses\Pages\CreateCustomerAddress;
 use App\Filament\Resources\CustomerAddresses\Pages\EditCustomerAddress;
 use App\Filament\Resources\CustomerAddresses\Pages\ListCustomerAddresses;
@@ -17,7 +18,13 @@ use UnitEnum;
 
 class CustomerAddressResource extends Resource
 {
+    use ChecksResourcePermissions;
+
     protected static ?string $model = CustomerAddress::class;
+
+    protected static ?string $viewPermission = 'customer_view';
+
+    protected static ?string $editPermission = 'customer_edit';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedMapPin;
 

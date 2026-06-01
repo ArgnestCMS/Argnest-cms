@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Customers;
 
+use App\Filament\Resources\Concerns\ChecksResourcePermissions;
 use App\Filament\Resources\Customers\Pages\CreateCustomer;
 use App\Filament\Resources\Customers\Pages\EditCustomer;
 use App\Filament\Resources\Customers\Pages\ListCustomers;
@@ -18,7 +19,13 @@ use UnitEnum;
 
 class CustomerResource extends Resource
 {
+    use ChecksResourcePermissions;
+
     protected static ?string $model = User::class;
+
+    protected static ?string $viewPermission = 'customer_view';
+
+    protected static ?string $editPermission = 'customer_edit';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUsers;
 

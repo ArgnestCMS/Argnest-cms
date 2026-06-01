@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\SupportTickets;
 
+use App\Filament\Resources\Concerns\ChecksResourcePermissions;
 use App\Filament\Resources\SupportTickets\Pages\CreateSupportTicket;
 use App\Filament\Resources\SupportTickets\Pages\EditSupportTicket;
 use App\Filament\Resources\SupportTickets\Pages\ListSupportTickets;
@@ -17,7 +18,17 @@ use UnitEnum;
 
 class SupportTicketResource extends Resource
 {
+    use ChecksResourcePermissions;
+
     protected static ?string $model = SupportTicket::class;
+
+    protected static ?string $viewPermission = 'support_view';
+
+    protected static ?string $createPermission = 'support_reply';
+
+    protected static ?string $editPermission = 'support_view';
+
+    protected static ?string $deletePermission = 'support_reply';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedLifebuoy;
 

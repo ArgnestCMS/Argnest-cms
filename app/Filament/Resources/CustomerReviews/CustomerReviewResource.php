@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\CustomerReviews;
 
+use App\Filament\Resources\Concerns\ChecksResourcePermissions;
 use App\Filament\Resources\CustomerReviews\Pages\CreateCustomerReview;
 use App\Filament\Resources\CustomerReviews\Pages\EditCustomerReview;
 use App\Filament\Resources\CustomerReviews\Pages\ListCustomerReviews;
@@ -17,7 +18,13 @@ use UnitEnum;
 
 class CustomerReviewResource extends Resource
 {
+    use ChecksResourcePermissions;
+
     protected static ?string $model = CustomerReview::class;
+
+    protected static ?string $viewPermission = 'customer_view';
+
+    protected static ?string $editPermission = 'customer_edit';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 

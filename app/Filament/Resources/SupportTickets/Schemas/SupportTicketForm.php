@@ -59,6 +59,7 @@ class SupportTicketForm
                                     ->required(),
                             ]),
                     ])
+                    ->disabled(fn (): bool => ! (auth()->user()?->hasPermission('support_reply') ?? false))
                     ->columnSpanFull(),
                 Section::make('Mesaj Gecmisi')
                     ->schema([

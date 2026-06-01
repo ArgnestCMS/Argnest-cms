@@ -76,7 +76,7 @@ class CustomersTable
                     ->label('E-postayi dogrulandi isaretle')
                     ->color('success')
                     ->requiresConfirmation()
-                    ->visible(fn (User $record): bool => $record->email_verified_at === null)
+                    ->visible(fn (User $record): bool => $record->email_verified_at === null && (auth()->user()?->hasPermission('customer_edit') ?? false))
                     ->action(function (User $record): void {
                         app(CustomerEmailVerificationService::class)->markVerified($record);
 
@@ -89,7 +89,7 @@ class CustomersTable
                     ->label('Dogrulama mailini tekrar gonder')
                     ->color('warning')
                     ->requiresConfirmation()
-                    ->visible(fn (User $record): bool => $record->email_verified_at === null)
+                    ->visible(fn (User $record): bool => $record->email_verified_at === null && (auth()->user()?->hasPermission('customer_edit') ?? false))
                     ->action(function (User $record): void {
                         $sent = app(CustomerEmailVerificationService::class)->send($record);
                         $notification = Notification::make()

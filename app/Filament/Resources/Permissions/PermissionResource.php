@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Permissions;
 
+use App\Filament\Resources\Concerns\ChecksResourcePermissions;
 use App\Filament\Resources\Permissions\Pages\CreatePermission;
 use App\Filament\Resources\Permissions\Pages\EditPermission;
 use App\Filament\Resources\Permissions\Pages\ListPermissions;
@@ -17,7 +18,13 @@ use UnitEnum;
 
 class PermissionResource extends Resource
 {
+    use ChecksResourcePermissions;
+
     protected static ?string $model = Permission::class;
+
+    protected static ?string $viewPermission = 'permission_manage';
+
+    protected static ?string $editPermission = 'permission_manage';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedKey;
 
