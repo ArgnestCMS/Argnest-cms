@@ -77,8 +77,13 @@ class CustomerReview extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
     public function publicName(): string
     {
-        return $this->hide_name ? 'Argnest Musterisi' : ($this->customer?->name ?: 'Argnest Musterisi');
+        return $this->hide_name ? 'Argnest Müşterisi' : ($this->user?->name ?: $this->customer?->name ?: 'Argnest Müşterisi');
     }
 }

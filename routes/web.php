@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [FrontendController::class, 'home'])->name('home');
 Route::get('/blog', [FrontendController::class, 'blogIndex'])->name('frontend.blog.index');
 Route::get('/blog/{post:slug}', [FrontendController::class, 'blogDetail'])->name('frontend.blog.show');
+Route::get('/musteri-yorumlari', [FrontendController::class, 'customerReviewsIndex'])->name('frontend.customer-reviews.index');
 Route::get('/iletisim', [FrontendController::class, 'contact'])->name('frontend.contact');
 Route::get('/kvkk', [FrontendController::class, 'kvkk'])->name('frontend.legal.kvkk');
 Route::get('/gizlilik-politikasi', [FrontendController::class, 'privacyPolicy'])->name('frontend.legal.privacy');

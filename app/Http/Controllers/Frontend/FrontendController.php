@@ -196,6 +196,27 @@ class FrontendController extends Controller
         ]);
     }
 
+    public function customerReviewsIndex(): View
+    {
+        $currentUser = Auth::user();
+        $reviewButtonUrl = match (true) {
+            $currentUser?->isCustomer() => url('/musteri/yorumlarim/yeni'),
+            ($currentUser?->role ?? null) === User::ROLE_ADMIN => url('/admin'),
+            default => url('/musteri/giris'),
+        };
+
+        return view('frontend.customer-reviews', [
+            'settings' => SiteSetting::query()->first(),
+            'reviews' => CustomerReview::query()
+                ->with('user')
+                ->where('status', CustomerReview::STATUS_APPROVED)
+                ->latest('approved_at')
+                ->latest()
+                ->paginate(12),
+            'reviewButtonUrl' => $reviewButtonUrl,
+        ]);
+    }
+
     public function contact(): View
     {
         return view('frontend.contact', [

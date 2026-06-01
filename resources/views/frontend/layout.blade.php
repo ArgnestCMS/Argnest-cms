@@ -89,6 +89,7 @@
                 <a href="{{ route('home') }}#urunler" class="transition hover:text-blue-700">Ürünler</a>
                 <a href="{{ route('home') }}#referanslar" class="transition hover:text-blue-700">Referanslar</a>
                 <a href="{{ route('frontend.blog.index') }}" class="transition hover:text-blue-700">Blog</a>
+                <a href="{{ route('frontend.customer-reviews.index') }}" class="transition hover:text-blue-700">Yorumlar</a>
                 <a href="{{ route('frontend.contact') }}" class="transition hover:text-blue-700">İletişim</a>
                 @guest
                     <span class="h-5 w-px bg-slate-200"></span>
@@ -121,6 +122,7 @@
                     <a href="{{ route('home') }}#urunler" class="block rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">Ürünler</a>
                     <a href="{{ route('home') }}#referanslar" class="block rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">Referanslar</a>
                     <a href="{{ route('frontend.blog.index') }}" class="block rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">Blog</a>
+                    <a href="{{ route('frontend.customer-reviews.index') }}" class="block rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">Müşteri Yorumları</a>
                     <a href="{{ route('frontend.contact') }}" class="block rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">İletişim</a>
                     <div class="my-2 h-px bg-slate-100"></div>
                     @guest
