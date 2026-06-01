@@ -13,6 +13,7 @@
         ['label' => 'Yaklasan Yenileme', 'value' => $upcomingRenewals],
         ['label' => 'Dosyalarim', 'value' => $visibleFilesCount],
         ['label' => 'Okunmamis Bildirim', 'value' => $unreadNotificationsCount],
+        ['label' => 'Adreslerim', 'value' => $customerAddressesCount],
         ['label' => 'Toplam Destek Talebi', 'value' => $totalSupportTickets],
         ['label' => 'Acik Destek Talebi', 'value' => $openSupportTickets],
         ['label' => 'Kapatilan Destek Talebi', 'value' => $closedSupportTickets],
@@ -45,6 +46,7 @@
                 <a href="{{ route('frontend.customer.services') }}" class="rounded-2xl px-5 py-3 text-sm font-black text-slate-700 transition hover:bg-blue-50 hover:text-blue-700">Hizmetlerim</a>
                 <a href="{{ route('frontend.customer.service-history') }}" class="rounded-2xl px-5 py-3 text-sm font-black text-slate-700 transition hover:bg-blue-50 hover:text-blue-700">Hizmet Gecmisi</a>
                 <a href="{{ route('frontend.customer.files.index') }}" class="rounded-2xl px-5 py-3 text-sm font-black text-slate-700 transition hover:bg-blue-50 hover:text-blue-700">Dosyalarim</a>
+                <a href="{{ route('frontend.customer.addresses.index') }}" class="rounded-2xl px-5 py-3 text-sm font-black text-slate-700 transition hover:bg-blue-50 hover:text-blue-700">Adreslerim</a>
                 <a href="{{ route('frontend.customer.notifications.index') }}" class="rounded-2xl px-5 py-3 text-sm font-black text-slate-700 transition hover:bg-blue-50 hover:text-blue-700">Bildirimlerim</a>
                 <a href="{{ route('frontend.customer.reviews.index') }}" class="rounded-2xl px-5 py-3 text-sm font-black text-slate-700 transition hover:bg-blue-50 hover:text-blue-700">Yorumlarim</a>
                 <a href="{{ route('frontend.customer.activities.index') }}" class="rounded-2xl px-5 py-3 text-sm font-black text-slate-700 transition hover:bg-blue-50 hover:text-blue-700">Aktivitelerim</a>
@@ -110,6 +112,7 @@
                         <a href="{{ route('frontend.customer.services') }}" class="inline-flex rounded-2xl bg-blue-600 px-6 py-3.5 text-sm font-black text-white shadow-lg shadow-blue-100 transition hover:-translate-y-0.5 hover:bg-blue-700">Hizmetlerimi Gor</a>
                         <a href="{{ route('frontend.customer.service-history') }}" class="inline-flex rounded-2xl border border-slate-200 bg-white px-6 py-3.5 text-sm font-black text-slate-800 transition hover:-translate-y-0.5 hover:border-blue-200 hover:text-blue-700">Hizmet Gecmisi</a>
                         <a href="{{ route('frontend.customer.files.index') }}" class="inline-flex rounded-2xl border border-slate-200 bg-white px-6 py-3.5 text-sm font-black text-slate-800 transition hover:-translate-y-0.5 hover:border-blue-200 hover:text-blue-700">Dosyalarim</a>
+                        <a href="{{ route('frontend.customer.addresses.index') }}" class="inline-flex rounded-2xl border border-slate-200 bg-white px-6 py-3.5 text-sm font-black text-slate-800 transition hover:-translate-y-0.5 hover:border-blue-200 hover:text-blue-700">Adreslerim</a>
                         <a href="{{ route('frontend.customer.notifications.index') }}" class="inline-flex rounded-2xl border border-slate-200 bg-white px-6 py-3.5 text-sm font-black text-slate-800 transition hover:-translate-y-0.5 hover:border-blue-200 hover:text-blue-700">Bildirimlerim</a>
                         <a href="{{ route('frontend.customer.support.index') }}" class="inline-flex rounded-2xl border border-slate-200 bg-white px-6 py-3.5 text-sm font-black text-slate-800 transition hover:-translate-y-0.5 hover:border-blue-200 hover:text-blue-700">Destek Taleplerim</a>
                         <a href="{{ route('frontend.customer.reviews.index') }}" class="inline-flex rounded-2xl border border-slate-200 bg-white px-6 py-3.5 text-sm font-black text-slate-800 transition hover:-translate-y-0.5 hover:border-blue-200 hover:text-blue-700">Yorumlarim</a>

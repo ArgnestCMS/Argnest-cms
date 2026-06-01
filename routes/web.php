@@ -28,6 +28,11 @@ Route::middleware(['auth', 'customer'])->group(function (): void {
     Route::get('/musteri/guvenlik', [FrontendController::class, 'customerSecurity'])->name('frontend.customer.security');
     Route::get('/musteri/hizmetlerim', [FrontendController::class, 'customerServices'])->name('frontend.customer.services');
     Route::get('/musteri/hizmet-gecmisi', [FrontendController::class, 'customerServiceHistory'])->name('frontend.customer.service-history');
+    Route::get('/musteri/adreslerim', [FrontendController::class, 'customerAddresses'])->name('frontend.customer.addresses.index');
+    Route::get('/musteri/adreslerim/yeni', [FrontendController::class, 'customerAddressCreate'])->name('frontend.customer.addresses.create');
+    Route::post('/musteri/adreslerim/yeni', [FrontendController::class, 'storeCustomerAddress'])->name('frontend.customer.addresses.store');
+    Route::get('/musteri/adreslerim/{address}/duzenle', [FrontendController::class, 'customerAddressEdit'])->name('frontend.customer.addresses.edit');
+    Route::put('/musteri/adreslerim/{address}/duzenle', [FrontendController::class, 'updateCustomerAddress'])->name('frontend.customer.addresses.update');
     Route::get('/musteri/dosyalarim', [FrontendController::class, 'customerFiles'])->name('frontend.customer.files.index');
     Route::get('/musteri/dosyalarim/{file}/indir', [FrontendController::class, 'downloadCustomerFile'])->name('frontend.customer.files.download');
     Route::get('/musteri/bildirimlerim', [FrontendController::class, 'customerNotifications'])->name('frontend.customer.notifications.index');

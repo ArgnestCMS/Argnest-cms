@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Frontend;
 use App\Http\Controllers\Controller;
 use App\Models\BlogPost;
 use App\Models\CustomerActivityLog;
+use App\Models\CustomerAddress;
 use App\Models\CustomerFile;
 use App\Models\CustomerNotification;
 use App\Models\HeroButton;
@@ -435,6 +436,7 @@ class FrontendController extends Controller
             'unreadNotificationsCount' => $customer->customerNotifications()
                 ->unread()
                 ->count(),
+            'customerAddressesCount' => $customer->customerAddresses()->count(),
             'totalSupportTickets' => (clone $supportTicketsQuery)->count(),
             'openSupportTickets' => (clone $supportTicketsQuery)
                 ->whereIn('status', [SupportTicket::STATUS_OPEN, SupportTicket::STATUS_ANSWERED, SupportTicket::STATUS_PENDING])
@@ -638,6 +640,96 @@ class FrontendController extends Controller
             ],
             'renewalStatusOptions' => CustomerService::renewalStatusOptions(),
         ]);
+    }
+
+    public function customerAddresses(Request $request): View
+    {
+        return view('frontend.customer.addresses.index', [
+            'settings' => SiteSetting::query()->first(),
+            'customer' => $request->user(),
+            'addresses' => $request->user()
+                ->customerAddresses()
+                ->orderByDesc('is_default')
+                ->latest()
+                ->paginate(10),
+        ]);
+    }
+
+    public function customerAddressCreate(Request $request): View
+    {
+        return view('frontend.customer.addresses.create', [
+            'settings' => SiteSetting::query()->first(),
+            'customer' => $request->user(),
+        ]);
+    }
+
+    public function storeCustomerAddress(Request $request): RedirectResponse
+    {
+        $customer = $request->user();
+        $validated = $request->validate($this->customerAddressValidationRules());
+        $validated['is_default'] = $request->boolean('is_default') || ! $customer->customerAddresses()->exists();
+
+        $address = $customer->customerAddresses()->create($validated);
+
+        app(CustomerActivityLogger::class)->log(
+            $customer,
+            CustomerActivityLog::ACTION_ADDRESS_CREATED,
+            'Adres eklendi: ' . $address->title,
+            $request,
+        );
+
+        CustomerNotification::query()->create([
+            'user_id' => $customer->id,
+            'title' => 'Adres eklendi',
+            'message' => 'Adres bilgileriniz basariyla eklendi.',
+            'type' => 'address',
+            'link' => route('frontend.customer.addresses.index'),
+        ]);
+
+        return redirect()
+            ->route('frontend.customer.addresses.index')
+            ->with('success', 'Adresiniz eklendi.');
+    }
+
+    public function customerAddressEdit(Request $request, CustomerAddress $address): View
+    {
+        abort_unless($address->user_id === $request->user()->id, 404);
+
+        return view('frontend.customer.addresses.edit', [
+            'settings' => SiteSetting::query()->first(),
+            'customer' => $request->user(),
+            'address' => $address,
+        ]);
+    }
+
+    public function updateCustomerAddress(Request $request, CustomerAddress $address): RedirectResponse
+    {
+        abort_unless($address->user_id === $request->user()->id, 404);
+
+        $customer = $request->user();
+        $validated = $request->validate($this->customerAddressValidationRules());
+        $validated['is_default'] = $request->boolean('is_default');
+
+        $address->update($validated);
+
+        app(CustomerActivityLogger::class)->log(
+            $customer,
+            CustomerActivityLog::ACTION_ADDRESS_UPDATED,
+            'Adres guncellendi: ' . $address->title,
+            $request,
+        );
+
+        CustomerNotification::query()->create([
+            'user_id' => $customer->id,
+            'title' => 'Adres guncellendi',
+            'message' => 'Adres bilgileriniz basariyla guncellendi.',
+            'type' => 'address',
+            'link' => route('frontend.customer.addresses.index'),
+        ]);
+
+        return redirect()
+            ->route('frontend.customer.addresses.index')
+            ->with('success', 'Adresiniz guncellendi.');
     }
 
     public function customerFiles(Request $request): View
@@ -894,6 +986,23 @@ class FrontendController extends Controller
             'message' => ['required', 'string'],
             'attachments' => ['nullable', 'array', 'max:5'],
             'attachments.*' => ['file', 'mimes:pdf,doc,docx,xls,xlsx,txt,jpg,jpeg,png,webp,zip,rar', 'max:20480'],
+        ];
+    }
+
+    private function customerAddressValidationRules(): array
+    {
+        return [
+            'title' => ['required', 'string', 'max:255'],
+            'country' => ['required', 'string', 'max:255'],
+            'city' => ['required', 'string', 'max:255'],
+            'district' => ['required', 'string', 'max:255'],
+            'neighborhood' => ['nullable', 'string', 'max:255'],
+            'street' => ['nullable', 'string', 'max:255'],
+            'building_no' => ['nullable', 'string', 'max:255'],
+            'apartment_no' => ['nullable', 'string', 'max:255'],
+            'postal_code' => ['nullable', 'string', 'max:255'],
+            'address' => ['required', 'string'],
+            'is_default' => ['nullable', 'boolean'],
         ];
     }
 
