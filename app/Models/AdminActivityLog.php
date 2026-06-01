@@ -41,6 +41,14 @@ class AdminActivityLog extends Model
 
     public const ACTION_LIVE_CHAT_CLOSED = 'live_chat_closed';
 
+    public const ACTION_BACKUP_CREATED = 'backup_created';
+
+    public const ACTION_BACKUP_DOWNLOADED = 'backup_downloaded';
+
+    public const ACTION_BACKUP_DELETED = 'backup_deleted';
+
+    public const ACTION_BACKUP_FAILED = 'backup_failed';
+
     protected $fillable = [
         'user_id',
         'action',
@@ -76,6 +84,10 @@ class AdminActivityLog extends Model
             self::ACTION_SUPPORT_TICKET_REPLIED => 'Destek talebi cevaplandi',
             self::ACTION_LIVE_CHAT_REPLIED => 'Canli destek cevaplandi',
             self::ACTION_LIVE_CHAT_CLOSED => 'Canli destek kapatildi',
+            self::ACTION_BACKUP_CREATED => 'Yedek olusturuldu',
+            self::ACTION_BACKUP_DOWNLOADED => 'Yedek indirildi',
+            self::ACTION_BACKUP_DELETED => 'Yedek silindi',
+            self::ACTION_BACKUP_FAILED => 'Yedek basarisiz oldu',
         ];
     }
 
