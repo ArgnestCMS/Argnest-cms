@@ -12,11 +12,13 @@ class CustomerActivityLogger
     public function log(User $user, string $action, ?string $description = null, ?Request $request = null): void
     {
         try {
+            $ipService = app(ClientIpService::class);
+
             $user->customerActivityLogs()->create([
                 'action' => $action,
                 'description' => $description,
-                'ip_address' => $request?->ip(),
-                'user_agent' => $request?->userAgent(),
+                'ip_address' => $request ? $ipService->ip($request) : null,
+                'user_agent' => $request ? $ipService->userAgent($request) : null,
                 'created_at' => now(),
             ]);
         } catch (Throwable $exception) {

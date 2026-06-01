@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\LiveChatMessage;
 use App\Models\LiveChatSession;
 use App\Models\SiteSetting;
+use App\Services\ClientIpService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -30,8 +31,8 @@ class LiveChatController extends Controller
             'visitor_name' => $validated['visitor_name'] ?? null,
             'visitor_email' => $validated['visitor_email'] ?? null,
             'visitor_phone' => $validated['visitor_phone'] ?? null,
-            'ip_address' => $request->ip(),
-            'user_agent' => $request->userAgent(),
+            'ip_address' => app(ClientIpService::class)->ip($request),
+            'user_agent' => app(ClientIpService::class)->userAgent($request),
             'status' => LiveChatSession::STATUS_OPEN,
         ]);
 

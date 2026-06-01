@@ -2,6 +2,12 @@
 
 namespace App\Providers;
 
+use App\Models\AdminActivityLog;
+use App\Models\User;
+use App\Services\AdminActivityLogger;
+use Illuminate\Auth\Events\Login;
+use Illuminate\Auth\Events\Logout;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +25,26 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Event::listen(Login::class, function (Login $event): void {
+            if ($event->user instanceof User && $event->user->role === User::ROLE_ADMIN) {
+                app(AdminActivityLogger::class)->log(
+                    AdminActivityLog::ACTION_LOGIN,
+                    'Admin paneline giris yapti.',
+                    $event->user,
+                    request(),
+                );
+            }
+        });
+
+        Event::listen(Logout::class, function (Logout $event): void {
+            if ($event->user instanceof User && $event->user->role === User::ROLE_ADMIN) {
+                app(AdminActivityLogger::class)->log(
+                    AdminActivityLog::ACTION_LOGOUT,
+                    'Admin panelinden cikis yapti.',
+                    $event->user,
+                    request(),
+                );
+            }
+        });
     }
 }

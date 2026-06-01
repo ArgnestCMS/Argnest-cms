@@ -3,9 +3,11 @@
 namespace App\Filament\Resources\SupportTickets\Pages;
 
 use App\Filament\Resources\SupportTickets\SupportTicketResource;
+use App\Models\AdminActivityLog;
 use App\Models\CustomerNotification;
 use App\Models\SupportMessage;
 use App\Models\SupportTicket;
+use App\Services\AdminActivityLogger;
 use App\Services\SupportTicketMailService;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
@@ -52,6 +54,11 @@ class EditSupportTicket extends EditRecord
                     $this->attachFiles($message, $data['attachments'] ?? []);
 
                     $ticket->forceFill(['status' => SupportTicket::STATUS_ANSWERED])->save();
+
+                    app(AdminActivityLogger::class)->log(
+                        AdminActivityLog::ACTION_SUPPORT_TICKET_REPLIED,
+                        'Destek talebine admin cevabi yazildi: ' . $ticket->ticket_no,
+                    );
 
                     app(SupportTicketMailService::class)->adminReplied($ticket, $message);
 

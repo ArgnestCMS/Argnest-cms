@@ -3,7 +3,9 @@
 namespace App\Filament\Resources\AdminUsers\Pages;
 
 use App\Filament\Resources\AdminUsers\AdminUserResource;
+use App\Models\AdminActivityLog;
 use App\Models\User;
+use App\Services\AdminActivityLogger;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Hash;
 
@@ -18,5 +20,13 @@ class CreateAdminUser extends CreateRecord
         $data['password'] = Hash::make($data['password']);
 
         return $data;
+    }
+
+    protected function afterCreate(): void
+    {
+        app(AdminActivityLogger::class)->log(
+            AdminActivityLog::ACTION_ADMIN_USER_CREATED,
+            'Admin kullanici olusturuldu: ' . $this->record->name . ' (' . $this->record->email . ')',
+        );
     }
 }

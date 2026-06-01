@@ -22,6 +22,7 @@ use App\Models\SupportTicket;
 use App\Models\User;
 use App\Services\CustomerActivityLogger;
 use App\Services\CustomerEmailVerificationService;
+use App\Services\ClientIpService;
 use App\Services\SupportTicketMailService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -316,16 +317,18 @@ class FrontendController extends Controller
         $settings = SiteSetting::query()->first();
         $emailVerificationEnabled = (bool) $settings?->customer_email_verification_enabled;
 
+        $clientIp = app(ClientIpService::class)->ip($request);
+
         $user = User::query()->create([
             'name' => $validated['name'],
             'company_name' => $validated['company_name'] ?? null,
             'email' => $validated['email'],
             'phone' => $validated['phone'] ?? null,
             'identity_number' => $validated['identity_number'],
-            'registration_ip' => $request->ip(),
+            'registration_ip' => $clientIp,
             'email_verified_at' => $emailVerificationEnabled ? null : now(),
             'last_login_at' => now(),
-            'last_login_ip' => $request->ip(),
+            'last_login_ip' => $clientIp,
             'password' => $validated['password'],
             'role' => User::ROLE_CUSTOMER,
             'is_active' => true,
@@ -386,7 +389,7 @@ class FrontendController extends Controller
 
         $request->user()->forceFill([
             'last_login_at' => now(),
-            'last_login_ip' => $request->ip(),
+            'last_login_ip' => app(ClientIpService::class)->ip($request),
         ])->save();
 
         app(CustomerActivityLogger::class)->log(
@@ -949,7 +952,7 @@ class FrontendController extends Controller
         app(CustomerActivityLogger::class)->log(
             $request->user(),
             CustomerActivityLog::ACTION_SUPPORT_TICKET_CREATED,
-            'Destek talebi olusturdu: ' . $ticket->ticket_no,
+            'Destek talebi olusturdu: ' . $ticket->ticket_no . ' | IP: ' . (app(ClientIpService::class)->ip($request) ?: 'bilinmiyor'),
             $request,
         );
 
@@ -1008,7 +1011,7 @@ class FrontendController extends Controller
         app(CustomerActivityLogger::class)->log(
             $request->user(),
             CustomerActivityLog::ACTION_SUPPORT_TICKET_REPLIED,
-            'Destek talebine cevap yazdi: ' . $ticket->ticket_no,
+            'Destek talebine cevap yazdi: ' . $ticket->ticket_no . ' | IP: ' . (app(ClientIpService::class)->ip($request) ?: 'bilinmiyor'),
             $request,
         );
 

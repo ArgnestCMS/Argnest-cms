@@ -2,7 +2,9 @@
 
 namespace App\Filament\Resources\Roles\Tables;
 
+use App\Models\AdminActivityLog;
 use App\Models\Role;
+use App\Services\AdminActivityLogger;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Notifications\Notification;
@@ -43,6 +45,12 @@ class RolesTable
                     ->label('Duzenle'),
                 DeleteAction::make()
                     ->label('Sil')
+                    ->after(function (Role $record): void {
+                        app(AdminActivityLogger::class)->log(
+                            AdminActivityLog::ACTION_ROLE_DELETED,
+                            'Rol silindi: ' . $record->name,
+                        );
+                    })
                     ->before(function (DeleteAction $action, Role $record): void {
                         if (! $record->is_system) {
                             return;

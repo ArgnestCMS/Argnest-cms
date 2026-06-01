@@ -3,7 +3,9 @@
 namespace App\Filament\Resources\AdminUsers\Tables;
 
 use App\Filament\Resources\AdminUsers\AdminUserResource;
+use App\Models\AdminActivityLog;
 use App\Models\User;
+use App\Services\AdminActivityLogger;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Notifications\Notification;
@@ -54,6 +56,12 @@ class AdminUsersTable
                     ->label('Düzenle'),
                 DeleteAction::make()
                     ->label('Sil')
+                    ->after(function (User $record): void {
+                        app(AdminActivityLogger::class)->log(
+                            AdminActivityLog::ACTION_ADMIN_USER_DELETED,
+                            'Admin kullanici silindi: ' . $record->name . ' (' . $record->email . ')',
+                        );
+                    })
                     ->before(function (DeleteAction $action, User $record): void {
                         $message = AdminUserResource::getDeleteBlockMessage($record);
 

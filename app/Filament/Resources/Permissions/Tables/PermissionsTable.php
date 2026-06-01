@@ -2,6 +2,9 @@
 
 namespace App\Filament\Resources\Permissions\Tables;
 
+use App\Models\AdminActivityLog;
+use App\Models\Permission;
+use App\Services\AdminActivityLogger;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
@@ -35,6 +38,12 @@ class PermissionsTable
                 EditAction::make()
                     ->label('Duzenle'),
                 DeleteAction::make()
+                    ->after(function (Permission $record): void {
+                        app(AdminActivityLogger::class)->log(
+                            AdminActivityLog::ACTION_PERMISSION_DELETED,
+                            'Yetki silindi: ' . $record->name . ' (' . $record->key . ')',
+                        );
+                    })
                     ->label('Sil'),
             ]);
     }

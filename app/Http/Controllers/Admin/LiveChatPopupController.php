@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\AdminActivityLog;
 use App\Models\LiveChatMessage;
 use App\Models\LiveChatSession;
 use App\Models\User;
+use App\Services\AdminActivityLogger;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -68,6 +70,13 @@ class LiveChatPopupController extends Controller
             'assigned_user_id' => $session->assigned_user_id ?: $request->user()->id,
         ])->save();
 
+        app(AdminActivityLogger::class)->log(
+            AdminActivityLog::ACTION_LIVE_CHAT_REPLIED,
+            'Canli destek cevaplandi: #' . $session->id,
+            $request->user(),
+            $request,
+        );
+
         return $this->show($request, $session->refresh());
     }
 
@@ -93,6 +102,13 @@ class LiveChatPopupController extends Controller
                 'live_chat_session_id' => $session->id,
                 'admin_user_id' => $request->user()->id,
             ]);
+
+            app(AdminActivityLogger::class)->log(
+                AdminActivityLog::ACTION_LIVE_CHAT_CLOSED,
+                'Canli destek kapatildi: #' . $session->id,
+                $request->user(),
+                $request,
+            );
         }
 
         return response()->json([

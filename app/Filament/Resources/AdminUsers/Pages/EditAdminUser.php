@@ -3,7 +3,9 @@
 namespace App\Filament\Resources\AdminUsers\Pages;
 
 use App\Filament\Resources\AdminUsers\AdminUserResource;
+use App\Models\AdminActivityLog;
 use App\Models\User;
+use App\Services\AdminActivityLogger;
 use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
@@ -18,6 +20,12 @@ class EditAdminUser extends EditRecord
         return [
             DeleteAction::make()
                 ->label('Sil')
+                ->after(function (): void {
+                    app(AdminActivityLogger::class)->log(
+                        AdminActivityLog::ACTION_ADMIN_USER_DELETED,
+                        'Admin kullanici silindi: ' . $this->record->name . ' (' . $this->record->email . ')',
+                    );
+                })
                 ->before(function (DeleteAction $action): void {
                     $message = AdminUserResource::getDeleteBlockMessage($this->record);
 
@@ -61,5 +69,13 @@ class EditAdminUser extends EditRecord
         }
 
         return $data;
+    }
+
+    protected function afterSave(): void
+    {
+        app(AdminActivityLogger::class)->log(
+            AdminActivityLog::ACTION_ADMIN_USER_UPDATED,
+            'Admin kullanici duzenlendi: ' . $this->record->name . ' (' . $this->record->email . ')',
+        );
     }
 }
