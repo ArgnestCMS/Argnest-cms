@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\CustomerFiles\Pages;
 
 use App\Filament\Resources\CustomerFiles\CustomerFileResource;
+use App\Models\CustomerNotification;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Storage;
 
@@ -13,6 +14,21 @@ class CreateCustomerFile extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         return $this->fillFileMetadata($data);
+    }
+
+    protected function afterCreate(): void
+    {
+        if (! $this->record->is_visible) {
+            return;
+        }
+
+        CustomerNotification::query()->create([
+            'user_id' => $this->record->user_id,
+            'title' => 'Yeni dosya eklendi',
+            'message' => $this->record->title . ' dosyasi panelinize eklendi.',
+            'type' => 'file',
+            'link' => route('frontend.customer.files.index'),
+        ]);
     }
 
     private function fillFileMetadata(array $data): array

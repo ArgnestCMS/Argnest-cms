@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\BlogPost;
 use App\Models\CustomerActivityLog;
 use App\Models\CustomerFile;
+use App\Models\CustomerNotification;
 use App\Models\HeroButton;
 use App\Models\CustomerReview;
 use App\Models\Lead;
@@ -424,10 +425,45 @@ class FrontendController extends Controller
             'visibleFilesCount' => $customer->customerFiles()
                 ->where('is_visible', true)
                 ->count(),
+            'unreadNotificationsCount' => $customer->customerNotifications()
+                ->unread()
+                ->count(),
             'openSupportTickets' => $customer->supportTickets()
                 ->whereIn('status', [SupportTicket::STATUS_OPEN, SupportTicket::STATUS_ANSWERED, SupportTicket::STATUS_PENDING])
                 ->count(),
         ]);
+    }
+
+    public function customerNotifications(Request $request): View
+    {
+        return view('frontend.customer.notifications', [
+            'settings' => SiteSetting::query()->first(),
+            'customer' => $request->user(),
+            'notifications' => $request->user()
+                ->customerNotifications()
+                ->latest()
+                ->paginate(12),
+        ]);
+    }
+
+    public function markCustomerNotificationAsRead(Request $request, CustomerNotification $notification): RedirectResponse
+    {
+        abort_unless($notification->user_id === $request->user()->id, 404);
+
+        $notification->markAsRead();
+
+        return back()->with('success', 'Bildirim okundu olarak isaretlendi.');
+    }
+
+    public function openCustomerNotification(Request $request, CustomerNotification $notification): RedirectResponse
+    {
+        abort_unless($notification->user_id === $request->user()->id, 404);
+
+        $notification->markAsRead();
+
+        return $notification->link
+            ? redirect()->to($notification->link)
+            : back()->with('success', 'Bildirim okundu olarak isaretlendi.');
     }
 
     public function customerServices(Request $request): View

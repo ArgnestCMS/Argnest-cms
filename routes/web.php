@@ -24,6 +24,9 @@ Route::middleware(['auth', 'customer'])->group(function (): void {
     Route::get('/musteri/hizmetlerim', [FrontendController::class, 'customerServices'])->name('frontend.customer.services');
     Route::get('/musteri/dosyalarim', [FrontendController::class, 'customerFiles'])->name('frontend.customer.files.index');
     Route::get('/musteri/dosyalarim/{file}/indir', [FrontendController::class, 'downloadCustomerFile'])->name('frontend.customer.files.download');
+    Route::get('/musteri/bildirimlerim', [FrontendController::class, 'customerNotifications'])->name('frontend.customer.notifications.index');
+    Route::post('/musteri/bildirimlerim/{notification}/okundu', [FrontendController::class, 'markCustomerNotificationAsRead'])->name('frontend.customer.notifications.read');
+    Route::post('/musteri/bildirimlerim/{notification}/ac', [FrontendController::class, 'openCustomerNotification'])->name('frontend.customer.notifications.open');
     Route::get('/musteri/aktivitelerim', [FrontendController::class, 'customerActivities'])->name('frontend.customer.activities.index');
     Route::get('/musteri/yorumlarim', [FrontendController::class, 'customerReviews'])->name('frontend.customer.reviews.index');
     Route::get('/musteri/yorumlarim/yeni', [FrontendController::class, 'customerReviewCreate'])->name('frontend.customer.reviews.create');

@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\CustomerReviews\Tables;
 
 use App\Models\CustomerReview;
+use App\Models\CustomerNotification;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -72,10 +73,20 @@ class CustomerReviewsTable
                     ->color('success')
                     ->requiresConfirmation()
                     ->visible(fn (CustomerReview $record): bool => $record->status !== CustomerReview::STATUS_APPROVED)
-                    ->action(fn (CustomerReview $record): bool => $record->forceFill([
-                        'status' => CustomerReview::STATUS_APPROVED,
-                        'approved_at' => now(),
-                    ])->save()),
+                    ->action(function (CustomerReview $record): void {
+                        $record->forceFill([
+                            'status' => CustomerReview::STATUS_APPROVED,
+                            'approved_at' => now(),
+                        ])->save();
+
+                        CustomerNotification::query()->create([
+                            'user_id' => $record->user_id,
+                            'title' => 'Yorumunuz onaylandi',
+                            'message' => 'Musteri yorumunuz onaylandi ve yayina alindi.',
+                            'type' => 'review',
+                            'link' => route('frontend.customer.reviews.index'),
+                        ]);
+                    }),
                 Action::make('reject')
                     ->label('Reddet')
                     ->color('danger')

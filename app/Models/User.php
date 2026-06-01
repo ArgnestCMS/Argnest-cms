@@ -89,6 +89,11 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasMany(CustomerReview::class);
     }
 
+    public function customerNotifications(): HasMany
+    {
+        return $this->hasMany(CustomerNotification::class);
+    }
+
     public function customerActivityLogs(): HasMany
     {
         return $this->hasMany(CustomerActivityLog::class);

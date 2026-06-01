@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\SupportTickets\Pages;
 
 use App\Filament\Resources\SupportTickets\SupportTicketResource;
+use App\Models\CustomerNotification;
 use App\Models\SupportMessage;
 use App\Models\SupportTicket;
 use App\Services\SupportTicketMailService;
@@ -52,6 +53,14 @@ class EditSupportTicket extends EditRecord
                     $ticket->forceFill(['status' => SupportTicket::STATUS_ANSWERED])->save();
 
                     app(SupportTicketMailService::class)->adminReplied($ticket, $message);
+
+                    CustomerNotification::query()->create([
+                        'user_id' => $ticket->user_id,
+                        'title' => 'Destek talebinize cevap geldi',
+                        'message' => $ticket->ticket_no . ' numarali destek talebinize admin cevabi eklendi.',
+                        'type' => 'support',
+                        'link' => route('frontend.customer.support.show', $ticket),
+                    ]);
                 }),
             DeleteAction::make()
                 ->label('Sil'),
