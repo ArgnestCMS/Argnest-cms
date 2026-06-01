@@ -414,6 +414,10 @@ class FrontendController extends Controller
         $upcomingRenewals = $services
             ->filter(fn ($service): bool => $service->is_active && $service->isExpiringSoon())
             ->count();
+        $supportTicketsQuery = $customer->supportTickets();
+        $lastSupportTicket = (clone $supportTicketsQuery)
+            ->latest('created_at')
+            ->first();
 
         return view('frontend.customer.dashboard', [
             'settings' => SiteSetting::query()->first(),
@@ -430,9 +434,14 @@ class FrontendController extends Controller
             'unreadNotificationsCount' => $customer->customerNotifications()
                 ->unread()
                 ->count(),
-            'openSupportTickets' => $customer->supportTickets()
+            'totalSupportTickets' => (clone $supportTicketsQuery)->count(),
+            'openSupportTickets' => (clone $supportTicketsQuery)
                 ->whereIn('status', [SupportTicket::STATUS_OPEN, SupportTicket::STATUS_ANSWERED, SupportTicket::STATUS_PENDING])
                 ->count(),
+            'closedSupportTickets' => (clone $supportTicketsQuery)
+                ->where('status', SupportTicket::STATUS_CLOSED)
+                ->count(),
+            'lastSupportTicketDate' => $lastSupportTicket?->created_at?->format('d.m.Y H:i') ?: 'Henuz yok',
         ]);
     }
 
@@ -704,14 +713,24 @@ class FrontendController extends Controller
 
     public function customerSupportTickets(Request $request): View
     {
+        $supportTicketsQuery = $request->user()->supportTickets();
+
         return view('frontend.customer.support.index', [
             'settings' => SiteSetting::query()->first(),
             'customer' => $request->user(),
-            'tickets' => $request->user()
-                ->supportTickets()
+            'tickets' => (clone $supportTicketsQuery)
                 ->withCount('messages')
                 ->latest()
                 ->paginate(10),
+            'supportStats' => [
+                'total' => (clone $supportTicketsQuery)->count(),
+                'open' => (clone $supportTicketsQuery)
+                    ->whereIn('status', [SupportTicket::STATUS_OPEN, SupportTicket::STATUS_ANSWERED, SupportTicket::STATUS_PENDING])
+                    ->count(),
+                'closed' => (clone $supportTicketsQuery)
+                    ->where('status', SupportTicket::STATUS_CLOSED)
+                    ->count(),
+            ],
             'statusOptions' => SupportTicket::statusOptions(),
             'priorityOptions' => SupportTicket::priorityOptions(),
         ]);

@@ -37,6 +37,19 @@
                 <div class="mb-6 rounded-3xl border border-emerald-200 bg-emerald-50 p-5 text-sm font-bold text-emerald-700">{{ session('success') }}</div>
             @endif
 
+            <div class="mb-6 grid gap-4 md:grid-cols-3">
+                @foreach ([
+                    ['label' => 'Toplam', 'value' => $supportStats['total'] ?? 0],
+                    ['label' => 'Acik', 'value' => $supportStats['open'] ?? 0],
+                    ['label' => 'Kapali', 'value' => $supportStats['closed'] ?? 0],
+                ] as $stat)
+                    <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+                        <p class="text-3xl font-black text-slate-950">{{ $stat['value'] }}</p>
+                        <p class="mt-2 text-sm font-bold text-slate-500">{{ $stat['label'] }}</p>
+                    </div>
+                @endforeach
+            </div>
+
             <div class="grid gap-5">
                 @forelse ($tickets as $ticket)
                     @php

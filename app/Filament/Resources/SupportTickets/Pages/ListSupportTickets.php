@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\SupportTickets\Pages;
 
 use App\Filament\Resources\SupportTickets\SupportTicketResource;
+use App\Filament\Resources\SupportTickets\Widgets\SupportTicketStatsOverview;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 
@@ -15,6 +16,13 @@ class ListSupportTickets extends ListRecords
         return [
             CreateAction::make()
                 ->label('Yeni Bilet'),
+        ];
+    }
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            SupportTicketStatsOverview::class,
         ];
     }
 }

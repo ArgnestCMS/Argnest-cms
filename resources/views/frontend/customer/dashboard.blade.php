@@ -13,7 +13,10 @@
         ['label' => 'Yaklasan Yenileme', 'value' => $upcomingRenewals],
         ['label' => 'Dosyalarim', 'value' => $visibleFilesCount],
         ['label' => 'Okunmamis Bildirim', 'value' => $unreadNotificationsCount],
+        ['label' => 'Toplam Destek Talebi', 'value' => $totalSupportTickets],
         ['label' => 'Acik Destek Talebi', 'value' => $openSupportTickets],
+        ['label' => 'Kapatilan Destek Talebi', 'value' => $closedSupportTickets],
+        ['label' => 'Son Destek Talebi Tarihi', 'value' => $lastSupportTicketDate],
     ];
 @endphp
 
@@ -50,7 +53,7 @@
                 <a href="{{ route('frontend.customer.security') }}" class="rounded-2xl px-5 py-3 text-sm font-black text-slate-700 transition hover:bg-blue-50 hover:text-blue-700">Güvenlik Merkezi</a>
             </nav>
 
-            <div class="mb-6 grid gap-4 md:grid-cols-2 lg:grid-cols-6">
+            <div class="mb-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
                 @foreach ($summaryCards as $card)
                     <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
                         <p class="text-3xl font-black text-slate-950">{{ $card['value'] }}</p>
