@@ -21,6 +21,18 @@ class User extends Authenticatable implements FilamentUser
 
     public const ROLE_CUSTOMER = 'customer';
 
+    public const STATUS_POTENTIAL = 'potential';
+
+    public const STATUS_ACTIVE = 'active';
+
+    public const STATUS_PENDING = 'pending';
+
+    public const STATUS_PASSIVE = 'passive';
+
+    public const STATUS_RISKY = 'risky';
+
+    public const STATUS_CANCELLED = 'cancelled';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -36,6 +48,9 @@ class User extends Authenticatable implements FilamentUser
         'email_verified_at',
         'last_login_at',
         'last_login_ip',
+        'status',
+        'last_contact_at',
+        'admin_notes',
         'role',
         'is_active',
         'password',
@@ -49,6 +64,7 @@ class User extends Authenticatable implements FilamentUser
     protected $hidden = [
         'password',
         'remember_token',
+        'admin_notes',
     ];
 
     /**
@@ -61,8 +77,33 @@ class User extends Authenticatable implements FilamentUser
         return [
             'email_verified_at' => 'datetime',
             'last_login_at' => 'datetime',
+            'last_contact_at' => 'datetime',
             'is_active' => 'boolean',
             'password' => 'hashed',
+        ];
+    }
+
+    public static function customerStatusOptions(): array
+    {
+        return [
+            self::STATUS_POTENTIAL => 'Potansiyel',
+            self::STATUS_ACTIVE => 'Aktif',
+            self::STATUS_PENDING => 'Beklemede',
+            self::STATUS_PASSIVE => 'Pasif',
+            self::STATUS_RISKY => 'Riskli',
+            self::STATUS_CANCELLED => 'Iptal',
+        ];
+    }
+
+    public static function customerStatusColors(): array
+    {
+        return [
+            self::STATUS_POTENTIAL => 'info',
+            self::STATUS_ACTIVE => 'success',
+            self::STATUS_PENDING => 'warning',
+            self::STATUS_PASSIVE => 'gray',
+            self::STATUS_RISKY => 'danger',
+            self::STATUS_CANCELLED => 'danger',
         ];
     }
 
@@ -113,6 +154,12 @@ class User extends Authenticatable implements FilamentUser
     public function permissions(): BelongsToMany
     {
         return $this->belongsToMany(Permission::class, 'user_permissions')
+            ->withTimestamps();
+    }
+
+    public function customerTags(): BelongsToMany
+    {
+        return $this->belongsToMany(CustomerTag::class, 'customer_tag_user')
             ->withTimestamps();
     }
 

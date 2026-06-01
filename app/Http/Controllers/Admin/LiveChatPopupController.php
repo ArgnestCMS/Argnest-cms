@@ -69,6 +69,7 @@ class LiveChatPopupController extends Controller
             'status' => LiveChatSession::STATUS_ANSWERED,
             'assigned_user_id' => $session->assigned_user_id ?: $request->user()->id,
         ])->save();
+        $this->touchCustomerContact($session);
 
         app(AdminActivityLogger::class)->log(
             AdminActivityLog::ACTION_LIVE_CHAT_REPLIED,
@@ -171,5 +172,19 @@ class LiveChatPopupController extends Controller
         return $session->messages()
             ->latest('created_at')
             ->value('sender_type') === LiveChatMessage::SENDER_VISITOR;
+    }
+
+    private function touchCustomerContact(LiveChatSession $session): void
+    {
+        if (blank($session->visitor_email)) {
+            return;
+        }
+
+        User::query()
+            ->where('role', User::ROLE_CUSTOMER)
+            ->where('email', $session->visitor_email)
+            ->first()
+            ?->forceFill(['last_contact_at' => now()])
+            ->save();
     }
 }

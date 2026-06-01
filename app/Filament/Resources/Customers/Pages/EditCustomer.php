@@ -16,4 +16,13 @@ class EditCustomer extends EditRecord
 
         return $data;
     }
+
+    protected function afterSave(): void
+    {
+        if ($this->record->wasChanged('admin_notes')) {
+            $this->record->forceFill([
+                'last_contact_at' => now(),
+            ])->saveQuietly();
+        }
+    }
 }

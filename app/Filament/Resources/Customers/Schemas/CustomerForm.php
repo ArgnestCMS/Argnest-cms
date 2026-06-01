@@ -4,6 +4,8 @@ namespace App\Filament\Resources\Customers\Schemas;
 
 use App\Models\User;
 use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Grid;
@@ -55,6 +57,22 @@ class CustomerForm
                                     ->label('Aktif/Pasif')
                                     ->default(true)
                                     ->inline(false),
+                                Select::make('status')
+                                    ->label('Durum')
+                                    ->options(User::customerStatusOptions())
+                                    ->native(false),
+                                Select::make('customerTags')
+                                    ->label('Etiketler')
+                                    ->relationship('customerTags', 'name')
+                                    ->multiple()
+                                    ->preload()
+                                    ->searchable()
+                                    ->columnSpanFull(),
+                                Textarea::make('admin_notes')
+                                    ->label('Admin Ozel Notlari')
+                                    ->rows(6)
+                                    ->visible(fn (string $operation): bool => $operation === 'edit')
+                                    ->columnSpanFull(),
                                 TextInput::make('role')
                                     ->default(User::ROLE_CUSTOMER)
                                     ->dehydrated()
@@ -82,6 +100,11 @@ class CustomerForm
                                     ->dehydrated(false),
                                 TextInput::make('last_login_ip')
                                     ->label('Son Giriş IP')
+                                    ->disabled()
+                                    ->dehydrated(false),
+                                TextInput::make('last_contact_at')
+                                    ->label('Son Iletisim Tarihi')
+                                    ->formatStateUsing(fn (?User $record): string => $record?->last_contact_at?->timezone('Europe/Istanbul')->format('d.m.Y H:i') ?: 'Henuz yok')
                                     ->disabled()
                                     ->dehydrated(false),
                                 TextInput::make('created_at')

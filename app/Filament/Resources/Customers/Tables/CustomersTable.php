@@ -34,6 +34,22 @@ class CustomersTable
                     ->label('Mail')
                     ->searchable()
                     ->sortable(),
+                TextColumn::make('status')
+                    ->label('Durum')
+                    ->badge()
+                    ->formatStateUsing(fn (?string $state): string => $state ? (User::customerStatusOptions()[$state] ?? $state) : 'Belirtilmedi')
+                    ->color(fn (?string $state): string => $state ? (User::customerStatusColors()[$state] ?? 'gray') : 'gray')
+                    ->sortable(),
+                TextColumn::make('customerTags.name')
+                    ->label('Etiketler')
+                    ->badge()
+                    ->separator(', ')
+                    ->toggleable(),
+                TextColumn::make('last_contact_at')
+                    ->label('Son Iletisim')
+                    ->dateTime('d.m.Y H:i', timezone: 'Europe/Istanbul')
+                    ->placeholder('Henuz yok')
+                    ->sortable(),
                 TextColumn::make('email_verified_at')
                     ->label('E-posta Dogrulama')
                     ->dateTime('d.m.Y H:i', timezone: 'Europe/Istanbul')

@@ -949,6 +949,8 @@ class FrontendController extends Controller
 
         $attachmentCount = $this->storeSupportAttachments($request, $message);
 
+        $request->user()->forceFill(['last_contact_at' => now()])->save();
+
         app(CustomerActivityLogger::class)->log(
             $request->user(),
             CustomerActivityLog::ACTION_SUPPORT_TICKET_CREATED,
@@ -1003,6 +1005,8 @@ class FrontendController extends Controller
         ]);
 
         $attachmentCount = $this->storeSupportAttachments($request, $message);
+
+        $request->user()->forceFill(['last_contact_at' => now()])->save();
 
         if ($ticket->status !== SupportTicket::STATUS_CLOSED) {
             $ticket->forceFill(['status' => SupportTicket::STATUS_PENDING])->save();

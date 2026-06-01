@@ -54,6 +54,7 @@ class EditSupportTicket extends EditRecord
                     $this->attachFiles($message, $data['attachments'] ?? []);
 
                     $ticket->forceFill(['status' => SupportTicket::STATUS_ANSWERED])->save();
+                    $ticket->customer?->forceFill(['last_contact_at' => now()])->save();
 
                     app(AdminActivityLogger::class)->log(
                         AdminActivityLog::ACTION_SUPPORT_TICKET_REPLIED,

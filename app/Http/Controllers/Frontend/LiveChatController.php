@@ -41,6 +41,7 @@ class LiveChatController extends Controller
             'message' => $validated['message'],
             'created_at' => now(),
         ]);
+        $this->touchCustomerContact($session);
         $session->touch();
 
         $previousSessionId = $request->session()->get('live_chat_current_session_id');
@@ -90,6 +91,7 @@ class LiveChatController extends Controller
             'message' => $validated['message'],
             'created_at' => now(),
         ]);
+        $this->touchCustomerContact($session);
 
         if ($session->status === LiveChatSession::STATUS_ANSWERED) {
             $session->forceFill(['status' => LiveChatSession::STATUS_OPEN])->save();
@@ -136,6 +138,20 @@ class LiveChatController extends Controller
     private function isLiveChatEnabled(): bool
     {
         return (bool) SiteSetting::query()->value('live_chat_enabled');
+    }
+
+    private function touchCustomerContact(LiveChatSession $session): void
+    {
+        if (blank($session->visitor_email)) {
+            return;
+        }
+
+        \App\Models\User::query()
+            ->where('role', \App\Models\User::ROLE_CUSTOMER)
+            ->where('email', $session->visitor_email)
+            ->first()
+            ?->forceFill(['last_contact_at' => now()])
+            ->save();
     }
 
     private function sessionKey(LiveChatSession $session): string
