@@ -3,7 +3,23 @@
 use App\Http\Controllers\Frontend\FrontendController;
 use App\Http\Controllers\Frontend\LiveChatController;
 use App\Http\Controllers\Admin\LiveChatPopupController;
+use App\Http\Controllers\InstallController;
 use Illuminate\Support\Facades\Route;
+
+Route::middleware('not-installed')->prefix('install')->name('install.')->group(function (): void {
+    Route::get('/', [InstallController::class, 'index'])->name('index');
+    Route::post('/type', [InstallController::class, 'storeType'])->name('type');
+    Route::get('/database', [InstallController::class, 'database'])->name('database');
+    Route::post('/database/test', [InstallController::class, 'testDatabase'])->name('database.test');
+    Route::post('/database', [InstallController::class, 'storeDatabase'])->name('database.store');
+    Route::get('/restore', [InstallController::class, 'restore'])->name('restore');
+    Route::post('/restore', [InstallController::class, 'storeRestore'])->name('restore.store');
+    Route::get('/site-admin', [InstallController::class, 'siteAdmin'])->name('site-admin');
+    Route::post('/site-admin', [InstallController::class, 'storeSiteAdmin'])->name('site-admin.store');
+    Route::get('/run', [InstallController::class, 'run'])->name('run');
+    Route::post('/run', [InstallController::class, 'process'])->name('process');
+    Route::get('/completed', [InstallController::class, 'completed'])->name('completed')->withoutMiddleware('not-installed');
+});
 
 Route::get('/', [FrontendController::class, 'home'])->name('home');
 Route::get('/blog', [FrontendController::class, 'blogIndex'])->name('frontend.blog.index');
