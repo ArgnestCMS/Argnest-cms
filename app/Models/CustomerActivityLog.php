@@ -31,6 +31,8 @@ class CustomerActivityLog extends Model
 
     public const ACTION_SERVICES_VIEWED = 'services_viewed';
 
+    public const ACTION_SERVICE_HISTORY_VIEWED = 'service_history_viewed';
+
     public const ACTION_FILE_VIEWED = 'file_viewed';
 
     public const ACTION_FILE_DOWNLOADED = 'file_downloaded';
@@ -65,6 +67,7 @@ class CustomerActivityLog extends Model
             self::ACTION_REVIEW_SUBMITTED => 'Yorum gonderdi',
             self::ACTION_REVIEW_UPDATED => 'Yorum guncelledi',
             self::ACTION_SERVICES_VIEWED => 'Hizmetlerini goruntuledi',
+            self::ACTION_SERVICE_HISTORY_VIEWED => 'Hizmet gecmisini goruntuledi',
             self::ACTION_FILE_VIEWED => 'Dosya goruntulendi',
             self::ACTION_FILE_DOWNLOADED => 'Dosya indirildi',
         ];

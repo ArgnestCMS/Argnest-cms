@@ -9,6 +9,7 @@ use App\Models\CustomerFile;
 use App\Models\CustomerNotification;
 use App\Models\HeroButton;
 use App\Models\CustomerReview;
+use App\Models\CustomerService;
 use App\Models\Lead;
 use App\Models\Portfolio;
 use App\Models\Product;
@@ -607,6 +608,35 @@ class FrontendController extends Controller
                 ->orderByRaw('expiry_date is null')
                 ->orderBy('expiry_date')
                 ->get(),
+        ]);
+    }
+
+    public function customerServiceHistory(Request $request): View
+    {
+        app(CustomerActivityLogger::class)->logForRequest(
+            CustomerActivityLog::ACTION_SERVICE_HISTORY_VIEWED,
+            'Hizmet gecmisini goruntuledi.',
+            $request,
+        );
+
+        $services = $request->user()
+            ->customerServices()
+            ->latest()
+            ->get();
+
+        return view('frontend.customer.service-history', [
+            'settings' => SiteSetting::query()->first(),
+            'customer' => $request->user(),
+            'services' => $services,
+            'serviceStats' => [
+                'total' => $services->count(),
+                'active' => $services->where('is_active', true)->count(),
+                'passive' => $services->where('is_active', false)->count(),
+                'expired' => $services
+                    ->filter(fn (CustomerService $service): bool => $service->isExpired())
+                    ->count(),
+            ],
+            'renewalStatusOptions' => CustomerService::renewalStatusOptions(),
         ]);
     }
 

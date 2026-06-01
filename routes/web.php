@@ -27,6 +27,7 @@ Route::middleware(['auth', 'customer'])->group(function (): void {
     Route::post('/musteri/sifre-degistir', [FrontendController::class, 'customerPasswordUpdate'])->name('frontend.customer.password.update');
     Route::get('/musteri/guvenlik', [FrontendController::class, 'customerSecurity'])->name('frontend.customer.security');
     Route::get('/musteri/hizmetlerim', [FrontendController::class, 'customerServices'])->name('frontend.customer.services');
+    Route::get('/musteri/hizmet-gecmisi', [FrontendController::class, 'customerServiceHistory'])->name('frontend.customer.service-history');
     Route::get('/musteri/dosyalarim', [FrontendController::class, 'customerFiles'])->name('frontend.customer.files.index');
     Route::get('/musteri/dosyalarim/{file}/indir', [FrontendController::class, 'downloadCustomerFile'])->name('frontend.customer.files.download');
     Route::get('/musteri/bildirimlerim', [FrontendController::class, 'customerNotifications'])->name('frontend.customer.notifications.index');
