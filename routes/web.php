@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Frontend\FrontendController;
+use App\Http\Controllers\Frontend\LiveChatController;
+use App\Http\Controllers\Admin\LiveChatPopupController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [FrontendController::class, 'home'])->name('home');
@@ -13,9 +15,19 @@ Route::get('/gizlilik-politikasi', [FrontendController::class, 'privacyPolicy'])
 Route::get('/cerez-politikasi', [FrontendController::class, 'cookiePolicy'])->name('frontend.legal.cookies');
 Route::get('/sitemap.xml', [FrontendController::class, 'sitemap'])->name('frontend.sitemap');
 Route::get('/robots.txt', [FrontendController::class, 'robots'])->name('frontend.robots');
+Route::post('/canli-destek/baslat', [LiveChatController::class, 'start'])->middleware('throttle:10,1')->name('frontend.live-chat.start');
+Route::get('/canli-destek/{session}/mesajlar', [LiveChatController::class, 'messages'])->name('frontend.live-chat.messages');
+Route::post('/canli-destek/{session}/mesaj-gonder', [LiveChatController::class, 'sendMessage'])->middleware('throttle:20,1')->name('frontend.live-chat.send');
+Route::post('/canli-destek/{session}/sonlandir', [LiveChatController::class, 'close'])->name('frontend.live-chat.close');
 Route::get('/musteri/email-dogrula/{id}/{hash}', [FrontendController::class, 'verifyCustomerEmail'])
     ->middleware('signed')
     ->name('frontend.customer.email.verify');
+Route::middleware('auth')->prefix('admin/live-chat-popup')->name('admin.live-chat-popup.')->group(function (): void {
+    Route::get('/sessions', [LiveChatPopupController::class, 'sessions'])->name('sessions');
+    Route::get('/sessions/{session}', [LiveChatPopupController::class, 'show'])->name('show');
+    Route::post('/sessions/{session}/reply', [LiveChatPopupController::class, 'reply'])->name('reply');
+    Route::post('/sessions/{session}/close', [LiveChatPopupController::class, 'close'])->name('close');
+});
 Route::middleware('guest')->group(function (): void {
     Route::get('/musteri/kayit', [FrontendController::class, 'customerRegister'])->name('frontend.customer.register');
     Route::post('/musteri/kayit', [FrontendController::class, 'storeCustomerRegister'])->name('frontend.customer.register.store');

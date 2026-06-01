@@ -188,6 +188,11 @@ class SiteSettingForm
                             ->label('Musteri E-posta Dogrulama Aktif')
                             ->default(false)
                             ->inline(false),
+                        Toggle::make('live_chat_enabled')
+                            ->label('Canlı Destek Aktif')
+                            ->default(false)
+                            ->disabled(fn (): bool => ! (auth()->user()?->hasPermission('live_chat_manage') ?? false))
+                            ->inline(false),
                     ])
                     ->columnSpanFull(),
                 Section::make('Yasal Metinler')

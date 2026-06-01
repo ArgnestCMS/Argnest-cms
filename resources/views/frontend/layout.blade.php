@@ -226,6 +226,10 @@
         </div>
     </footer>
 
+    @if ($settings?->live_chat_enabled)
+        @include('frontend.partials.live-chat-widget')
+    @endif
+
     @if ($whatsappNumber)
         <a
             href="https://wa.me/{{ $whatsappNumber }}"

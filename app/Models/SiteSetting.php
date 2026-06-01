@@ -44,6 +44,7 @@ class SiteSetting extends Model
         'support_notification_email',
         'sales_notification_email',
         'customer_email_verification_enabled',
+        'live_chat_enabled',
     ];
 
     protected function casts(): array
@@ -52,6 +53,7 @@ class SiteSetting extends Model
             'smtp_port' => 'integer',
             'smtp_password' => 'encrypted',
             'customer_email_verification_enabled' => 'boolean',
+            'live_chat_enabled' => 'boolean',
         ];
     }
 }
