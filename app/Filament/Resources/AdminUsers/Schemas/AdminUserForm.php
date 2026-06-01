@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\AdminUsers\Schemas;
 
 use App\Models\User;
+use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Grid;
@@ -50,6 +51,24 @@ class AdminUserForm
                                     ->dehydrated()
                                     ->hidden(),
                             ]),
+                    ])
+                    ->columnSpanFull(),
+                Section::make('Rol ve Yetkiler')
+                    ->schema([
+                        CheckboxList::make('roles')
+                            ->label('Roller')
+                            ->relationship('roles', 'name')
+                            ->columns(2)
+                            ->bulkToggleable()
+                            ->disabled(fn (?User $record): bool => $record?->id === auth()->id())
+                            ->columnSpanFull(),
+                        CheckboxList::make('permissions')
+                            ->label('Ek Yetkiler')
+                            ->relationship('permissions', 'name')
+                            ->columns(2)
+                            ->bulkToggleable()
+                            ->disabled(fn (?User $record): bool => $record?->id === auth()->id())
+                            ->columnSpanFull(),
                     ])
                     ->columnSpanFull(),
             ]);

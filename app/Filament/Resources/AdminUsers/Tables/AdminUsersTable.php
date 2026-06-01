@@ -29,6 +29,11 @@ class AdminUsersTable
                     ->label('Telefon')
                     ->searchable()
                     ->toggleable(),
+                TextColumn::make('roles.name')
+                    ->label('Roller')
+                    ->badge()
+                    ->separator(', ')
+                    ->toggleable(),
                 IconColumn::make('is_active')
                     ->label('Aktif/Pasif')
                     ->boolean()

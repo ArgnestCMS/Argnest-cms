@@ -48,6 +48,14 @@ class AdminUserResource extends Resource
             return 'Kendi hesabınızı silemezsiniz.';
         }
 
+        $adminCount = User::query()
+            ->where('role', User::ROLE_ADMIN)
+            ->count();
+
+        if ($adminCount <= 1) {
+            return 'Sistemde en az bir admin kullanicisi kalmalidir.';
+        }
+
         $activeAdminCount = User::query()
             ->where('role', User::ROLE_ADMIN)
             ->where('is_active', true)
@@ -55,6 +63,28 @@ class AdminUserResource extends Resource
 
         if ($record->is_active && $activeAdminCount <= 1) {
             return 'Sistemde en az bir aktif admin kalmalıdır.';
+        }
+
+        return null;
+    }
+
+    public static function getDeactivateBlockMessage(User $record): ?string
+    {
+        if ($record->role !== User::ROLE_ADMIN || ! $record->is_active) {
+            return null;
+        }
+
+        if ($record->id === auth()->id()) {
+            return 'Kendi hesabinizi pasif yapamazsiniz.';
+        }
+
+        $activeAdminCount = User::query()
+            ->where('role', User::ROLE_ADMIN)
+            ->where('is_active', true)
+            ->count();
+
+        if ($activeAdminCount <= 1) {
+            return 'Sistemde en az bir aktif admin kalmalidir.';
         }
 
         return null;

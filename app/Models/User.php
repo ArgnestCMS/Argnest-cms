@@ -7,6 +7,7 @@ use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -72,6 +73,46 @@ class User extends Authenticatable implements FilamentUser
     public function isCustomer(): bool
     {
         return $this->is_active && $this->role === self::ROLE_CUSTOMER;
+    }
+
+    public function hasPermission(string $permissionKey): bool
+    {
+        if (! $this->is_active || $this->role !== self::ROLE_ADMIN) {
+            return false;
+        }
+
+        if ($this->isFirstAdmin()) {
+            return true;
+        }
+
+        return $this->permissions()
+            ->where('key', $permissionKey)
+            ->exists()
+            || $this->roles()
+                ->whereHas('permissions', fn ($query) => $query->where('key', $permissionKey))
+                ->exists();
+    }
+
+    public function isFirstAdmin(): bool
+    {
+        $firstAdminId = self::query()
+            ->where('role', self::ROLE_ADMIN)
+            ->orderBy('id')
+            ->value('id');
+
+        return $firstAdminId !== null && $this->id === $firstAdminId;
+    }
+
+    public function roles(): BelongsToMany
+    {
+        return $this->belongsToMany(Role::class, 'user_roles')
+            ->withTimestamps();
+    }
+
+    public function permissions(): BelongsToMany
+    {
+        return $this->belongsToMany(Permission::class, 'user_permissions')
+            ->withTimestamps();
     }
 
     public function customerServices(): HasMany

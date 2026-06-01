@@ -47,6 +47,19 @@ class EditAdminUser extends EditRecord
             $data['is_active'] = true;
         }
 
+        if (($data['is_active'] ?? true) === false) {
+            $message = AdminUserResource::getDeactivateBlockMessage($this->record);
+
+            if ($message !== null) {
+                Notification::make()
+                    ->title($message)
+                    ->danger()
+                    ->send();
+
+                $data['is_active'] = true;
+            }
+        }
+
         return $data;
     }
 }
