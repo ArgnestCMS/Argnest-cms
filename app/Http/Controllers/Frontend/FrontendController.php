@@ -24,6 +24,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
@@ -432,6 +433,51 @@ class FrontendController extends Controller
                 ->whereIn('status', [SupportTicket::STATUS_OPEN, SupportTicket::STATUS_ANSWERED, SupportTicket::STATUS_PENDING])
                 ->count(),
         ]);
+    }
+
+    public function customerProfile(Request $request): View
+    {
+        return view('frontend.customer.profile', [
+            'settings' => SiteSetting::query()->first(),
+            'customer' => $request->user(),
+        ]);
+    }
+
+    public function customerProfileUpdate(Request $request): RedirectResponse
+    {
+        $customer = $request->user();
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'company_name' => ['nullable', 'string', 'max:255'],
+            'phone' => ['nullable', 'string', 'max:255'],
+            'email' => [
+                'required',
+                'email',
+                'max:255',
+                Rule::unique('users', 'email')->ignore($customer->id),
+            ],
+        ]);
+
+        $customer->forceFill($validated)->save();
+
+        app(CustomerActivityLogger::class)->log(
+            $customer,
+            CustomerActivityLog::ACTION_PROFILE_UPDATED,
+            'Profil bilgileri güncellendi',
+            $request,
+        );
+
+        if (class_exists(CustomerNotification::class)) {
+            CustomerNotification::query()->create([
+                'user_id' => $customer->id,
+                'title' => 'Profiliniz güncellendi',
+                'message' => 'Profil bilgileriniz başarıyla güncellendi.',
+                'type' => 'profile',
+                'link' => route('frontend.customer.profile'),
+            ]);
+        }
+
+        return back()->with('success', 'Profil bilgileriniz guncellendi.');
     }
 
     public function customerNotifications(Request $request): View

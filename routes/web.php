@@ -21,6 +21,8 @@ Route::middleware('guest')->group(function (): void {
 });
 Route::middleware(['auth', 'customer'])->group(function (): void {
     Route::get('/musteri/panel', [FrontendController::class, 'customerDashboard'])->name('frontend.customer.dashboard');
+    Route::get('/musteri/profil', [FrontendController::class, 'customerProfile'])->name('frontend.customer.profile');
+    Route::post('/musteri/profil', [FrontendController::class, 'customerProfileUpdate'])->name('frontend.customer.profile.update');
     Route::get('/musteri/hizmetlerim', [FrontendController::class, 'customerServices'])->name('frontend.customer.services');
     Route::get('/musteri/dosyalarim', [FrontendController::class, 'customerFiles'])->name('frontend.customer.files.index');
     Route::get('/musteri/dosyalarim/{file}/indir', [FrontendController::class, 'downloadCustomerFile'])->name('frontend.customer.files.download');
