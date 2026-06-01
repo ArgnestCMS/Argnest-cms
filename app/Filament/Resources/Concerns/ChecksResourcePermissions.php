@@ -52,6 +52,9 @@ trait ChecksResourcePermissions
 
         return $permission !== null
             && $user instanceof User
-            && $user->hasPermission($permission);
+            && (
+                $user->hasPermission($permission)
+                || $user->hasPermission('admin_manage')
+            );
     }
 }

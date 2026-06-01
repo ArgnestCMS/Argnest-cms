@@ -46,7 +46,7 @@ class Dashboard extends BaseDashboard
             'user' => $user,
             'roleName' => $this->roleName($user),
             'system' => [
-                'app_version' => 'Sprint 30.2',
+                'app_version' => 'Sprint 30.3',
                 'laravel_version' => app()->version(),
                 'filament_version' => InstalledVersions::isInstalled('filament/filament')
                     ? InstalledVersions::getPrettyVersion('filament/filament')
@@ -60,7 +60,7 @@ class Dashboard extends BaseDashboard
             ],
             'kpis' => [
                 [
-                    'label' => 'Toplam Musteri',
+                    'label' => 'Toplam Müşteri',
                     'value' => User::query()->where('role', User::ROLE_CUSTOMER)->count(),
                     'tone' => 'blue',
                 ],
@@ -70,14 +70,14 @@ class Dashboard extends BaseDashboard
                     'tone' => 'emerald',
                 ],
                 [
-                    'label' => 'Acik Destek Talebi',
+                    'label' => 'Açık Destek Talebi',
                     'value' => SupportTicket::query()
                         ->whereIn('status', [SupportTicket::STATUS_OPEN, SupportTicket::STATUS_PENDING, SupportTicket::STATUS_ANSWERED])
                         ->count(),
                     'tone' => 'amber',
                 ],
                 [
-                    'label' => 'Aktif Canli Sohbet',
+                    'label' => 'Aktif Canlı Sohbet',
                     'value' => LiveChatSession::query()
                         ->whereIn('status', [LiveChatSession::STATUS_OPEN, LiveChatSession::STATUS_ANSWERED])
                         ->count(),
@@ -89,7 +89,7 @@ class Dashboard extends BaseDashboard
                     'tone' => 'slate',
                 ],
                 [
-                    'label' => 'Okunmamis Bildirim',
+                    'label' => 'Okunmamış Bildirim',
                     'value' => CustomerNotification::query()->unread()->count(),
                     'tone' => 'rose',
                 ],
@@ -101,18 +101,51 @@ class Dashboard extends BaseDashboard
                 ->take(10)
                 ->get(),
             'urls' => [
-                'profile' => $user instanceof User && $user->role === User::ROLE_ADMIN
+                'profile' => $user instanceof User && AdminUserResource::canEdit($user)
                     ? AdminUserResource::getUrl('edit', ['record' => $user])
-                    : url('/admin'),
-                'security' => AdminActivityLogResource::getUrl('index'),
-                'customers_create' => CustomerResource::getUrl('create'),
-                'services_create' => CustomerServiceResource::getUrl('create'),
-                'support_create' => SupportTicketResource::getUrl('create'),
-                'admin_create' => AdminUserResource::getUrl('create'),
-                'backups' => SystemBackupResource::getUrl('index'),
-                'live_chat' => LiveChatSessionResource::getUrl('index'),
+                    : null,
+                'security' => AdminActivityLogResource::canViewAny()
+                    ? AdminActivityLogResource::getUrl('index')
+                    : null,
+                'backups' => SystemBackupResource::canViewAny()
+                    ? SystemBackupResource::getUrl('index')
+                    : null,
             ],
+            'quickActions' => $this->quickActions(),
         ];
+    }
+
+    private function quickActions(): array
+    {
+        return collect([
+            [
+                'label' => 'Yeni Müşteri',
+                'url' => CustomerResource::canCreate() ? CustomerResource::getUrl('create') : null,
+            ],
+            [
+                'label' => 'Yeni Hizmet',
+                'url' => CustomerServiceResource::canCreate() ? CustomerServiceResource::getUrl('create') : null,
+            ],
+            [
+                'label' => 'Yeni Destek Talebi',
+                'url' => SupportTicketResource::canCreate() ? SupportTicketResource::getUrl('create') : null,
+            ],
+            [
+                'label' => 'Yeni Admin',
+                'url' => AdminUserResource::canCreate() ? AdminUserResource::getUrl('create') : null,
+            ],
+            [
+                'label' => 'Yeni Yedek Al',
+                'url' => SystemBackupResource::canCreate() ? SystemBackupResource::getUrl('index') : null,
+            ],
+            [
+                'label' => 'Canlı Destek',
+                'url' => LiveChatSessionResource::canViewAny() ? LiveChatSessionResource::getUrl('index') : null,
+            ],
+        ])
+            ->filter(fn (array $action): bool => filled($action['url']))
+            ->values()
+            ->all();
     }
 
     private function roleName(?User $user): string
@@ -122,11 +155,11 @@ class Dashboard extends BaseDashboard
         }
 
         if ($user->isFirstAdmin()) {
-            return 'Kurucu Yonetici';
+            return 'Kurucu Yönetici';
         }
 
         $role = $user->roles()->orderBy('name')->value('name');
 
-        return $role ?: ($user->role === User::ROLE_ADMIN ? 'Yonetici' : 'Kullanici');
+        return $role ?: ($user->role === User::ROLE_ADMIN ? 'Yönetici' : 'Kullanıcı');
     }
 }

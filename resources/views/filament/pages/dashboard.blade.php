@@ -48,8 +48,12 @@
                         <div><span style="color:#bfdbfe;font-size:12px;font-weight:800;">Kayıt</span><div>{{ $user?->created_at?->timezone('Europe/Istanbul')->format('d.m.Y H:i') ?: '-' }}</div></div>
                     </div>
                     <div class="arg-actions" style="margin-top:18px;">
-                        <a class="arg-btn arg-btn-soft" href="{{ $urls['profile'] }}">Profilim</a>
-                        <a class="arg-btn arg-btn-soft" href="{{ $urls['security'] }}">Güvenlik Merkezi</a>
+                        @if ($urls['profile'])
+                            <a class="arg-btn arg-btn-soft" href="{{ $urls['profile'] }}">Profilim</a>
+                        @endif
+                        @if ($urls['security'])
+                            <a class="arg-btn arg-btn-soft" href="{{ $urls['security'] }}">Güvenlik Merkezi</a>
+                        @endif
                         <form method="POST" action="{{ route('filament.admin.auth.logout') }}">
                             @csrf
                             <button class="arg-btn arg-btn-primary" type="submit" style="border:0;cursor:pointer;">Oturumu Kapat</button>
@@ -97,7 +101,9 @@
                 @else
                     <p style="margin:0;color:#64748b;">Henüz alınmış yedek yok.</p>
                 @endif
-                <div style="margin-top:18px;"><a class="arg-btn arg-btn-light" href="{{ $urls['backups'] }}">Yedeklere Git</a></div>
+                @if ($urls['backups'])
+                    <div style="margin-top:18px;"><a class="arg-btn arg-btn-light" href="{{ $urls['backups'] }}">Yedeklere Git</a></div>
+                @endif
             </article>
         </section>
 
@@ -118,12 +124,11 @@
             <article class="arg-card">
                 <h2 style="margin:0 0 16px;font-size:20px;font-weight:950;">Hızlı İşlemler</h2>
                 <div class="arg-grid" style="grid-template-columns:repeat(2,minmax(0,1fr));">
-                    <a class="arg-quick" href="{{ $urls['customers_create'] }}"><strong>Yeni Müşteri</strong><span>→</span></a>
-                    <a class="arg-quick" href="{{ $urls['services_create'] }}"><strong>Yeni Hizmet</strong><span>→</span></a>
-                    <a class="arg-quick" href="{{ $urls['support_create'] }}"><strong>Yeni Destek Talebi</strong><span>→</span></a>
-                    <a class="arg-quick" href="{{ $urls['admin_create'] }}"><strong>Yeni Admin</strong><span>→</span></a>
-                    <a class="arg-quick" href="{{ $urls['backups'] }}"><strong>Yeni Yedek Al</strong><span>→</span></a>
-                    <a class="arg-quick" href="{{ $urls['live_chat'] }}"><strong>Canlı Destek</strong><span>→</span></a>
+                    @forelse ($quickActions as $action)
+                        <a class="arg-quick" href="{{ $action['url'] }}"><strong>{{ $action['label'] }}</strong><span>→</span></a>
+                    @empty
+                        <p style="margin:0;color:#64748b;">Bu kullanıcı için hızlı işlem bulunmuyor.</p>
+                    @endforelse
                 </div>
             </article>
         </section>

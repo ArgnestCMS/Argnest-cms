@@ -91,7 +91,7 @@ class User extends Authenticatable implements FilamentUser
             self::STATUS_PENDING => 'Beklemede',
             self::STATUS_PASSIVE => 'Pasif',
             self::STATUS_RISKY => 'Riskli',
-            self::STATUS_CANCELLED => 'Iptal',
+            self::STATUS_CANCELLED => 'İptal',
         ];
     }
 
