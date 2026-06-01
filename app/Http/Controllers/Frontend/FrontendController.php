@@ -527,6 +527,28 @@ class FrontendController extends Controller
         return back()->with('success', 'Sifreniz basariyla degistirildi.');
     }
 
+    public function customerSecurity(Request $request): View
+    {
+        $securityActions = [
+            CustomerActivityLog::ACTION_LOGIN,
+            CustomerActivityLog::ACTION_LOGOUT,
+            CustomerActivityLog::ACTION_PASSWORD_CHANGED,
+            CustomerActivityLog::ACTION_PROFILE_UPDATED,
+        ];
+
+        return view('frontend.customer.security', [
+            'settings' => SiteSetting::query()->first(),
+            'customer' => $request->user(),
+            'securityLogs' => $request->user()
+                ->customerActivityLogs()
+                ->whereIn('action', $securityActions)
+                ->latest('created_at')
+                ->take(10)
+                ->get(),
+            'actionOptions' => CustomerActivityLog::actionOptions(),
+        ]);
+    }
+
     public function customerNotifications(Request $request): View
     {
         return view('frontend.customer.notifications', [
