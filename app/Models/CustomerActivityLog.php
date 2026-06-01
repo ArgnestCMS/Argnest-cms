@@ -17,6 +17,8 @@ class CustomerActivityLog extends Model
 
     public const ACTION_PROFILE_UPDATED = 'profile_updated';
 
+    public const ACTION_PASSWORD_CHANGED = 'password_changed';
+
     public const ACTION_SUPPORT_TICKET_CREATED = 'support_ticket_created';
 
     public const ACTION_SUPPORT_TICKET_REPLIED = 'support_ticket_replied';
@@ -56,6 +58,7 @@ class CustomerActivityLog extends Model
             self::ACTION_LOGIN => 'Musteri giris yapti',
             self::ACTION_LOGOUT => 'Musteri cikis yapti',
             self::ACTION_PROFILE_UPDATED => 'Profil guncelledi',
+            self::ACTION_PASSWORD_CHANGED => 'Sifre degistirdi',
             self::ACTION_SUPPORT_TICKET_CREATED => 'Destek talebi olusturdu',
             self::ACTION_SUPPORT_TICKET_REPLIED => 'Destek talebine cevap yazdi',
             self::ACTION_FILE_UPLOADED => 'Dosya yukledi',

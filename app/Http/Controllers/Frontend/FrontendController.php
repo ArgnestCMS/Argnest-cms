@@ -23,6 +23,7 @@ use App\Services\SupportTicketMailService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
@@ -478,6 +479,52 @@ class FrontendController extends Controller
         }
 
         return back()->with('success', 'Profil bilgileriniz guncellendi.');
+    }
+
+    public function customerPassword(Request $request): View
+    {
+        return view('frontend.customer.change-password', [
+            'settings' => SiteSetting::query()->first(),
+            'customer' => $request->user(),
+        ]);
+    }
+
+    public function customerPasswordUpdate(Request $request): RedirectResponse
+    {
+        $customer = $request->user();
+        $validated = $request->validate([
+            'current_password' => ['required', 'string'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        if (! Hash::check($validated['current_password'], $customer->password)) {
+            throw ValidationException::withMessages([
+                'current_password' => 'Mevcut sifreniz hatali.',
+            ]);
+        }
+
+        $customer->forceFill([
+            'password' => Hash::make($validated['password']),
+        ])->save();
+
+        app(CustomerActivityLogger::class)->log(
+            $customer,
+            CustomerActivityLog::ACTION_PASSWORD_CHANGED,
+            'Sifre degistirildi.',
+            $request,
+        );
+
+        if (class_exists(CustomerNotification::class)) {
+            CustomerNotification::query()->create([
+                'user_id' => $customer->id,
+                'title' => 'Sifreniz degistirildi',
+                'message' => 'Şifreniz başarıyla değiştirildi',
+                'type' => 'security',
+                'link' => route('frontend.customer.password'),
+            ]);
+        }
+
+        return back()->with('success', 'Sifreniz basariyla degistirildi.');
     }
 
     public function customerNotifications(Request $request): View
