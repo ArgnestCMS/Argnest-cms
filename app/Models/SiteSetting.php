@@ -2,7 +2,11 @@
 
 namespace App\Models;
 
+use Illuminate\Contracts\Encryption\DecryptException;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Log;
 
 class SiteSetting extends Model
 {
@@ -51,9 +55,32 @@ class SiteSetting extends Model
     {
         return [
             'smtp_port' => 'integer',
-            'smtp_password' => 'encrypted',
             'customer_email_verification_enabled' => 'boolean',
             'live_chat_enabled' => 'boolean',
         ];
+    }
+
+    protected function smtpPassword(): Attribute
+    {
+        return Attribute::make(
+            get: function (?string $value): ?string {
+                if ($value === null || $value === '') {
+                    return null;
+                }
+
+                try {
+                    return Crypt::decryptString($value);
+                } catch (DecryptException $exception) {
+                    Log::warning('Site setting SMTP password could not be decrypted.', [
+                        'site_setting_id' => $this->getKey(),
+                        'attribute' => 'smtp_password',
+                        'exception' => $exception->getMessage(),
+                    ]);
+
+                    return null;
+                }
+            },
+            set: fn (?string $value): ?string => filled($value) ? Crypt::encryptString($value) : null,
+        );
     }
 }
