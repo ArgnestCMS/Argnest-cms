@@ -82,6 +82,88 @@ php artisan storage:link
 
 Production ortaminda web sunucusunun `storage` ve `bootstrap/cache` dizinlerine yazma izni olmalidir.
 
+# Önerilen Canlı Sunucu Kurulumu
+
+Argnest CMS için önerilen yapı subdomain kurulumudur.
+
+Örnek:
+
+Domain:
+
+```text
+crm.siteadi.com
+```
+
+Dosya Yapısı:
+
+```text
+/home/kullanici/web/crm.siteadi.com/
+├── private/
+│   └── argnest-cms/
+│       ├── app
+│       ├── bootstrap
+│       ├── config
+│       ├── database
+│       ├── public
+│       ├── resources
+│       ├── routes
+│       ├── storage
+│       ├── vendor
+│       └── .env
+│
+└── public_html -> private/argnest-cms/public
+```
+
+Kurulum Adımları:
+
+1. Subdomain oluştur
+
+   Örnek:
+
+   ```text
+   crm.siteadi.com
+   ```
+
+2. SSL aktif et
+
+3. Projeyi şu klasöre kur:
+
+   ```text
+   private/argnest-cms
+   ```
+
+4. `public_html` klasörünü Laravel `public` klasörüne yönlendir:
+
+   ```bash
+   ln -s /home/kullanici/web/crm.siteadi.com/private/argnest-cms/public public_html
+   ```
+
+5. `.env` düzenle:
+
+   ```env
+   APP_URL=https://crm.siteadi.com
+   ```
+
+6. Kurulum sonrası çalıştır:
+
+   ```bash
+   php artisan storage:link
+   php artisan optimize
+   ```
+
+7. Tarayıcıdan aç:
+
+   ```text
+   https://crm.siteadi.com/install
+   ```
+
+Notlar:
+
+- Alt klasör (`/crm`) kurulumu teorik olarak mümkündür ancak Filament, session ve cookie yapıları nedeniyle önerilmez.
+- Subdomain kurulumu önerilir.
+- Kurulum tamamlandıktan sonra `APP_INSTALLED=true` ve lock dosyası otomatik oluşturulur.
+- `storage:link` komutu mutlaka çalıştırılmalıdır, aksi halde medya dosyaları görüntülenmeyebilir.
+
 ## Production Notlari
 
 - `APP_ENV=production` kullanin.

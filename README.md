@@ -33,6 +33,25 @@ php artisan serve
 
 Ardindan tarayicida `/install` adresine giderek kurulumu tamamlayin.
 
+## Recommended Production Structure
+
+Production ortaminda Argnest CMS icin onerilen yapi subdomain kurulumudur. Ornek olarak `crm.siteadi.com` subdomain'i olusturulur, proje public olmayan `private/argnest-cms` klasorune kurulur ve `public_html` Laravel `public` klasorune yonlendirilir.
+
+```text
+/home/kullanici/web/crm.siteadi.com/
+├── private/
+│   └── argnest-cms/
+│       ├── app
+│       ├── public
+│       ├── storage
+│       ├── vendor
+│       └── .env
+│
+└── public_html -> private/argnest-cms/public
+```
+
+`.env` icinde `APP_URL=https://crm.siteadi.com` olarak ayarlanmalidir. Kurulum sonrasi `php artisan storage:link` ve `php artisan optimize` calistirilir, ardindan `https://crm.siteadi.com/install` adresinden kurulum tamamlanir. Alt klasor (`/crm`) kurulumu Filament, session ve cookie yapilari nedeniyle onerilmez.
+
 ## /install Sihirbazi
 
 Kurulum sihirbazi uc kurulum tipini destekler:

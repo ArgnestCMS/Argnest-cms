@@ -19,3 +19,5 @@ Tum kayda deger degisiklikler bu dosyada belgelenir.
 - Tam ZIP yedekleme, SQL yedekleme ve restore destegi
 - `/install` kurulum sihirbazi
 - GitHub yayini oncesi guvenli `.gitignore`, `.env.example`, README, kurulum ve guvenlik dokumantasyonu
+- Recommended subdomain deployment documentation
+- Production deployment architecture guide
