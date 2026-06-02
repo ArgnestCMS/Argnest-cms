@@ -37,6 +37,7 @@
     $currentUser = auth()->user();
     $isCustomerUser = $currentUser?->isCustomer() ?? false;
     $isAdminUser = ($currentUser?->role ?? null) === \App\Models\User::ROLE_ADMIN;
+    $adminPanelUrl = url('/admin');
 @endphp
 
 <!DOCTYPE html>
@@ -105,7 +106,7 @@
                         </form>
                     @elseif ($isAdminUser)
                         <span class="h-5 w-px bg-slate-200"></span>
-                        <a href="{{ url('/admin') }}" class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-800 shadow-sm transition hover:border-blue-300 hover:text-blue-700 hover:shadow-md">Admin Paneli</a>
+                        <a href="{{ $adminPanelUrl }}" class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-800 shadow-sm transition hover:border-blue-300 hover:text-blue-700 hover:shadow-md">Admin Paneli</a>
                         <form action="{{ route('frontend.customer.logout') }}" method="POST" class="inline-flex">
                             @csrf
                             <button type="submit" class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-800 shadow-sm transition hover:border-blue-300 hover:text-blue-700 hover:shadow-md">Cikis Yap</button>
@@ -136,7 +137,7 @@
                                 <button type="submit" class="flex w-full items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-800 shadow-sm transition hover:border-blue-300 hover:text-blue-700 hover:shadow-md">Cikis Yap</button>
                             </form>
                         @elseif ($isAdminUser)
-                            <a href="{{ url('/admin') }}" class="flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-800 shadow-sm transition hover:border-blue-300 hover:text-blue-700 hover:shadow-md">Admin Paneli</a>
+                            <a href="{{ $adminPanelUrl }}" class="flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-800 shadow-sm transition hover:border-blue-300 hover:text-blue-700 hover:shadow-md">Admin Paneli</a>
                             <form action="{{ route('frontend.customer.logout') }}" method="POST" class="mt-1">
                                 @csrf
                                 <button type="submit" class="flex w-full items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-800 shadow-sm transition hover:border-blue-300 hover:text-blue-700 hover:shadow-md">Cikis Yap</button>

@@ -377,7 +377,15 @@ class FrontendController extends Controller
 
         $request->session()->regenerate();
 
-        if (! $request->user()?->isCustomer()) {
+        $user = $request->user();
+
+        if (($user?->role ?? null) === User::ROLE_ADMIN) {
+            return redirect()
+                ->to(url('/admin'))
+                ->with('status', 'Admin hesabı ile yönetim paneline yönlendiriliyorsunuz.');
+        }
+
+        if (! $user?->isCustomer()) {
             Auth::logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
@@ -387,13 +395,13 @@ class FrontendController extends Controller
             ]);
         }
 
-        $request->user()->forceFill([
+        $user->forceFill([
             'last_login_at' => now(),
             'last_login_ip' => app(ClientIpService::class)->ip($request),
         ])->save();
 
         app(CustomerActivityLogger::class)->log(
-            $request->user(),
+            $user,
             CustomerActivityLog::ACTION_LOGIN,
             'Musteri paneline giris yapti.',
             $request,
