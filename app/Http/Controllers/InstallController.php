@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 use PDO;
@@ -169,6 +171,8 @@ class InstallController extends Controller
             'admin_password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
+        $validated['admin_email'] = Str::lower(trim($validated['admin_email']));
+
         $request->session()->put('install.site_admin', $validated);
         $this->writeEnvValue('APP_URL', $validated['site_url']);
 
@@ -252,12 +256,13 @@ class InstallController extends Controller
         );
 
         $this->attachAdminRoleAndPermissions($admin);
+        $this->assertAdminCanLogin($siteAdmin['admin_email'], $siteAdmin['admin_password']);
     }
 
     private function processFullZipRestore(Request $request): void
     {
         $path = $this->restorePath($request);
-        $this->createPreRestoreBackup();
+        $this->createPreRestoreBackupIfPossible();
 
         $extractPath = storage_path('app/installer/full-restore-' . Str::random(8));
         File::ensureDirectoryExists($extractPath);
@@ -268,17 +273,17 @@ class InstallController extends Controller
             throw new \RuntimeException('ZIP yedek dosyasi acilamadi.');
         }
 
-        $databaseSqlIndex = $zip->locateName('database.sql', ZipArchive::FL_NOCASE);
+        $databaseSqlName = $this->databaseSqlNameInZip($zip);
 
-        if ($databaseSqlIndex === false) {
+        if ($databaseSqlName === null) {
             $zip->close();
-            throw new \RuntimeException('ZIP icinde database.sql bulunamadi.');
+            throw new \RuntimeException('ZIP içinde database.sql bulunamadı');
         }
 
         $zip->extractTo($extractPath);
         $zip->close();
 
-        $databaseSqlPath = $extractPath . DIRECTORY_SEPARATOR . 'database.sql';
+        $databaseSqlPath = $extractPath . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $databaseSqlName);
         $this->importSqlFile($databaseSqlPath);
         $this->restoreExtractedFiles($extractPath);
 
@@ -288,20 +293,38 @@ class InstallController extends Controller
     private function processSqlRestore(Request $request): void
     {
         $path = $this->restorePath($request);
-        $this->createPreRestoreBackup();
+        $this->createPreRestoreBackupIfPossible();
         $this->importSqlFile($path);
     }
 
-    private function createPreRestoreBackup(): void
+    private function createPreRestoreBackupIfPossible(): void
     {
-        $backup = app(SystemBackupService::class)->createFullBackup();
-        $target = storage_path('app/backups/pre-restore-backup.zip');
+        try {
+            DB::connection()->getPdo();
 
-        if ($backup->status !== 'completed' || ! File::exists($backup->absolutePath())) {
-            throw new \RuntimeException('Geri yukleme oncesi guvenlik yedegi olusturulamadi: ' . $backup->error_message);
+            if (! Schema::hasTable('migrations') || ! Schema::hasTable('system_backups')) {
+                Log::warning('Pre-restore backup atlandi: migrations veya system_backups tablosu bulunamadi.');
+
+                return;
+            }
+
+            $backup = app(SystemBackupService::class)->createFullBackup();
+            $target = storage_path('app/backups/pre-restore-backup.zip');
+
+            if ($backup->status !== 'completed' || ! File::exists($backup->absolutePath())) {
+                Log::warning('Pre-restore backup olusturulamadi, restore devam ediyor.', [
+                    'error' => $backup->error_message,
+                ]);
+
+                return;
+            }
+
+            File::copy($backup->absolutePath(), $target);
+        } catch (Throwable $exception) {
+            Log::warning('Pre-restore backup alinamadi, restore devam ediyor.', [
+                'error' => $exception->getMessage(),
+            ]);
         }
-
-        File::copy($backup->absolutePath(), $target);
     }
 
     private function importSqlFile(string $path): void
@@ -310,8 +333,12 @@ class InstallController extends Controller
             throw new \RuntimeException('SQL dosyasi bulunamadi.');
         }
 
-        $sql = File::get($path);
-        DB::connection()->getPdo()->exec($sql);
+        try {
+            $sql = File::get($path);
+            DB::unprepared($sql);
+        } catch (Throwable $exception) {
+            throw new \RuntimeException('Veritabanı yedeği içe aktarılamadı: ' . $exception->getMessage(), 0, $exception);
+        }
     }
 
     private function restoreExtractedFiles(string $extractPath): void
@@ -319,6 +346,8 @@ class InstallController extends Controller
         $map = [
             'storage/app/public' => storage_path('app/public'),
             'storage/app/private' => storage_path('app/private'),
+            'storage/public' => storage_path('app/public'),
+            'storage/private' => storage_path('app/private'),
             'public/uploads' => public_path('uploads'),
             'public/images' => public_path('images'),
         ];
@@ -372,20 +401,68 @@ class InstallController extends Controller
             ['name' => 'Canli Destek Yonetimi', 'key' => 'live_chat_manage', 'group' => 'Destek'],
         ];
 
-        $permissionIds = collect($permissions)->map(function (array $permission): int {
-            return Permission::query()->firstOrCreate(
+        collect($permissions)->each(function (array $permission): void {
+            Permission::query()->firstOrCreate(
                 ['key' => $permission['key']],
                 [
                     'name' => $permission['name'],
                     'group' => $permission['group'],
                     'description' => null,
                 ],
-            )->id;
+            );
         });
+
+        $permissionIds = Permission::query()->pluck('id');
 
         $role->permissions()->syncWithoutDetaching($permissionIds->all());
         $admin->roles()->syncWithoutDetaching([$role->id]);
         $admin->permissions()->syncWithoutDetaching($permissionIds->all());
+    }
+
+    private function assertAdminCanLogin(string $email, string $password): void
+    {
+        if (! User::query()->where('email', $email)->exists()) {
+            throw new \RuntimeException('Admin kullanıcı oluşturulamadı');
+        }
+
+        $admin = User::query()->where('email', $email)->first();
+
+        if (! $admin || ! Hash::check($password, $admin->password)) {
+            throw new \RuntimeException('Şifre hash doğrulaması başarısız');
+        }
+
+        if ($admin->role !== User::ROLE_ADMIN || ! $admin->is_active || $admin->email_verified_at === null) {
+            throw new \RuntimeException('Admin kullanıcı oluşturulamadı');
+        }
+
+        if (! $admin->roles()->where('slug', 'yonetici')->exists()) {
+            throw new \RuntimeException('Admin kullanıcı oluşturulamadı');
+        }
+
+        $permissionCount = Permission::query()->count();
+        $adminPermissionCount = $admin->permissions()->count();
+        $adminRolePermissionCount = $admin->roles()
+            ->where('slug', 'yonetici')
+            ->withCount('permissions')
+            ->first()
+            ?->permissions_count ?? 0;
+
+        if ($adminPermissionCount < $permissionCount || $adminRolePermissionCount < $permissionCount) {
+            throw new \RuntimeException('Admin kullanıcı oluşturulamadı');
+        }
+    }
+
+    private function databaseSqlNameInZip(ZipArchive $zip): ?string
+    {
+        for ($index = 0; $index < $zip->numFiles; $index++) {
+            $name = $zip->getNameIndex($index);
+
+            if ($name !== false && Str::lower(basename(str_replace('\\', '/', $name))) === 'database.sql') {
+                return $name;
+            }
+        }
+
+        return null;
     }
 
     private function validateDatabase(Request $request): array
